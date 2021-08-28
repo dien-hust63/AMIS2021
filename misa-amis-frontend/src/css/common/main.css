@@ -1,0 +1,29 @@
+@import url("../layout/layout.css");
+@import url("../base/icon.css");
+@import url("../base/button.css");
+body{
+    font-family:  MISANotoSans-Regular;
+    font-size: 13px;
+    margin:0;
+    padding:0;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: MISANotoSans-Regular;
+    src: url(../../assets/fonts/notosans-regular.2cb88a13.woff2);
+}
+
+@font-face {
+    font-family: MISANotoSans-Semibold;
+    src: url(../../assets/fonts/notosans-semibold.df3e6dc4.woff2);
+}
+@font-face {
+    font-family: MISANotoSans-Bold;
+    src: url(../../assets/fonts/notosans-bold.3ede5aff.woff2);
+}
+
+@font-face {
+    font-family: MISANotoSans-Italic;
+    src: url(../../assets/fonts/notosans-italic.1c1aaac9.woff2);
+}

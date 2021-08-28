@@ -1,0 +1,22 @@
+.button{
+    background-color: #2ca01c;
+    border-radius: 2px;
+    height: 36px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.button:hover{
+    background-color:#35bf22;
+}
+
+.button:active{
+    background-color: #2ca01c;
+}
+
+.add-button{
+    padding-left: 16px;
+    padding-right: 8px;
+    line-height: 36px;
+}

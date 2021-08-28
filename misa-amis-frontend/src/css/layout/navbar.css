@@ -1,0 +1,52 @@
+ .navbar-wrapper{
+    height: 48px; 
+    display: flex;
+    align-items: center;
+    background-color: #fff !important;
+ }
+.navbar-icon{
+    margin: 0 10px;
+}
+.navbar-branch{
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    margin:0;
+    padding:0;
+}
+.navbar-branch__name{
+    padding-left:10px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    transition: all .2s ease;
+    font-size: 14px;
+    color: #111;
+}
+.navbar-branch__icon{
+    transform: rotate(90deg);
+    margin-left: 10px;
+}
+
+.ms-space{
+    flex:1;
+}
+ .account{
+     display: flex;
+     align-items: center;
+     padding:  0 16px;
+ }
+ .account__avatar{
+     border-radius: 32px;
+     margin-right:4px;
+ }
+
+ .account__name{
+    font-weight: 600;
+    font-size:14px;
+ }
+ .account__icon{
+     margin-left: 4px;
+ }
+
