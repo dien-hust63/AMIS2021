@@ -1,8 +1,12 @@
 @import url("../layout/layout.css");
 @import url("../base/icon.css");
 @import url("../base/button.css");
+@import url("../base/input.css");
+@import url("../base/text.css");
+@import url("../base/checkbox.css");
+
 body{
-    font-family:  MISANotoSans-Regular;
+    font-family:  MISANotoSans-Regular !important;
     font-size: 13px;
     margin:0;
     padding:0;

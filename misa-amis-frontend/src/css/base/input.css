@@ -1,3 +1,35 @@
+.ms-input{
+   display: flex;
+   align-items: center;
+   position: relative;
+}
+
+.ms-input__input input{
+    height: 32px;
+    box-sizing: border-box;
+    border-radius: 2px;
+    border: 1px solid #babec5;
+    outline: none;
+    width: 100%;
+    padding: 6px 10px;
+}
+.ms-input__input input:focus{
+    border-color: #019160;
+}
+.ms-input__input input::placeholder{
+    font-size: 11px;
+    font-style: italic;
+}
+
+.ms-input__input.icon-after-input input{
+    padding-right: 26px;
+}
+
+.ms-input__icon--after{
+    position: absolute;
+    right: 10px;
+}
+
 .input-search{
     width: 240px;
 }

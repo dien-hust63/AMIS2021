@@ -1,6 +1,7 @@
 .menu-container{
     height: 100vh;
     width: 178px;
+    min-width: 178px;
     background-color: #393a3d;
 }
 

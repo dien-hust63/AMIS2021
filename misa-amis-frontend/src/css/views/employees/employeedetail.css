@@ -1,0 +1,14 @@
+.employee-detail{
+    width:100%
+}
+.row-input{
+    width: 100%;
+    display: flex;
+}
+
+.row-input--left{
+    display: flex;
+}
+.row-input-right{
+    display: flex;
+}

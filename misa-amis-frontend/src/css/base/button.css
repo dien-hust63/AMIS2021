@@ -1,22 +1,32 @@
-.button{
-    background-color: #2ca01c;
-    border-radius: 2px;
+.ms-button{
+    border-radius: 3px;
     height: 36px;
-    color: #fff;
     font-weight: 600;
     cursor: pointer;
+    box-sizing: border-box;
+    padding:8px 20px;
+    transition: all .2s ease;
 }
-
-.button:hover{
+.ms-button-primary{
+    color: #fff;
+    background-color: #2ca01c;
+}
+.ms-button-primary:hover{
     background-color:#35bf22;
 }
 
-.button:active{
+.ms-button-primary:active{
     background-color: #2ca01c;
 }
 
-.add-button{
-    padding-left: 16px;
-    padding-right: 8px;
-    line-height: 36px;
+.ms-button-secondary{
+    background-color: transparent;
+    border: 1px solid #8d9096;
+    color: #111;
+}
+.ms-button-secondary:hover{
+    background-color: #d2d3d6;
+}
+.ms-button-secondary:active{
+    background-color: #bbbcbc;
 }
