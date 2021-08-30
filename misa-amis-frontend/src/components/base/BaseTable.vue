@@ -33,13 +33,12 @@
             <span>{{ formatTableContent(tableContent, tableHeader) }}</span>
           </td>
           <td>
-            <context-menu
-              :deleteData="tableContents[index]"
-            />
+            <context-menu :deleteData="tableContents[index]" @loadTable="loadTable"/>
           </td>
         </tr>
       </tbody>
     </table>
+    <base-loading :class="{ 'ms-loading--show': isLoading }" />
   </div>
 </template>
 
@@ -48,10 +47,12 @@
 import CommonMethods from "../../mixins/methods.js";
 import axios from "axios";
 import ContextMenu from "../views/contextmenu/ContextMenu.vue";
+import BaseLoading from "../base/BaseLoading.vue";
 export default {
   name: "BaseTable",
   components: {
     ContextMenu,
+    BaseLoading,
   },
   mixins: [CommonMethods],
   props: {
@@ -72,6 +73,7 @@ export default {
   data() {
     return {
       tableContents: [],
+      isLoading: false,
     };
   },
   methods: {
@@ -138,8 +140,15 @@ export default {
     loadTable() {
       axios
         .get(this.urlAPI)
-        .then((response) => (this.tableContents = response.data["Employees"]))
-        .catch((response) => console.log(response));
+        .then((response) => {
+          this.tableContents = response.data["Employees"];
+          this.isLoading = false;
+        })
+        .catch((response) => {
+          console.log(response);
+          this.isLoading = true;
+        });
+      this.isLoading = true;
     },
   },
 };

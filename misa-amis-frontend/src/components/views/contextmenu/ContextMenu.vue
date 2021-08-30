@@ -14,7 +14,7 @@
       <div class="dropdown__content">
         <ul>
           <li>Nhân bản</li>
-          <li @click="deleteRow">Xóa</li>
+          <li @click="confirmDeleteRow">Xóa</li>
           <li>Ngừng sử dụng</li>
         </ul>
       </div>
@@ -22,17 +22,18 @@
     <base-message
       :class="{ 'ms-message--show': isShowMessage }"
       :messageText="messageText"
-      icon="mi-exclamation-question-48"
-      isLeftRightTwo
+      icon="mi-exclamation-warning-48"
+      isLeftRightOne
       :messageButtonData="messageButtonData"
+      @closeMessageBox="closeMessageBox"
+      @handleSecondRight="deleteRow"
     />
   </div>
 </template>
 
 <script>
-// import EmployeeApi from "../../../js/component/employeeapi.js";
+import EmployeeApi from "../../../js/component/employeeapi.js";
 import BaseMessage from "../../base/BaseMessage.vue";
-import { confirmChangeData } from "../../../js/resources/resourcevn.js";
 export default {
   name: "ContextMenu",
   components: {
@@ -48,11 +49,10 @@ export default {
   },
   data() {
     return {
-      isChoose:true,
+      isChoose: true,
       isShow: false,
       isShowMessage: false,
-      messageText: confirmChangeData,
-      messageButtonData: ['Mở','','Test','Đóng'],
+      messageButtonData: ["Không", "", "", "Có"],
     };
   },
   methods: {
@@ -71,11 +71,39 @@ export default {
       this.isShow = false;
     },
     /**
-     * Xóa thông tin của đối tượng tại hàng đó
+     * Hiển thị form cảnh báo xóa
+     * CreatedBy: nvdien(30/8/2021)
      */
-    deleteRow() {
+    confirmDeleteRow() {
       //Hiện form cảnh báo
       this.isShowMessage = true;
+    },
+    /**
+     * Đóng message box
+     * CreatedBy: nvdien(30/8/2021)
+     */
+    closeMessageBox() {
+      this.isShowMessage = false;
+    },
+
+    /**
+     * Xóa dữ liệu tại hàng đó
+     * CreatedBy: nvdien(30/8/2021)
+     */
+    deleteRow() {
+      this.isShowMessage = false;
+      EmployeeApi.delete(this.deleteData["EmployeeId"])
+        .then((response) => {
+          console.log(response);
+          this.$emit("loadTable");
+        })
+        .catch((response) => console.log(response));
+      this.loadData = true;
+    },
+  },
+  computed: {
+    messageText: function () {
+      return `Bạn có thực sự muốn xóa Nhân viên <${this.deleteData["EmployeeCode"]}> không?`;
     },
   },
 };

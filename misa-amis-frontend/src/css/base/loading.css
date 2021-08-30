@@ -1,0 +1,22 @@
+.ms-loading-wrap{
+    position: fixed;
+    left:0;
+    top:0;
+    width: 100%;
+    height: 100%;
+    background: rgba(1,1,1,.1);
+    z-index: 1000;
+    transition: all .25s ease;
+    opacity: 1;
+    display: none;
+}
+.ms-loading-wrap.ms-loading--show{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.ms-loading{
+    background: url("../../assets/img/loading.svg") no-repeat;
+    width: 48px;
+    height: 48px;
+}

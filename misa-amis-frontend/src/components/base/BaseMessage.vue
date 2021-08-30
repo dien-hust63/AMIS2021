@@ -12,17 +12,17 @@
       <div class="message-line"></div>
       <div class="message-footer" :class="classObject">
         <div class="message-footer--left">
-          <div class="ms-button ms-button-secondary">{{messageButtonData[0]}}</div>
+          <div class="ms-button ms-button-secondary" @click="handleLeft">{{messageButtonData[0]}}</div>
         </div>
         <div class="message-footer--center">
-          <div class="ms-button ms-button-primary">{{messageButtonData[1]}}</div>
+          <div class="ms-button ms-button-primary" @click="handleCenter">{{messageButtonData[1]}}</div>
         </div>
         <div class="message-footer--right">
           <div class="footer-right-first">
-            <div class="ms-button ms-button-secondary">{{messageButtonData[2]}}</div>
+            <div class="ms-button ms-button-secondary" @click="handleFirstRight">{{messageButtonData[2]}}</div>
           </div>
           <div class="footer-right-second">
-            <div class="ms-button ms-button-primary">{{messageButtonData[3]}}</div>
+            <div class="ms-button ms-button-primary" @click="handleSecondRight">{{messageButtonData[3]}}</div>
           </div>
         </div>
       </div>
@@ -79,6 +79,36 @@ export default {
       },
     };
   },
+  methods:{
+    /**
+     * xử lí khi ấn vào nút bên trái
+     */
+    handleLeft(){
+      if(this.messageButtonData[0] === "Không"){
+        this.$emit("closeMessageBox");
+      }
+    },
+    /**
+     * Xử lí khi ấn vào nút giữa
+     */
+    handleCenter(){
+
+    },
+    /**
+     * Xử lí khi ấn vào nút đầu tiên bên phải
+     */
+    handleFirstRight(){
+
+    },
+    /**
+     * Xử lí khi ấn vào nút thứ 2 bên phải
+     */
+    handleSecondRight(){
+      if(this.messageButtonData[3] === "Có"){
+        this.$emit("handleSecondRight");
+      }
+    }
+  }
 };
 </script>
 
