@@ -60,5 +60,15 @@ export default class BaseAPI {
         let api = this.baseApiUrl + this.controller + "?entityIds=" + idList;
         return await axios.delete(api);
     }
+    /**
+     * Xóa theo id
+     * @param {string} id  id của đối tượng
+     * @returns promise
+     * CreatedBy: nvdien(30/8/2021)
+     */
+    delete(id){
+        let api = this.baseApiUrl + this.controller + "/" + id;
+        return axios.delete(api);
+    }
 
 }

@@ -8,8 +8,11 @@
           <base-checkbox label="Là nhà cung cấp" />
         </div>
         <div class="ms-popup-close">
-          <div class="mi mi-24 mi-help popup-help"></div>
-          <div class="mi mi-24 mi-close" @click="confirmClosePopup"></div>
+          <div class="mi mi-24 mi-help popup-help-icon"></div>
+          <div
+            class="mi mi-24 mi-close popup-close-icon"
+            @click="confirmClosePopup"
+          ></div>
         </div>
       </div>
       <div class="ms-popup__content">
@@ -18,13 +21,16 @@
             :employeeInfo="popupData"
             :isFocusCode="isShowPopup"
             @checkChangeData="checkChangeData"
+            :mode="mode"
+            :isResetData="isResetData"
+            @resetDataDone="resetDataDone"
           />
         </div>
         <div class="popup-footer">
           <div class="popup-footer-divide"></div>
           <div class="popup-footer-content">
             <div class="popup-footer--right">
-              <div class="ms-button ms-button-secondary">Hủy</div>
+              <div class="ms-button ms-button-secondary" @click="closePopup">Hủy</div>
             </div>
             <div class="popup-footer--left">
               <div class="ms-button ms-button-secondary first-right-button">
@@ -36,7 +42,7 @@
         </div>
       </div>
     </div>
-    <base-message />
+    <base-message :class="{ 'ms-message--show': isShowMessage }" />
   </div>
 </template>
 
@@ -57,11 +63,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    mode: {
+      type: Number,
+      default: -1
+    }
   },
   components: {
     BaseCheckbox,
     EmployeeDetail,
     BaseMessage,
+  },
+  data() {
+    return {
+      isChangeData: false,
+      isShowMessage: false,
+      isResetData:false,
+    };
   },
   methods: {
     /**
@@ -70,18 +87,35 @@ export default {
      */
     confirmClosePopup() {
       //Kiểm tra dữ liệu có bị thay đổi không
-      if(this.checkChangeData()){
-        console.log("close change oke");
-      }
-      else{
-        console.log("close not change data nha");
+      if (this.isChangeData) {
+        // hiển thị cảnh báo
+        this.isShowMessage = true;
+      } else {
+        // đóng popup
+        this.isResetData = true;
+        this.$emit("closePopup");
       }
     },
     /**
      * kiểm tra dữ liệu có bị thay đổi không
      */
-    checkChangeData(isChangeData){
-      return isChangeData;
+    checkChangeData(isChangeData) {
+      this.isChangeData = isChangeData;
+    },
+    /**
+     * xử lí khi đã reset xong data
+     * CreatedBy: nvdien(30/8/2021)
+     */
+    resetDataDone(){
+      this.isResetData = false;
+    },
+    /**
+     * Đóng popup
+     * CreatedBy: nvdien(30/8/2021)
+     */
+    closePopup(){
+      this.isResetData = true;
+      this.$emit("closePopup");
     }
   },
 };

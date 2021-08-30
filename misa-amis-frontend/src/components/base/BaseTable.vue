@@ -33,7 +33,9 @@
             <span>{{ formatTableContent(tableContent, tableHeader) }}</span>
           </td>
           <td>
-            <context-menu/>
+            <context-menu
+              :deleteData="tableContents[index]"
+            />
           </td>
         </tr>
       </tbody>
@@ -48,7 +50,7 @@ import axios from "axios";
 import ContextMenu from "../views/contextmenu/ContextMenu.vue";
 export default {
   name: "BaseTable",
-  components:{
+  components: {
     ContextMenu,
   },
   mixins: [CommonMethods],

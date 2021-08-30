@@ -71,7 +71,6 @@
         <base-input label="Chi nhánh" />
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -90,11 +89,19 @@ export default {
       type: Boolean,
       default: false,
     },
+    mode: {
+      type: Number,
+      default: -1,
+    },
+    isResetData: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       employeeData: {},
-      isChangeData: false,
+      // isChangeData: false,
     };
   },
   methods: {
@@ -112,22 +119,35 @@ export default {
   watch: {
     isFocusCode: function (newValue) {
       if (newValue) {
+        //focus vào ô mã nhân viên mỗi lần mở popup
         this.$refs.employeeCodeInput.focusInput();
+        //đồng thời gán thông tin employee lên form
         this.employeeData = Object.assign({}, this.employeeInfo);
       }
     },
-    employeeData(newValue, oldValue) {
+    employeeData: function (newValue, oldValue) {
+      if(this.isResetData && this.checkEmptyObject(newValue)) {
+        //nếu ở chế độ reset data thì sẽ không hiện cảnh báo thay đổi dữ liệu
+        this.$emit("resetDataDone");
+        return;
+      }
       if (this.checkEmptyObject(oldValue)) {
         console.log("giá trị trc đó rỗng");
       } else {
         console.log("not rỗng ");
         console.log(oldValue);
-        this.isChangeData = true;
-        this.$emit("changeData", this.isChangeData);
+        this.$emit("checkChangeData", true);
       }
-
       console.log("new value ");
       console.log(newValue);
+    },
+    isResetData: function (newValue) {
+      if (newValue) {
+        //đánh dấu không có sự thay đổi dữ liệu
+        this.$emit("checkChangeData", false);
+        //reset employeeData
+        this.employeeData = Object.assign({}, {});
+      }
     },
   },
 };

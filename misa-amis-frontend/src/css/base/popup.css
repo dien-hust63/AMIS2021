@@ -55,11 +55,16 @@
     align-items: flex-start;
 }
 
-.popup-help{
-    margin-right: 6px
+.popup-help-icon{
+    margin-right: 6px;
+    cursor: pointer;
 }
 
-.base-checkbox{
+.popup-close-icon{
+    cursor: pointer;
+}
+
+.ms-checkbox{
     margin: 0 20px;
 }
 
@@ -94,6 +99,7 @@
 .popup-footer--left .first-right-button{
     margin-right:10px;
 }
+
 
 
 

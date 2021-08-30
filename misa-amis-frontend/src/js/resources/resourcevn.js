@@ -25,5 +25,7 @@ var tableEmployeeHeaders = [
   { BankBranch: "CHI NHÁNH TK NGÂN HÀNG", type: "0" },
 ]
 
+var confirmChangeData =  "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?";
+var requiredName = "Tên không được để trống";
 
-export { apiList, tableEmployeeHeaders };
+export { apiList, tableEmployeeHeaders, confirmChangeData, requiredName};

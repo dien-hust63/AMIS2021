@@ -33,6 +33,8 @@
     <base-popup
       :popupData="employeeData"
       :isShowPopup="isShowPopup"
+      @closePopup ="closePopup"
+      :mode ="mode"
     />
   </div>
 </template>
@@ -60,6 +62,7 @@ export default {
       tableEmployeeHeaders: tableEmployeeHeaders,
       isShowPopup: false,
       employeeData: {},
+      mode: -1,
     };
   },
   methods: {
@@ -71,7 +74,8 @@ export default {
       //lấy mã nhân viên mới
       EmployeeApi.getNewEmployeeCode()
         .then((response) => {
-          console.log(response.data);
+          //set mode = 0: thêm mới
+          this.mode = 0;
           //hiển thị form thêm mới nhân viên
           this.isShowPopup = true;
           //truyền mã nhân viên mới lên popup
@@ -84,6 +88,13 @@ export default {
           this.isShowPopup = true;
         });
     },
+
+    /**
+     * Đóng popup
+     */
+    closePopup(){
+      this.isShowPopup  = false;
+    }
   },
   computed: {
     employeeApiFilter: function () {

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-checkbox">
+  <div class="ms-checkbox">
     <div class="checkbox">
       <i class="fas fa-check"></i>
     </div>
