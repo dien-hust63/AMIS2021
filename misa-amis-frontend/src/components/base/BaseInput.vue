@@ -9,13 +9,10 @@
       <input
         ref="input"
         v-bind="$attrs"
-        :value="valueInput"
         v-on="inputListeners"
-        :tabindex="tabIndex"
       />
-      <div class="ms-input__icon mi mi-16 mi-search" v-if="hasIcon"></div>
+      <div class="ms-input__icon--after mi mi-16 mi-search"></div>
     </div>
-    <div class="text--red" style="margin-top: 2px">{{ errors }}</div>
   </div>
 </template>
 
@@ -28,9 +25,20 @@ export default {
       type:String,
       default: "",
     },
-    hasIcon:{
+    label:{
       type:String,
       default: "",
+    }
+  },
+  methods:{
+    /**
+     * focus vào ô input
+     * CreatedBy: nvdien(30/8/2021)
+     */
+    focusInput() {
+      this.$nextTick(() => {
+        this.$refs.input.focus();
+      });
     },
   },
   computed: {

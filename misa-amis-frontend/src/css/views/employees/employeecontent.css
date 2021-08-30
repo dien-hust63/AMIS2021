@@ -39,9 +39,11 @@
 
 
 .employee-table{
-    flex:1;
+    height: calc(100vh - 234px);
+    overflow-y: scroll;
 }
-.pagination{
+.employee-content-pagination{
     height: 46px;
-    background-color: chartreuse;
+    padding-left:20px;
+    padding-right:30px;
 }

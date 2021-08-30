@@ -4,11 +4,18 @@
 .row-input{
     width: 100%;
     display: flex;
+    padding-bottom:12px;
 }
 
 .row-input--left{
     display: flex;
+    box-sizing: border-box;
+    padding-right:26px;
 }
-.row-input-right{
+.row-input--right{
     display: flex;
+    box-sizing: border-box;
+}
+.row-input-third{
+    margin-bottom: 30px;
 }

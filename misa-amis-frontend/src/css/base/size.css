@@ -13,3 +13,17 @@
 .w-1\/2{
     width: 50%;
 }
+.w-200{
+    width: 200px;
+}
+.p-r-6{
+    padding-right: 6px;
+}
+
+.p-l-6{
+    padding-left: 6px;
+}
+
+.border-box{
+    box-sizing: border-box;
+}

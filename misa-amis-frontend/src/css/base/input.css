@@ -1,9 +1,19 @@
 .ms-input{
    display: flex;
-   align-items: center;
+   align-items: flex-start;
    position: relative;
+   flex-direction: column;
+   justify-content: flex-start;
+   width: 100%;
 }
-
+.ms-input__label{
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.ms-input__input{
+    width: 100%;
+}
 .ms-input__input input{
     height: 32px;
     box-sizing: border-box;
@@ -21,15 +31,18 @@
     font-style: italic;
 }
 
-.ms-input__input.icon-after-input input{
-    padding-right: 26px;
-}
-
 .ms-input__icon--after{
+   display: none;
+}
+.input-search .ms-input__icon--after{
+    display: block;
     position: absolute;
     right: 10px;
+    bottom: 8px;
 }
-
-.input-search{
+.input-search .ms-input__input{
     width: 240px;
+}
+.input-search .ms-input__input input{
+    padding-right: 26px;
 }

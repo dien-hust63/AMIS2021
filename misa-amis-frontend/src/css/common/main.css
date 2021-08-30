@@ -4,6 +4,7 @@
 @import url("../base/input.css");
 @import url("../base/text.css");
 @import url("../base/checkbox.css");
+@import url("../base/size.css");
 
 body{
     font-family:  MISANotoSans-Regular !important;

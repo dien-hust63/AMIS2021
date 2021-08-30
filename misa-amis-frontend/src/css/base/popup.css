@@ -5,13 +5,16 @@
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,.4);
-    z-index: 98;
+    z-index: 900;
     transition: all .25s ease;
     opacity: 1;
+    display: none;
+}
+
+.ms-popup-wrap.ms-popup--show{
     display: flex;
     justify-content: center;
     align-items: center;
-    display: none;
 }
 
 .ms-popup{
@@ -21,6 +24,7 @@
     background-color: #fff;
     display: flex;
     flex-direction: column;
+    border-radius: 2px;
 }
 
 .ms-popup__header{
