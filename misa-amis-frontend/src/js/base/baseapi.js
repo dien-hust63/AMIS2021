@@ -32,9 +32,9 @@ export default class BaseAPI {
      * @returns promise
      * author: nvdien(25/8/2021)
      */
-    async post(body) {
+    post(body) {
         let api = this.baseApiUrl + this.controller;
-        return await axios.post(api, body);
+        return axios.post(api, body);
     }
 
     /**
@@ -44,9 +44,9 @@ export default class BaseAPI {
      * @returns promise
      * author: nvdien(25/8/2021)
      */
-    async put(id, body) {
+    put(id, body) {
         let api = this.baseApiUrl + this.controller + "/" + id;
-        return await axios.put(api, body);
+        return axios.put(api, body);
     }
 
     /**

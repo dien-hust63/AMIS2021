@@ -51,46 +51,23 @@
 .message-footer{
     height: 36px;
     box-sizing: border-box;
-    display: flex;
-    align-items: center;
+   position:relative;
 }
 
-/**right*/
-.message-footer--right{
-    display: flex;
-}
-
-.footer-right-first{
-    margin-right:8px;
-}
-
-.center .message-footer--right{
-    display: none;
-}
-.center .message-footer--left{
-    display: none;
-}
 .center{
-    justify-content: center !important;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+}
+.left{
+    float: left;
 }
 
-.right-only .message-footer--center,.right-only .message-footer--left, .right-only .footer-right-first{
-    display: none;
+.right-second{
+    float: right;
+    margin-right: 10px;
 }
-.right-only{
-    justify-content: flex-end;
-}
-
-.left-right-one .message-footer--center,.left-right-one .footer-right-first{
-    display: none;
-}
-.left-right-one{
-    justify-content: space-between;
-}
-
-.left-right-two .message-footer--center{
-    display: none;
-}
-.left-right-two{
-    justify-content: space-between;
+.right-first{
+    float: right;
+   
 }

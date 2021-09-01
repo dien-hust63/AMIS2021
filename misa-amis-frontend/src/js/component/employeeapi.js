@@ -1,7 +1,7 @@
 import axios from "axios";
 import BaseAPI from "../base/baseapi"
-class EmployeeAPI extends BaseAPI{
-    constructor(){
+class EmployeeAPI extends BaseAPI {
+    constructor() {
         super();
         this.controller = "Employees"
     }
@@ -14,9 +14,9 @@ class EmployeeAPI extends BaseAPI{
      * @param {int} pageIndex index trang 
      * @param {int} pageSize số bản ghi trên trang
      * @returns promise
-     * author: nvdien(26/8/2021)
+     * CreatedBy: nvdien(26/8/2021)
      */
-    getEmployeePaging(pageIndex, pageSize, searchVal="", departmentVal="", positionVal=""){
+    getEmployeePaging(pageIndex, pageSize, searchVal = "", departmentVal = "", positionVal = "") {
         let api = this.baseApiUrl + this.controller;
         api += `/Filter?searchData=${searchVal}&departmentId=${departmentVal}&positionId=${positionVal}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
         return axios.get(api);
@@ -25,11 +25,21 @@ class EmployeeAPI extends BaseAPI{
     /**
      * Lấy mã nhân viên mới
      * @return promise
-     * author: nvdien(26/8/2021)
+     * CreatedBy: nvdien(26/8/2021)
      */
-    getNewEmployeeCode(){
+    getNewEmployeeCode() {
         let api = this.baseApiUrl + this.controller + "/NewEmployeeCode";
         return axios.get(api);
+    }
+
+    /**
+     * Xuất dữ liệu ra file excel
+     * @returns promise
+     * CreatedBy: nvdien(31/8/2021)
+     */
+    export() {
+        let api = this.baseApiUrl + this.controller + "/export";
+        return axios.get(api, {responseType: "blob"});
     }
 }
 export default new EmployeeAPI();

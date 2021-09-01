@@ -4,9 +4,10 @@
       <thead class="ms-thead">
         <tr>
           <th>
-            <div class="checkbox">
+            <!-- <div class="checkbox">
               <i class="fas fa-check"></i>
-            </div>
+            </div> -->
+            <base-checkbox />
           </th>
           <th v-for="(tableHeader, index) in tableHeaders" :key="index">
             {{ Object.values(tableHeader)[0] }}
@@ -21,9 +22,7 @@
           @dblclick="showDetailForm"
         >
           <td>
-            <div class="checkbox">
-              <i class="fas fa-check"></i>
-            </div>
+            <base-checkbox />
           </td>
           <td
             v-for="(tableHeader, index) in tableHeaders"
@@ -33,7 +32,11 @@
             <span>{{ formatTableContent(tableContent, tableHeader) }}</span>
           </td>
           <td>
-            <context-menu :deleteData="tableContents[index]" @loadTable="loadTable"/>
+            <context-menu
+              :deleteData="tableContents[index]"
+              @loadTable="loadTable"
+              @editEntity="editEntity"
+            />
           </td>
         </tr>
       </tbody>
@@ -48,11 +51,13 @@ import CommonMethods from "../../mixins/methods.js";
 import axios from "axios";
 import ContextMenu from "../views/contextmenu/ContextMenu.vue";
 import BaseLoading from "../base/BaseLoading.vue";
+import BaseCheckbox from "../base/BaseCheckbox.vue";
 export default {
   name: "BaseTable",
   components: {
     ContextMenu,
     BaseLoading,
+    BaseCheckbox,
   },
   mixins: [CommonMethods],
   props: {
@@ -65,6 +70,12 @@ export default {
     urlAPI: {
       type: String,
       default: "",
+    },
+    forceLoadTable: {
+      type: Boolean,
+      default() {
+        return false;
+      },
     },
   },
   mounted() {
@@ -142,6 +153,7 @@ export default {
         .get(this.urlAPI)
         .then((response) => {
           this.tableContents = response.data["Employees"];
+          this.$emit("getTableData", response.data);
           this.isLoading = false;
         })
         .catch((response) => {
@@ -149,6 +161,22 @@ export default {
           this.isLoading = true;
         });
       this.isLoading = true;
+    },
+    /**
+     * Chỉnh sửa đối tượng
+     * @param {string} entityId: Id của đối tượng
+     * CreadtedBy: nvdien(1/9/2021)
+     */
+    editEntity(entityId){
+      this.$emit("editEntity",entityId);
+    } 
+  },
+  watch: {
+    urlAPI: function () {
+      this.loadTable();
+    },
+    forceLoadTable: function () {
+      this.loadTable();
     },
   },
 };

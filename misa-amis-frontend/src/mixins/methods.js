@@ -52,6 +52,47 @@ export default {
                 default:
                     return "";
             }
-        }
+        },
+        /**
+         * so sánh 2 object có giống nhau về nội dung không
+         * @param object1 object cần so sánh
+         * @param object2 object cần so sánh 
+         * CreatedBy: nvdien(1/9/2021)
+         */
+        deepEqual(object1, object2) {
+            const keys1 = Object.keys(object1);
+            const keys2 = Object.keys(object2);
+            if (keys1.length !== keys2.length) {
+                return false;
+            }
+            for (const key of keys1) {
+                const val1 = object1[key];
+                const val2 = object2[key];
+                const areObjects = this.isObject(val1) && this.isObject(val2);
+                if (
+                    areObjects && !this.deepEqual(val1, val2) ||
+                    !areObjects && val1 !== val2
+                ) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        /**
+         * Kiểm tra phải object không
+         * @param object: object cần kiểm tra
+         * CreatedBY: nvdien(1/9/2021)
+         */
+        isObject(object) {
+            return object != null && typeof object === 'object';
+        },
+        /**
+        * Kiểm tra xem object có rỗng không
+        * @param obj: object cần kiểm tra
+        * CreatedBy: nvdien(30/8/2021)
+        */
+        checkEmptyObject(obj) {
+            return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
+        },
     }
 }

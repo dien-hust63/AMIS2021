@@ -28,6 +28,7 @@
     box-sizing: border-box;
     cursor: pointer;
     position: relative;
+    margin: 0 16px;
 }
 
 .ms-pagination-options .selected-options{
@@ -60,8 +61,15 @@
     border: 1px solid #babec5;
     display: none;
 }
-.selected-options__list.selected-options__list--show{
+.seleted-options--active{
+    border: 1px solid #2ca01c;
+}
+.selected-options--show .selected-options__list{
     display: block;
+}
+.selected-options--show .dropdown-icon{
+    transform: rotate(180deg);
+    transition: transform .15s linear;
 }
 
 .selected-options__item{
@@ -80,5 +88,31 @@
     color: #fff;
 }
 .ms-pagination-page{
-    width: 100px;
+    display: flex;
+    padding-right: 30px;
+    align-items: center;
+}
+.ms-pagination-page .prev-page{
+    margin-right: 13px;
+    cursor: pointer;
+}
+.ms-pagination-page .page-number{
+   
+    padding-right: .5rem !important;
+    padding-left: .5rem !important;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.page-number.page--selected{
+    border: 1px solid #e0e0e0;
+    font-weight: 700;
+    height: 20px;
+}
+.ms-pagination-page .next-page{
+    margin-left: 13px;
+    cursor: pointer;
+}
+.ms-pagination-page .disable{
+    cursor: default !important;
+    color: #9e9e9e;
 }

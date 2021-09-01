@@ -1,4 +1,4 @@
-.ms-popup-wrap{
+.employee-popup-wrap{
     position: fixed;
     left:0;
     top:0;
@@ -11,30 +11,30 @@
     display: none;
 }
 
-.ms-popup-wrap.ms-popup--show{
+.employee-popup-wrap.employee-popup--show{
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.ms-popup{
+.employee-popup{
     position: absolute;
     width: 900px;
     height: 612px;
-    background-color: #fff;
+    background-color: #fff !important;
     display: flex;
     flex-direction: column;
     border-radius: 2px;
 }
 
-.ms-popup__header{
+.employee-popup__header{
     display: flex;
     width: 100%;
     align-items: center;
     height: 72px;
 }
 
-.ms-popup-title{
+.employee-popup-title{
     flex:1;
     display: flex;
     align-items: center;
@@ -46,7 +46,7 @@
     color: #111;
     font-weight: 700;
 }
-.ms-popup-close{
+.employee-popup-close{
     display: flex;
     align-items: center;
     padding:12px;
@@ -64,11 +64,11 @@
     cursor: pointer;
 }
 
-.ms-checkbox{
+.employee-popup-title .ms-checkbox{
     margin: 0 20px;
 }
 
-.ms-popup__content{
+.employee-popup__content{
     flex:1;
     padding:0 32px 20px 32px;
     display: flex;
@@ -100,9 +100,6 @@
     margin-right:10px;
 }
 
-/* .employee-detail{
-    width:100%
-} */
 .row-input{
     width: 100%;
     display: flex;
@@ -121,13 +118,6 @@
 .row-input-third{
     margin-bottom: 30px;
 }
-
-.employee-detail--show .ms-popup-wrap{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 
 
 

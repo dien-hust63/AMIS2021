@@ -1,6 +1,6 @@
 <template>
   <div class="context-menu">
-    <div class="context-menu__text">Sửa</div>
+    <div class="context-menu__text" @click="editEntity">Sửa</div>
     <div
       class="context-menu-dropdown"
       :class="{ 'dropdown--show': isShow }"
@@ -20,20 +20,18 @@
       </div>
     </div>
     <base-message
-      :class="{ 'ms-message--show': isShowMessage }"
       :messageText="messageText"
       icon="mi-exclamation-warning-48"
-      isLeftRightOne
-      :messageButtonData="messageButtonData"
-      @closeMessageBox="closeMessageBox"
-      @handleSecondRight="deleteRow"
+      :class="{ 'ms-message--show': isShowMessage }"
+      :buttons="buttons"
     />
   </div>
 </template>
 
 <script>
-import EmployeeApi from "../../../js/component/employeeapi.js";
 import BaseMessage from "../../base/BaseMessage.vue";
+import {RepositoryFactory} from "../../../js/repository/repository.factory.js";
+const EmployeesRepository = RepositoryFactory.get('employees');
 export default {
   name: "ContextMenu",
   components: {
@@ -52,7 +50,22 @@ export default {
       isChoose: true,
       isShow: false,
       isShowMessage: false,
-      messageButtonData: ["Không", "", "", "Có"],
+      buttons: [
+        {
+          feature: "left ms-button-secondary",
+          callback: () => {
+            this.closeMessageBox();
+          },
+          value: "Không",
+        },
+        {
+          feature: "right-first ms-button-primary",
+          callback: () => {
+            this.deleteRow();
+          },
+          value: "Có",
+        },
+      ],
     };
   },
   methods: {
@@ -92,13 +105,21 @@ export default {
      */
     deleteRow() {
       this.isShowMessage = false;
-      EmployeeApi.delete(this.deleteData["EmployeeId"])
+      EmployeesRepository.delete(this.deleteData["EmployeeId"])
         .then((response) => {
           console.log(response);
           this.$emit("loadTable");
         })
         .catch((response) => console.log(response));
       this.loadData = true;
+    },
+    /**
+     * Sửa nhân viên
+     * CreatedBy: nvdien(1/9/2021)
+     */
+    editEntity() {
+      // hiển thị popup nhân viên và đổ các dữ liệu lên popup
+      this.$emit("editEntity", this.deleteData["EmployeeId"]);
     },
   },
   computed: {

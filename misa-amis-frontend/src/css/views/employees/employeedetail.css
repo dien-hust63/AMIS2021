@@ -19,3 +19,9 @@
 .row-input-third{
     margin-bottom: 30px;
 }
+
+.employee-detail--show .ms-popup-wrap{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
