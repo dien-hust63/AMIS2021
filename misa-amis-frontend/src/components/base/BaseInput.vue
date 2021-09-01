@@ -42,7 +42,6 @@ export default {
     },
   },
   computed: {
-    // We add all the listeners from the parent
     inputListeners: function () {
       var self = this;
       return Object.assign({}, this.$listeners, {

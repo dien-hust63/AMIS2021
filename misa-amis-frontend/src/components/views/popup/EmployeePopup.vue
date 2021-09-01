@@ -44,11 +44,7 @@
           </div>
           <div class="row-input">
             <div class="row-input--left w-1/2">
-              <base-input
-                label="Đơn vị"
-                required="true"
-                v-model="employeeData['DepartmentName']"
-              />
+             <base-combobox label="Đơn vị" required="true" @getComboboxData="getComboboxData" />
             </div>
             <div class="row-input--right w-1/2">
               <div class="w-3/5">
@@ -151,6 +147,7 @@
 import BaseInput from "../../base/BaseInput.vue";
 import BaseCheckbox from "../../base/BaseCheckbox.vue";
 import BaseMessage from "../../base/BaseMessage.vue";
+import BaseCombobox from "../../base/BaseCombobox.vue";
 import Mixin from "../../../mixins/methods.js";
 import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
 
@@ -163,6 +160,7 @@ export default {
     BaseInput,
     BaseCheckbox,
     BaseMessage,
+    BaseCombobox
   },
   props: {
     employeeInfo: {
@@ -179,6 +177,7 @@ export default {
       type: Number,
       default: -1,
     },
+    
   },
   data() {
     return {
@@ -187,7 +186,7 @@ export default {
       isShowMessage: false,
       isChangeData: false,
       isResetData: false,
-      isForceNotChange: false,
+      isForceDataNotChange: false,
       buttons: [
         {
           feature: "left ms-button-secondary",
@@ -211,6 +210,7 @@ export default {
           value: "Không",
         },
       ],
+      comboboxDepartmentData: "",
     };
   },
 
@@ -234,7 +234,6 @@ export default {
       } else {
         //Reset dữ liệu popup nhân viên
         this.isResetData = true;
-        this.isForceNotChange = false;
         this.employeeData = Object.assign({}, {});
         //Đóng popup nhân viên
         this.$emit("closePopup");
@@ -248,7 +247,6 @@ export default {
       this.isShowMessage = false;
       //Reset dữ liệu popup nhân viên
       this.isResetData = true;
-       this.isForceNotChange = false;
       this.employeeData = Object.assign({}, {});
       //Đóng popup nhân viên
       this.$emit("closePopup");
@@ -298,7 +296,9 @@ export default {
         Promise.all([
           EmployeesRepository.post(this.employeeData),
           EmployeesRepository.getNewEmployeeCode(),
-        ]).then((response) => console.log(response[1].data));
+        ])
+          .then((response) => console.log(response.data))
+          .catch((response) => console.log(response));
       }
       if (this.mode == 1) {
         //Sửa
@@ -313,7 +313,6 @@ export default {
             EmployeesRepository.getNewEmployeeCode(),
           ]).then((response) => {
             this.$refs.employeeCodeInput.focusInput();
-            this.isForceNotChange = true;
             this.employeeData = Object.assign(
               {},
               { EmployeeCode: response[1].data }
@@ -324,17 +323,22 @@ export default {
           EmployeesRepository.getNewEmployeeCode()
             .then((response) => {
               this.$refs.employeeCodeInput.focusInput();
-              this.isForceNotChange = true;
+              this.isForceDataNotChange = true;
               this.employeeData = Object.assign(
                 {},
                 { EmployeeCode: response.data }
               );
-              
             })
             .catch((error) => console.log(error));
         }
       }
     },
+    /**
+     * lấy dữ liệu từ combobox đơn vị
+     */
+    getComboboxData(departmentData){
+      this.$set(this.employeeData, "DepartmentId", departmentData);
+    }
   },
 
   watch: {
@@ -348,10 +352,8 @@ export default {
     },
     employeeData: {
       handler(newValue, oldValue) {
-        if(this.isForceNotChange){
-          return;
-        }
         if (
+          this.isForceDataNotChange ||
           this.checkEmptyObject(oldValue) ||
           (this.isResetData && this.checkEmptyObject(newValue)) ||
           (this.mode == 1 &&
@@ -359,17 +361,13 @@ export default {
             this.isObject(newValue))
         ) {
           this.isChangeData = false;
+          this.isForceDataNotChange = false;
           return;
         }
         this.isChangeData = true;
       },
       deep: true,
     },
-    isForceNotChange: function(newValue){
-      if(newValue){
-        this.isChangeData = false;
-      }
-    }
   },
 };
 </script>

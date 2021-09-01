@@ -1,0 +1,108 @@
+.ms-combobox{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.ms-combobox--focus .ms-combobox-content{
+    border: 1px solid #019160;
+}
+.combobox__label{
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.ms-combobox-content{
+    width: 100%;
+    display: flex;
+    border-radius: 2px;
+    border: 1px solid #babec5;
+    box-sizing: border-box;
+    position: relative;
+}
+.ms-combobox-input{
+    flex:1;
+}
+
+.ms-combobox-input input{
+    height: 30px;
+    padding: 5px 0 5px 10px;
+    box-sizing: border-box;
+    width: 100%;
+    outline:none;
+    border: none;
+}
+.ms-combobox-icon{
+    width: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.ms-combobox-icon:hover{
+    background-color: #e0e0e0;
+}
+
+.ms-combobox-list{
+    width: 100%;
+    border-radius: 2px;
+    border: 1px solid #babec5;
+    position: absolute;
+    left: -1px;
+    top: 34px;
+    display: none;
+    height: 128px;
+    overflow-y: scroll;
+    z-index: 900;
+    background-color: #fff;
+}
+.ms-combox-list--show .ms-combobox-list{
+    display: block;
+}
+.combobox-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.combobox-table thead{
+    background-color: #f4f5f8;
+    width: 100%;
+    text-align: left;
+    position: sticky;
+    top:0;
+    z-index:800;
+}
+.combobox-table tr{
+    height: 32px;
+    cursor: pointer;
+}
+.combobox-table tbody tr:not(.item--selected):hover{
+    color: #43ca54;
+    background-color: #e8e9ec;
+    line-height: 32px;
+    cursor: pointer;
+}
+.combobox-table tbody{
+    background-color: #fff;
+}
+.combobox-table th,td{
+    padding : 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+
+}
+.item--selected{
+    background-color: #2ca01c;
+    color: #fff;
+}
+
+::-webkit-scrollbar {
+     width: 7px;
+     height: 7px;
+     background-color: lightgray;
+     border-radius: 3px;
+ }
+ 
+ ::-webkit-scrollbar-thumb {
+     background-color: #b8bcc3;
+     border-radius: 3px;
+ }
