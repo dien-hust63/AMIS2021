@@ -124,10 +124,15 @@
               <div class="ms-button ms-button-secondary">Hủy</div>
             </div>
             <div class="popup-footer--left">
-              <div class="ms-button ms-button-secondary first-right-button" @click="saveData">
+              <div
+                class="ms-button ms-button-secondary first-right-button"
+                @click="saveData"
+              >
                 Cất
               </div>
-              <div class="ms-button ms-button-primary">Cất và thêm</div>
+              <div class="ms-button ms-button-primary" @click="saveAndInsert">
+                Cất và thêm
+              </div>
             </div>
           </div>
         </div>
@@ -147,9 +152,9 @@ import BaseInput from "../../base/BaseInput.vue";
 import BaseCheckbox from "../../base/BaseCheckbox.vue";
 import BaseMessage from "../../base/BaseMessage.vue";
 import Mixin from "../../../mixins/methods.js";
-import {RepositoryFactory} from "../../../js/repository/repository.factory.js";
+import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
 
-const EmployeesRepository = RepositoryFactory.get('employees');
+const EmployeesRepository = RepositoryFactory.get("employees");
 
 export default {
   name: "EmployeePopup",
@@ -182,6 +187,7 @@ export default {
       isShowMessage: false,
       isChangeData: false,
       isResetData: false,
+      isForceNotChange: false,
       buttons: [
         {
           feature: "left ms-button-secondary",
@@ -193,7 +199,7 @@ export default {
         {
           feature: "right-first ms-button-primary",
           callback: () => {
-            this.saveData()
+            this.saveData();
           },
           value: "Có",
         },
@@ -228,6 +234,7 @@ export default {
       } else {
         //Reset dữ liệu popup nhân viên
         this.isResetData = true;
+        this.isForceNotChange = false;
         this.employeeData = Object.assign({}, {});
         //Đóng popup nhân viên
         this.$emit("closePopup");
@@ -241,10 +248,15 @@ export default {
       this.isShowMessage = false;
       //Reset dữ liệu popup nhân viên
       this.isResetData = true;
+       this.isForceNotChange = false;
       this.employeeData = Object.assign({}, {});
       //Đóng popup nhân viên
       this.$emit("closePopup");
     },
+    /**
+     * Lưu dữ liệu
+     * CreatedBy: nvdien(1/9/2021)
+     */
     saveData() {
       if (this.mode == 0) {
         //Thêm mới
@@ -253,7 +265,8 @@ export default {
         EmployeesRepository.post(this.employeeData)
           .then((response) => {
             console.log(response);
-            this.closeMessageAndPopup()
+            this.closeMessageAndPopup();
+            this.$emit("loadTable");
           })
           .catch((response) => console.log(response));
       }
@@ -261,13 +274,65 @@ export default {
         //Sửa
         //Validate các trường
         //Thực hiện sửa thông tin
-        EmployeesRepository.put(this.employeeData['EmployeeId'], this.employeeData)
+        EmployeesRepository.put(
+          this.employeeData["EmployeeId"],
+          this.employeeData
+        )
           .then((response) => {
             console.log(response);
             this.closeMessageAndPopup();
             this.$emit("loadTable");
           })
           .catch((response) => console.log(response));
+      }
+    },
+    /**
+     * Cất và thêm mới
+     * CreatedBy: nvdien(1/9/2021)
+     */
+    saveAndInsert() {
+      if (this.mode == 0) {
+        //Thêm mới
+        //Validate các trường
+        //Thực hiện cất và thêm mới
+        Promise.all([
+          EmployeesRepository.post(this.employeeData),
+          EmployeesRepository.getNewEmployeeCode(),
+        ]).then((response) => console.log(response[1].data));
+      }
+      if (this.mode == 1) {
+        //Sửa
+        //Validate các trường
+        //Thực hiện sửa thông tin va thêm mới
+        if (this.isChangeData) {
+          Promise.all([
+            EmployeesRepository.put(
+              this.employeeData["EmployeeId"],
+              this.employeeData
+            ),
+            EmployeesRepository.getNewEmployeeCode(),
+          ]).then((response) => {
+            this.$refs.employeeCodeInput.focusInput();
+            this.isForceNotChange = true;
+            this.employeeData = Object.assign(
+              {},
+              { EmployeeCode: response[1].data }
+            );
+            this.$emit("loadTable");
+          });
+        } else {
+          EmployeesRepository.getNewEmployeeCode()
+            .then((response) => {
+              this.$refs.employeeCodeInput.focusInput();
+              this.isForceNotChange = true;
+              this.employeeData = Object.assign(
+                {},
+                { EmployeeCode: response.data }
+              );
+              
+            })
+            .catch((error) => console.log(error));
+        }
       }
     },
   },
@@ -283,8 +348,9 @@ export default {
     },
     employeeData: {
       handler(newValue, oldValue) {
-        console.log(oldValue);
-        console.log(newValue);
+        if(this.isForceNotChange){
+          return;
+        }
         if (
           this.checkEmptyObject(oldValue) ||
           (this.isResetData && this.checkEmptyObject(newValue)) ||
@@ -299,6 +365,11 @@ export default {
       },
       deep: true,
     },
+    isForceNotChange: function(newValue){
+      if(newValue){
+        this.isChangeData = false;
+      }
+    }
   },
 };
 </script>
