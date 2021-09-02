@@ -5,7 +5,7 @@
 @import url("../base/text.css");
 @import url("../base/checkbox.css");
 @import url("../base/size.css");
-
+@import url("../base/scrollbar.css");
 body{
     font-family:  MISANotoSans-Regular !important;
     font-size: 13px;

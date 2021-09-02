@@ -37,5 +37,15 @@ namespace Misa.ApplicationCore.Interfaces
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
         MemoryStream Export();
+
+        /// <summary>
+        /// Kiểm tra mã nhân viên có trùng không
+        /// </summary>
+        /// <param name="employeeCode">Mã nhân viên</param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(27/8/2021)
+        /// ModifiedBy: nvdien(27/8/2021)
+        ServiceResult CheckEmployeeCodeExist(string employeeCode);
+       
     }
 }

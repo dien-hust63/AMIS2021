@@ -36,5 +36,14 @@ namespace Misa.ApplicationCore.Interfaces
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
         IEnumerable<Employee> ExportEmployee();
+
+        /// <summary>
+        /// Kiểm tra mã nhân viên có trùng hay không
+        /// </summary>
+        /// <param name="employeeCode">Mã nhân viên</param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(27/8/2021)
+        /// ModifiedBy: nvdien(27/8/2021)
+        int CheckEmployeeCodeExist(string employeeCode);
     }
 }

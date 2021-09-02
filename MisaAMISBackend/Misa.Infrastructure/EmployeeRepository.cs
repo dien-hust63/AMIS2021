@@ -90,6 +90,25 @@ namespace Misa.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Kiểm tra mã nhân viên có tồn tại không
+        /// </summary>
+        /// <param name="employeeCode">Mã nhân viên</param>
+        /// <returns></returns>
+        // CreatedBy: nvdien(27/8/2021)
+        /// ModifiedBy: nvdien(27/8/2021)
+        public int CheckEmployeeCodeExist(string employeeCode)
+        {
+            using (_dbConnection = new MySqlConnection(_connectionString))
+            {
+                var sqlCommand = "SELECT EXISTS(SELECT * from employee WHERE EmployeeCode= @EmployeeCode);";
+                DynamicParameters dynamicParameters = new DynamicParameters();
+                dynamicParameters.Add("@EmployeeCode", employeeCode);
+                var result = _dbConnection.QueryFirstOrDefault<int>(sqlCommand, param: dynamicParameters);
+                return result;
+            }
+        }
+
         #endregion
 
     }

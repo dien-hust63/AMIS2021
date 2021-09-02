@@ -4,12 +4,13 @@
     :class="{
       'ms-combox-list--show': isShowList,
       'ms-combobox--focus': isFocusInput,
+      'ms-combobox--error': isError,
     }"
   >
     <label class="ms-combobox__label">
       {{ label }} <span v-if="required"><b class="text--red">*</b></span>
     </label>
-    <div class="ms-combobox-content">
+    <div class="ms-combobox-content" v-on="comboboxListeners">
       <div class="ms-combobox-input">
         <input
           type="text"
@@ -19,19 +20,20 @@
           v-on="inputListeners"
         />
       </div>
-      <div class="ms-combobox-icon">
-        <div class="mi mi-16 mi-arrow-dropdown" @click="toogleList"></div>
+      <div class="ms-combobox-icon" @click="toogleList">
+        <div class="mi mi-16 mi-arrow-dropdown"></div>
       </div>
       <div class="ms-combobox-list">
         <table class="combobox-table">
-          <thead>
-            <tr>
-              <th>Mã đơn vị</th>
-              <th>Tên đơn vị</th>
+          <thead class="combobox-table-thead">
+            <tr class="combobox-table-row">
+              <th class="combobox-table-header">Mã đơn vị</th>
+              <th class="combobox-table-header">Tên đơn vị</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="combobox-table-tbody">
             <tr
+              class="combobox-table-row"
               v-for="(item, index) in comboboxListData"
               :key="index"
               @click="
@@ -39,11 +41,14 @@
               "
               :class="{ 'item--selected': currentIndex == index }"
             >
-              <td>{{ item["DepartmentCode"] }}</td>
-              <td>{{ item["DepartmentName"] }}</td>
+              <td class="combobox-table-cell">{{ item["DepartmentCode"] }}</td>
+              <td class="combobox-table-cell">{{ item["DepartmentName"] }}</td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="block-error" :class="{ 'block-error--show': isShowError }">
+        Tên không được phép để trông
       </div>
     </div>
   </div>
@@ -60,8 +65,8 @@ export default {
       default: "",
     },
     required: {
-      type: String,
-      default: "",
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -72,16 +77,32 @@ export default {
       comboboxData: "",
       currentIndex: -1,
       isFocusInput: false,
+      isError: false,
+      isShowError: false,
     };
   },
   methods: {
+    /**
+     * Ẩn hiện combobox list
+     * CreatedBy: nvdien(1/9/2021)
+     */
     toogleList() {
       this.isShowList = !this.isShowList;
       this.isFocusInput = true;
+      this.$nextTick(() => {
+        this.$refs.input.focus();
+      });
       DepartmentApi.getAll()
         .then((response) => (this.comboboxListData = response.data))
         .catch((response) => console.log(response));
     },
+    /**
+     * Chọn item
+     * @param index: index của item trong list combobox
+     * @param itemData: giá trị của item
+     * @param itemVaue: id của item
+     * CreatedBy:nvdien(1/9/2021)
+     */
     chooseItem(index, itemData, itemValue) {
       this.currentIndex = index;
       this.comboboxValue = itemValue;
@@ -97,12 +118,25 @@ export default {
         input: function (event) {
           self.$emit("input", event.target.value);
         },
-        blur: function () {
-            console.log("blur");
-          self.isFocusInput = false;
-        },
         focus: function () {
           self.isFocusInput = true;
+        },
+        blur: function () {
+          self.isFocusInput = false;
+          // self.isShowList = false;
+        },
+      });
+    },
+    comboboxListeners: function () {
+      var self = this;
+      return Object.assign({}, this.$listeners, {
+        mouseover: function () {
+          if (self.isError) {
+            self.isShowError = true;
+          }
+        },
+        mouseout: function () {
+          self.isShowError = false;
         },
       });
     },

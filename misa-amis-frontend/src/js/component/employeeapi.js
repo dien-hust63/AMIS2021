@@ -31,6 +31,17 @@ class EmployeeAPI extends BaseAPI {
         let api = this.baseApiUrl + this.controller + "/NewEmployeeCode";
         return axios.get(api);
     }
+    
+    /**
+     * Kiểm tra mã nhân viên có trùng không
+     * @param {string} employeeCode  mã nhân viên
+     * @returns promise
+     * CreatedBy: nvdien(1/9/2021)
+     */
+    checkEmployeeCodeExist(employeeCode){
+        let api = this.baseApiUrl + this.controller + `/EmployeeCodeExist?employeeCode=${employeeCode}`;
+        return axios.get(api);
+    }
 
     /**
      * Xuất dữ liệu ra file excel

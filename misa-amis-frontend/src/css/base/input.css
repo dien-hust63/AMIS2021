@@ -13,6 +13,7 @@
 }
 .ms-input__input{
     width: 100%;
+    position: relative;
 }
 .ms-input__input input{
     height: 32px;
@@ -23,7 +24,11 @@
     width: 100%;
     padding: 6px 10px;
 }
-.ms-input__input input:focus{
+.ms-input--error input{
+    border: 1px solid red;
+}
+
+.ms-input__input:not(.ms-input--error) input:focus{
     border-color: #019160;
 }
 .ms-input__input input::placeholder{
@@ -45,4 +50,23 @@
 }
 .input-search .ms-input__input input{
     padding-right: 26px;
+}
+
+.ms-input__error{
+    position: absolute;
+    top: 80%;
+    left:50%;
+    background-color:  #393a3d;
+    color:#fff;
+    text-align: center;
+    transform: translate(-50%);
+    height: 15px;
+    padding:5px 10px;
+    white-space: nowrap;
+    line-height: 15px;
+    z-index:100;
+    display: none;
+}
+.ms-input__error--show{
+    display: block;
 }

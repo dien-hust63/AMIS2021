@@ -74,8 +74,8 @@ namespace MisaCukcukApi.Controllers
         /// Lấy mã nhân viên mới
         /// </summary>
         /// <returns></returns>
-        /// CreatedBy: nvdien(20/8/2021)
-        /// ModifiedBy: nvdien(20/8/2021)
+        /// CreatedBy: nvdien(27/8/2021)
+        /// ModifiedBy: nvdien(27/8/2021)
         [HttpGet("NewEmployeeCode")]
         public IActionResult GetNewEmployeeCode()
         {
@@ -99,11 +99,42 @@ namespace MisaCukcukApi.Controllers
                 return StatusCode(500, errorObj);
             }
         }
+        /// <summary>
+        /// Kiểm tra mã nhân viên có trùng không
+        /// </summary>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(27/8/2021)
+        /// ModifiedBy: nvdien(27/8/2021)
+        [HttpGet("EmployeeCodeExist")]
+        public IActionResult CheckEmployeeCodeExist(string employeeCode)
+        {
+            try
+            {
+                var serviceResult = _employeeService.CheckEmployeeCodeExist(employeeCode);
+                return Ok(serviceResult.Data);
+            }
+            catch (Exception ex)
+            {
+
+                var errorObj = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = Resources.Exception_ErrorMsg,
+                    errorCode = "misa-001",
+                    moreInfo = "https://openapi.misa.com.vn/errorcode/misa-001",
+                    traceId = "ba9587fd-1a79-4ac5-a0ca-2c9f74dfd3fb"
+                };
+
+                return StatusCode(500, errorObj);
+            }
+        }
 
         /// <summary>
         /// Export dữ liệu nhân viên ra file excel
         /// </summary>
         /// <returns></returns>
+        /// CreatedBy: nvdien(27/8/2021)
+        /// ModifiedBy: nvdien(27/8/2021)
         [HttpGet("export")]
         public IActionResult Export()
         {
@@ -129,8 +160,6 @@ namespace MisaCukcukApi.Controllers
                 return StatusCode(500, errorObj);
             }
         }
-
-
 
     }
 }

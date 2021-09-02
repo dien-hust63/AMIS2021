@@ -115,7 +115,7 @@ namespace Misa.ApplicationCore.Services
             }
             //Validate riêng
             var validateCustom = ValidateCustom(entity);
-            if(validateCustom != null)
+            if (validateCustom != null)
             {
                 serviceResult.IsValid = false;
                 serviceResult.Data = validateCustom;
@@ -179,7 +179,7 @@ namespace Misa.ApplicationCore.Services
         /// <returns>error object nếu dữ liệu không thỏa mãn, null nếu thỏa mãn</returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        private object ValidateData(TEntity entity, Guid? entityId=null)
+        private object ValidateData(TEntity entity, Guid? entityId = null)
         {
             //Kiểm tra các trường bắt buộc nhập
             var checkRequiredField = CheckRequiredField(entity);
@@ -233,7 +233,7 @@ namespace Misa.ApplicationCore.Services
                 if (propMisaRequired.Length > 0)
                 {
                     var fieldName = propMisaDislayName.Length > 0 ? (propMisaDislayName[0] as MisaDisplayName).FieldName : property.Name;
-                    if (property.GetValue(entity) == null || string.IsNullOrEmpty(property.GetValue(entity).ToString()))
+                    if (property.GetValue(entity) == null || string.IsNullOrEmpty(property.GetValue(entity).ToString()) || property.GetValue(entity).ToString() == Guid.Empty.ToString())
                     {
                         var errorObj = new
                         {
@@ -302,12 +302,13 @@ namespace Misa.ApplicationCore.Services
         private object CheckEmailSyntax(TEntity entity)
         {
             var propEmail = entity.GetType().GetProperty("Email");
-            if(propEmail != null)
+            if (propEmail != null)
             {
                 var email = propEmail.GetValue(entity);
+                if (email == null || email == "") return null;
                 var regexEmail = @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
                 var isValidEmail = Regex.IsMatch(email.ToString(), regexEmail);
-                if(isValidEmail == false)
+                if (isValidEmail == false)
                 {
                     var errorObj = new
                     {
@@ -323,7 +324,7 @@ namespace Misa.ApplicationCore.Services
             return null;
         }
 
-       
+
         #endregion
         #endregion
     }

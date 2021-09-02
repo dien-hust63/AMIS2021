@@ -6,6 +6,9 @@
 .ms-combobox--focus .ms-combobox-content{
     border: 1px solid #019160;
 }
+.ms-combobox--error .ms-combobox-content{
+    border: 1px solid red;
+}
 .combobox__label{
     font-size: 12px;
     font-weight: 700;
@@ -36,6 +39,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 .ms-combobox-icon:hover{
     background-color: #e0e0e0;
@@ -61,7 +65,7 @@
     width: 100%;
     border-collapse: collapse;
 }
-.combobox-table thead{
+.combobox-table .combobox-table-thead{
     background-color: #f4f5f8;
     width: 100%;
     text-align: left;
@@ -69,20 +73,21 @@
     top:0;
     z-index:800;
 }
-.combobox-table tr{
+.combobox-table .combobox-table-row{
     height: 32px;
     cursor: pointer;
 }
-.combobox-table tbody tr:not(.item--selected):hover{
+.combobox-table-tbody .combobox-table-row:not(.item--selected):hover{
     color: #43ca54;
     background-color: #e8e9ec;
     line-height: 32px;
     cursor: pointer;
+    font-weight: 600;
 }
-.combobox-table tbody{
+.combobox-table-tbody{
     background-color: #fff;
 }
-.combobox-table th,td{
+.combobox-table-header,.combobox-table-cell{
     padding : 0 10px;
     white-space: nowrap;
     overflow: hidden;
@@ -95,14 +100,23 @@
     color: #fff;
 }
 
-::-webkit-scrollbar {
-     width: 7px;
-     height: 7px;
-     background-color: lightgray;
-     border-radius: 3px;
- }
- 
- ::-webkit-scrollbar-thumb {
-     background-color: #b8bcc3;
-     border-radius: 3px;
- }
+.block-error{
+    position: absolute;
+    top: 50%;
+    left:50%;
+    background-color:  #393a3d;
+    color:#fff;
+    text-align: center;
+    transform: translate(-50%);
+    height: 15px;
+    padding:5px 10px;
+    white-space: nowrap;
+    line-height: 15px;
+    z-index:100;
+    display: none;
+}
+
+.block-error--show{
+    display: block;
+}
+

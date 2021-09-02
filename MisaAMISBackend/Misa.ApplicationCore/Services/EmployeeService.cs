@@ -61,6 +61,12 @@ namespace Misa.ApplicationCore
             return serviceResult;
         }
 
+        public ServiceResult CheckEmployeeCodeExist(string employeeCode)
+        {
+            var serviceResult = new ServiceResult();
+            serviceResult.Data = _employeeRepository.CheckEmployeeCodeExist(employeeCode);
+            return serviceResult;
+        }
         /// <summary>
         /// Export dữ liệu nhân viên ra file excel
         /// </summary>
