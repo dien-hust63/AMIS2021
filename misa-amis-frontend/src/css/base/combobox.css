@@ -53,7 +53,7 @@
     left: -1px;
     top: 34px;
     display: none;
-    height: 128px;
+    max-height: 128px;
     overflow-y: scroll;
     z-index: 900;
     background-color: #fff;

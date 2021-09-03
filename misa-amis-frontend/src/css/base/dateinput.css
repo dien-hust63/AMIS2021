@@ -1,0 +1,87 @@
+.ms-input{
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+ }
+ .ms-input__label{
+     font-size: 12px;
+     font-weight: 700;
+     margin-bottom: 4px;
+ }
+ .ms-input__input{
+     width: 100%;
+     position: relative;
+ }
+ .ms-input__input input{
+     height: 32px;
+     box-sizing: border-box;
+     border-radius: 2px;
+     border: 1px solid #babec5;
+     outline: none;
+     width: 100%;
+     padding: 6px 10px;
+ }
+ .ms-input--error input{
+     border: 1px solid red;
+ }
+
+ .ms-input--focus input{
+    border-color: #019160;
+ }
+
+ .ms-input__input:not(.ms-input--error) input:focus{
+     border-color: #019160;
+ }
+ .ms-input__input input::placeholder{
+     font-size: 12px;
+     font-style: italic;
+ }
+ 
+ .ms-input__icon--after{
+    display: none;
+ }
+ .input-search .ms-input__icon--after{
+     display: block;
+     position: absolute;
+     right: 10px;
+     bottom: 8px;
+ }
+ .input-search .ms-input__input{
+     width: 240px;
+ }
+ .input-search .ms-input__input input{
+     padding-right: 26px;
+ }
+ 
+ .ms-input__error{
+     position: absolute;
+     top: 80%;
+     left:50%;
+     background-color:  #393a3d;
+     color:#fff;
+     text-align: center;
+     transform: translate(-50%);
+     height: 15px;
+     padding:5px 10px;
+     white-space: nowrap;
+     line-height: 15px;
+     z-index:100;
+     display: none;
+ }
+ .ms-input__error--show{
+     display: block;
+ }
+
+ .ms-input__input .input-date{
+    position: absolute;
+    top:1px;
+    left: 1px;
+    width: 80%;
+    height: 30px;
+    border: none;
+    outline: none;
+    background-color: none;
+ }

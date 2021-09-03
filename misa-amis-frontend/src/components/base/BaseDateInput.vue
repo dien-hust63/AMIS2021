@@ -3,14 +3,30 @@
     <label class="ms-input__label">
       {{ label }} <span v-if="required"><b class="text--red">*</b></span>
     </label>
-    <div class="ms-input__input" :class="{ 'ms-input--error': isInputError }">
+    <div
+      class="ms-input__input"
+      :class="{
+        'ms-input--error': isInputError,
+        'ms-input--focus': isFocusInput,
+      }"
+    >
       <input
         ref="input"
         v-bind="$attrs"
         v-on="inputListeners"
         :value="valueInput"
       />
-      <div class="ms-input__icon--after mi mi-16 mi-search"></div>
+      <input
+        type="text"
+        class="input-date"
+        placeholder="DD/MM/YYYY"
+        v-model="valueDateInput"
+        @mouseover="mouseoverDateInput"
+        @mouseout="mouseoutDateInput"
+        v-on:keyup="validateDateInput"
+        @focus="focusInputDate"
+        @blur="blurDateInput"
+      />
       <div
         class="ms-input__error"
         :class="{ 'ms-input__error--show': isShowError }"
@@ -24,7 +40,7 @@
 <script>
 import Mixin from "../../mixins/methods.js";
 export default {
-  name: "BaseInput",
+  name: "BaseDateInput",
   inheritAttrs: false,
   mixins: [Mixin],
   props: {
@@ -62,18 +78,12 @@ export default {
       isInputError: false,
       isShowError: false,
       inputError: "",
+      valueDateInput: "",
+      notWatch: false,
+      isFocusInput: false,
     };
   },
   methods: {
-    /**
-     * focus vào ô input
-     * CreatedBy: nvdien(30/8/2021)
-     */
-    focusInput() {
-      this.$nextTick(() => {
-        this.$refs.input.focus();
-      });
-    },
     /**
      * validate input
      * CreatedBy: nvdien(2/9/2021)
@@ -85,6 +95,56 @@ export default {
         this.$emit("getInputError", this.inputError);
       }
     },
+    /**
+     * mouseover input date
+     * CreatedBy: nvdien(3/9/2021)
+     */
+    mouseoverDateInput() {
+      if (this.isInputError) {
+        // hiển thị báo lỗi
+        this.isShowError = true;
+      }
+    },
+    /**
+     * mouseout input date
+     * CreatedBY: nvdien(2/9/2021)
+     */
+    mouseoutDateInput() {
+      this.isShowError = false;
+    },
+    /**
+     * validate input date
+     * CreatedBY: nvdien(2/9/2021)
+     */
+    validateDateInput() {
+      if (this.valueDateInput === "") return;
+      if (this.validateDateString(this.valueDateInput)) {
+        if (this.isFutureDate(this.valueDateInput)) {
+          this.isInputError = true;
+          this.inputError = `${this.label} vượt quá ngày hiện tại`;
+          return;
+        }
+        this.isInputError = false;
+        this.isShowError = false;
+        this.$emit("getDate", this.valueDateInput);
+      } else {
+        this.isInputError = true;
+        this.inputError = `Ngày chưa đúng định dạng`;
+      }
+    },
+    /**
+     * focus vào input date
+     * CreatedBy: nvdien(2/9/2021)
+     */
+    focusInputDate() {
+      this.isFocusInput = true;
+    },
+    /**
+     * blur dateInput
+     */
+    blurDateInput() {
+      this.isFocusInput = false;
+    },
   },
   computed: {
     inputListeners: function () {
@@ -93,9 +153,10 @@ export default {
         input: function (event) {
           self.$emit("input", event.target.value);
         },
-        blur: function (event) {
-          console.log(event);
-        },
+        // blur: function () {
+        //     console.log("test");
+        //   self.isFocusInput = false;
+        // },
         mouseover: function () {
           if (self.isInputError) {
             // hiển thị báo lỗi
@@ -107,6 +168,7 @@ export default {
         },
       });
     },
+
     valueInput: function () {
       if (this.$attrs.type == "date") {
         return this.formatDate(this.value, "-");
@@ -126,26 +188,35 @@ export default {
           this.inputError = `${this.label} không được phép để trống`;
         }
       }
+      if (this.$attrs.type == "date") {
+        this.valueDateInput = this.formatDate(this.value, "/");
+        this.validateDateInput();
+      }
     },
     inputCheck: function () {
       //validate input
       this.validateInput(this);
     },
+    inputReset: function (newValue) {
+      if (newValue) {
+        //reset input
+        this.isInputError = false;
+        this.isShowError = false;
+        this.isFocusInput = false;
+      }
+    },
     inputErrorCustom: function (newValue) {
       this.isInputError = true;
       this.inputError = newValue;
     },
-    inputReset: function(newValue){
-      if(newValue){
-        this.isInputError = false;
-        this.inputError = false;
-      }
-    }
+    isInputError: function (newValue) {
+      this.isFocusInput = !newValue;
+    },
   },
 };
 </script>
 
 <style scoped>
-@import url("../../css/base/input.css");
+@import url("../../css/base/dateinput.css");
 </style>
 

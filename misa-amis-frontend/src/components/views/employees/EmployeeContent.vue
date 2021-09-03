@@ -32,6 +32,7 @@
           @getTableData="getTableData"
           :forceLoadTable="forceLoadTable"
           @editEntity="editEmployee"
+          @copyEntity="copyEntity"
         />
       </div>
       <div class="employee-content-pagination">
@@ -62,8 +63,9 @@ import {
 import BaseTable from "../../base/BaseTable.vue";
 import BaseInput from "../../base/BaseInput.vue";
 import BasePagination from "../../base/BasePagination.vue";
-import EmployeeApi from "../../../js/component/employeeapi.js";
 import EmployeePopup from "../../views/popup/EmployeePopup.vue";
+import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
+const EmployeesRepository = RepositoryFactory.get("employees");
 
 export default {
   name: "EmployeeContent",
@@ -98,7 +100,7 @@ export default {
      */
     addNewEmployee() {
       //lấy mã nhân viên mới
-      EmployeeApi.getNewEmployeeCode()
+      EmployeesRepository.getNewEmployeeCode()
         .then((response) => {
           //set mode = 0: thêm mới
           this.mode = 0;
@@ -162,7 +164,7 @@ export default {
      * export dữ liệu nhân viên
      */
     exportData() {
-      EmployeeApi.export()
+      EmployeesRepository.export()
         .then((response) => {
           const link = document.createElement("a");
           link.href = window.URL.createObjectURL(new Blob([response.data]));
@@ -176,10 +178,10 @@ export default {
     /**
      * Chỉnh sửa nhân viên
      * @param {string} employeeId: Id của nhân viên
-     *
+     * CreatedBy: nvdien(2/9/2021)
      */
     editEmployee(employeeId) {
-      EmployeeApi.getById(employeeId)
+      EmployeesRepository.getById(employeeId)
         .then((response) => {
           //set mode = 1: chỉnh sửa
           this.mode = 1;
@@ -189,9 +191,25 @@ export default {
           this.isFocusCode = !this.isFocusCode;
           //mở form chi tiết
           this.isShowPopup = true;
-          
         })
         .catch((error) => console.log(error));
+    },
+    /**
+     * Nhân bản đối tượng
+     * @param {object} entity: đối tượng nhân bản
+     * CreatedByL nvdien(2/9/2021)
+     */
+    copyEntity(entity) {
+      this.employeeData = Object.assign({},entity);
+      EmployeesRepository.getNewEmployeeCode().then((response) => {
+        //set mode = 0: Thêm mới
+        this.mode = 0;
+        this.$set(this.employeeData, "EmployeeCode", response.data);
+        //focus vào ô mã nhân viên
+        this.isFocusCode = !this.isFocusCode;
+        //mở form chi tiết
+        this.isShowPopup = true;
+      });
     },
   },
   computed: {

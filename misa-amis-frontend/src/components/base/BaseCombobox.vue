@@ -34,7 +34,7 @@
           <tbody class="combobox-table-tbody">
             <tr
               class="combobox-table-row"
-              v-for="(item, index) in comboboxListData"
+              v-for="(item, index) in comboboxListShow"
               :key="index"
               @click="
                 chooseItem(index, item['DepartmentId'], item['DepartmentName'])
@@ -48,7 +48,7 @@
         </table>
       </div>
       <div class="block-error" :class="{ 'block-error--show': isShowError }">
-        Tên không được phép để trông
+        {{ comboboxError }}
       </div>
     </div>
   </div>
@@ -68,18 +68,37 @@ export default {
       type: Boolean,
       default: false,
     },
+    comboboxDataProp: {
+      type: String,
+      default: "",
+    },
+    comboboxCheck: {
+      type: Boolean,
+      default: false,
+    },
+    comboboxReset: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       isShowList: false,
       comboboxListData: [],
+      comboboxListShow: [],
       comboboxValue: "",
       comboboxData: "",
       currentIndex: -1,
       isFocusInput: false,
       isError: false,
       isShowError: false,
+      comboboxError: "",
     };
+  },
+  mounted() {
+     DepartmentApi.getAll()
+        .then((response) => (this.comboboxListData = response.data))
+        .catch((response) => console.log(response));
   },
   methods: {
     /**
@@ -87,14 +106,16 @@ export default {
      * CreatedBy: nvdien(1/9/2021)
      */
     toogleList() {
+      this.isError = false;
+      this.isShowError = false;
       this.isShowList = !this.isShowList;
+      if(this.isShowList){
+        this.comboboxListShow = this.comboboxListData;
+      }
       this.isFocusInput = true;
       this.$nextTick(() => {
         this.$refs.input.focus();
       });
-      DepartmentApi.getAll()
-        .then((response) => (this.comboboxListData = response.data))
-        .catch((response) => console.log(response));
     },
     /**
      * Chọn item
@@ -108,7 +129,22 @@ export default {
       this.comboboxValue = itemValue;
       this.comboboxData = itemData;
       this.isShowList = false;
+      this.isError = false;
       this.$emit("getComboboxData", this.comboboxData);
+    },
+    /**
+     * validate input
+     * CreatedBy: nvdien(2/9/2021)
+     */
+    validateInput(self) {
+      if (
+        self.required &&
+        (self.comboboxValue === null || self.comboboxValue === "")
+      ) {
+        this.isError = true;
+        this.comboboxError = `${this.label} không được phép để trống`;
+        this.$emit("getComboboxError", this.comboboxError);
+      }
     },
   },
   computed: {
@@ -116,7 +152,10 @@ export default {
       var self = this;
       return Object.assign({}, this.$listeners, {
         input: function (event) {
-          self.$emit("input", event.target.value);
+          self.isShowList = true;
+          let filterString = event.target.value;
+          let listData = self.comboboxListData;
+          self.comboboxListShow = listData.filter(item => item['DepartmentName'].toLowerCase().includes(filterString.toLowerCase()));
         },
         focus: function () {
           self.isFocusInput = true;
@@ -139,6 +178,29 @@ export default {
           self.isShowError = false;
         },
       });
+    },
+  },
+  watch: {
+    comboboxDataProp: function (newValue) {
+      //update combobox value
+      DepartmentApi.getById(newValue)
+        .then((response) => {
+          this.comboboxValue = response.data["DepartmentName"];
+        })
+        .catch((response) => console.log(response));
+    },
+    comboboxCheck: function () {
+      //validate combobox Input
+      this.validateInput(this);
+    },
+    comboboxReset: function (newValue) {
+      if (newValue) {
+        //reset input
+        this.comboboxValue = "";
+        this.comboboxData = "";
+        this.isError = false;
+        this.isShowError = false;
+      }
     },
   },
 };

@@ -11,7 +11,7 @@
           <div class="mi mi-24 mi-help popup-help-icon"></div>
           <div
             class="mi mi-24 mi-close popup-close-icon"
-            @click="closePopup"
+            @click="closePopupAndCheck"
           ></div>
         </div>
       </div>
@@ -44,10 +44,12 @@
             </div>
             <div class="row-input--right w-1/2">
               <div class="w-2/5 p-r-6 border-box">
-                <base-input
+                <base-date-input
                   label="Ngày sinh"
                   type="date"
                   v-model="employeeData['DateOfBirth']"
+                  @getDate="getDateOfBirth"
+                  :inputReset="inputReset"
                 />
               </div>
               <div class="w-3/5">
@@ -55,6 +57,8 @@
                   label="Giới tính"
                   :options="genderRadioData"
                   @chooseRadio="chooseGenderRadio"
+                  :value="employeeData['Gender']"
+                  :radioReset="inputReset"
                 />
               </div>
             </div>
@@ -65,6 +69,10 @@
                 label="Đơn vị"
                 :required="true"
                 @getComboboxData="getComboboxData"
+                :comboboxDataProp ="comboboxDepartmentData"
+                :comboboxCheck="inputCheck"
+                :comboboxReset="inputReset"
+                @getComboboxError="getInputError"
               />
             </div>
             <div class="row-input--right w-1/2">
@@ -75,10 +83,12 @@
                 />
               </div>
               <div class="w-2/5 p-l-6 border-box">
-                <base-input
+                <base-date-input
                   label="Ngày cấp"
                   type="date"
                   v-model="employeeData['IdentityDate']"
+                  @getDate="getIdentityDate"
+                  :inputReset="inputReset"
                 />
               </div>
             </div>
@@ -142,7 +152,7 @@
           <div class="popup-footer-divide"></div>
           <div class="popup-footer-content">
             <div class="popup-footer--right">
-              <div class="ms-button ms-button-secondary">Hủy</div>
+              <div class="ms-button ms-button-secondary" @click="closePopup">Hủy</div>
             </div>
             <div class="popup-footer--left">
               <div
@@ -169,6 +179,7 @@
 </template>
 
 <script>
+import BaseDateInput from "../../base/BaseDateInput.vue";
 import BaseInput from "../../base/BaseInput.vue";
 import BaseCheckbox from "../../base/BaseCheckbox.vue";
 import BaseMessage from "../../base/BaseMessage.vue";
@@ -188,6 +199,7 @@ export default {
     BaseMessage,
     BaseCombobox,
     BaseRadio,
+    BaseDateInput,
   },
   props: {
     employeeInfo: {
@@ -240,10 +252,10 @@ export default {
       this.isShowMessage = false;
     },
     /**
-     * Đóng popup nhân viên
+     * Kiểm tra thay đổi dữ liệu và Đóng popup nhân viên
      * CreatedBy: nvdien(30/8/2021)
      */
-    closePopup() {
+    closePopupAndCheck() {
       //Kiểm tra có thay đổi dữ liệu không
       if (this.isChangeData) {
         //Hiệm message cảnh báo
@@ -274,7 +286,15 @@ export default {
         ];
         this.isShowMessage = true;
       } else {
-        //Reset dữ liệu popup nhân viên
+        this.closePopup();
+      }
+    },
+    /**
+     * Hủy dữ liệu và đóng form
+     * CreatedBy: nvdien(3/9/2021)
+     */
+    closePopup(){
+      //Reset dữ liệu popup nhân viên
         this.isResetData = true;
         this.employeeData = Object.assign({}, {});
         //Reset các input
@@ -283,7 +303,6 @@ export default {
         this.errorList = [];
         //Đóng popup nhân viên
         this.$emit("closePopup");
-      }
     },
     /**
      * Đóng đồng thời message box và popup
@@ -307,20 +326,17 @@ export default {
      */
     async saveData() {
       try {
+        //Validate các trường
         let isValid = await this.validateBeforeSave();
         if (isValid == false) {
           return;
         }
         if (this.mode == 0) {
-          //Thêm mới
-          //Validate các trường
           //Thực hiện thêm mới
           this.$set(this.employeeData, "Gender", this.genderRadioValue);
           await EmployeesRepository.post(this.employeeData);
         }
         if (this.mode == 1) {
-          //Sửa
-          //Validate các trường
           //Thực hiện sửa thông tin
           await EmployeesRepository.put(
             this.employeeData["EmployeeId"],
@@ -345,38 +361,41 @@ export default {
           return;
         }
         if (this.mode == 0) {
-          //Thực hiện cất và thêm mới
-
+          //Thực hiện thêm mới
           await EmployeesRepository.post(this.employeeData);
-          await EmployeesRepository.getNewEmployeeCode();
         }
         if (this.mode == 1) {
-          //Thực hiện sửa thông tin va thêm mới
+          //Thực hiện sửa thông tin
           if (this.isChangeData) {
             await EmployeesRepository.put(
               this.employeeData["EmployeeId"],
               this.employeeData
             );
-            let newEmployeeCode = EmployeesRepository.getNewEmployeeCode();
-            this.inputReset = true;
-            this.$refs.employeeCodeInput.focusInput();
-            this.employeeData = Object.assign(
-              {},
-              { EmployeeCode: newEmployeeCode.data }
-            );
-            this.$emit("loadTable");
           } else {
-            let newEmployeeCode =
-              await EmployeesRepository.getNewEmployeeCode();
-            this.inputReset = true;
-            this.$refs.employeeCodeInput.focusInput();
-            this.isForceDataNotChange = true;
-            this.employeeData = Object.assign(
-              {},
-              { EmployeeCode: newEmployeeCode.data }
-            );
+            await this.insertAfterSave();
+            return;
           }
         }
+        await this.insertAfterSave();
+        this.$emit("loadTable");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    /**
+     * Lấy mã mới sau khi cất khi thực hiện cất và thêm mới
+     * CreatedBy: nvdien(2/9/2021)
+     */
+    async insertAfterSave() {
+      try {
+        let newEmployeeCode = await EmployeesRepository.getNewEmployeeCode();
+        this.inputReset = true;
+        this.$refs.employeeCodeInput.focusInput();
+        this.isForceDataNotChange = true;
+        this.employeeData = Object.assign(
+          {},
+          { EmployeeCode: newEmployeeCode.data }
+        );
       } catch (error) {
         console.log(error);
       }
@@ -389,7 +408,7 @@ export default {
       try {
         //Kiểm tra các trường không được để trống
         if (
-          !(this.employeeData["EmployeeCode"] && this.employeeData["FullName"])
+          !(this.employeeData["EmployeeCode"] && this.employeeData["FullName"] && this.employeeData["DepartmentId"])
         ) {
           this.inputCheck = !this.inputCheck;
           return false;
@@ -463,10 +482,34 @@ export default {
      */
     chooseGenderRadio(options) {
       this.genderRadioValue = options["Gender"];
+      this.$set(this.employeeData, "Gender", this.genderRadioValue);
+    },
+    /**
+     * Lấy giá trị ngày từ input ngày sinh
+     * CreatedBy: nvdien(3/9/2021)
+     */
+    getDateOfBirth(dateValue) {
+      this.$set(
+        this.employeeData,
+        "DateOfBirth",
+        this.convertDateString(dateValue)
+      );
+    },
+    /**
+     * Lấy giá trị ngày từ input nơi cấp
+     * CreatedBy: nvdien(3/9/2021)
+     */
+    getIdentityDate(dateValue) {
+      this.$set(
+        this.employeeData,
+        "IdentityDate",
+        this.convertDateString(dateValue)
+      );
     },
   },
 
   watch: {
+    //khi mở form
     isFocusCode: function () {
       //focus vào ô mã nhân viên mỗi lần mở popup
       this.$refs.employeeCodeInput.focusInput();
@@ -476,6 +519,10 @@ export default {
       this.inputReset = false;
       //đồng thời gán thông tin employee lên form
       this.employeeData = Object.assign({}, this.employeeInfo);
+      if(this.mode == 1){
+        //Đổ dữ liệu lên combobox
+        this.comboboxDepartmentData = this.employeeData["DepartmentId"];
+      }
     },
     employeeData: {
       handler(newValue, oldValue) {
@@ -494,9 +541,6 @@ export default {
         this.isChangeData = true;
       },
       deep: true,
-    },
-    genderRadioValue: function (newValue) {
-      this.$set(this.employeeData, "Gender", newValue);
     },
   },
 };

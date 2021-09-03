@@ -1,5 +1,4 @@
 <template lang="">
-<!-- @keydown="radioItemOnKeydown($event, index)" -->
 	<div class="radio">
 		<div v-if="label" class="radio__label">{{ label }}</div>
 		<div class="radio__list">
@@ -7,8 +6,7 @@
 				v-for="(item, index) in options"
 				class="radio__item"
 				:class="{ 'radio__item--selected': index == currIdx }"
-                @click="chooseRadio(index)"
-				
+        @click="chooseRadio(index)"
 				:key="index"
 				tabindex="0"
 				:ref="'radio' + index"
@@ -41,6 +39,10 @@ export default {
       type: Number,
       default: null,
     },
+    radioReset: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -48,33 +50,6 @@ export default {
     };
   },
   methods: {
-    /**
-     * Bắt sự kiện nhấn phím mũi tên để di chuyển
-     * @param {event} event
-     * @param {number} index
-     * CreatedBy: NTDUNG (30/08/2021)
-     */
-    // radioItemOnKeydown(event, index) {
-    // 	switch(event.key) {
-    // 		case 'ArrowRight':
-    // 			if (this.currIdx != this.options.length - 1)
-    // 				this.currIdx++;
-    // 			else
-    // 				this.currIdx = 0;
-    // 			this.$refs['radio' + this.currIdx][0].focus();
-    // 			break;
-    // 		case 'ArrowLeft':
-    // 			if (this.currIdx != 0)
-    // 				this.currIdx--;
-    // 			else
-    // 				this.currIdx = this.options.length - 1;
-    // 			this.$refs['radio' + this.currIdx][0].focus();
-    // 			break;
-    // 		case 'Enter':
-    // 			this.currIdx = index;
-    // 			break;
-    // 	}
-    // }
     /**
      * Chọn item
      * CreatedBy: nvdien(2/9/2021)
@@ -88,11 +63,20 @@ export default {
     /**
      * Bắt sự kiện thay đổi giá trị truyền vào
      * @param {number} value
-     * CreatedBy: NTDUNG (31/08/2021)
+     * CreatedBy: nvdien (31/08/2021)
      */
-    value: function (value) {
-      if (value !== null) this.currIdx = value;
+    value: function (newValue) {
+      if (newValue != null) this.currIdx = this.options.findIndex(x => x['Gender'] === newValue);
     },
+    /**
+     * reset radio về nam
+     * CreatedBy: nvdien(3/9/2021)
+     */
+    radioReset: function(newValue){
+      if(newValue){
+        this.currIdx = 0;
+      }
+    }
   },
 };
 </script>

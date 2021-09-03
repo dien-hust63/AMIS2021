@@ -13,7 +13,7 @@
       ></div>
       <div class="dropdown__content">
         <ul>
-          <li>Nhân bản</li>
+          <li @click="copyEntity">Nhân bản</li>
           <li @click="confirmDeleteRow">Xóa</li>
           <li>Ngừng sử dụng</li>
         </ul>
@@ -30,8 +30,8 @@
 
 <script>
 import BaseMessage from "../../base/BaseMessage.vue";
-import {RepositoryFactory} from "../../../js/repository/repository.factory.js";
-const EmployeesRepository = RepositoryFactory.get('employees');
+import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
+const EmployeesRepository = RepositoryFactory.get("employees");
 export default {
   name: "ContextMenu",
   components: {
@@ -120,6 +120,13 @@ export default {
     editEntity() {
       // hiển thị popup nhân viên và đổ các dữ liệu lên popup
       this.$emit("editEntity", this.deleteData["EmployeeId"]);
+    },
+    /**
+     * Nhân bản đối tượng
+     * CreatedBy: nvdien(2/9/2021)
+     */
+    copyEntity() {
+      this.$emit("copyEntity", this.deleteData);
     },
   },
   computed: {

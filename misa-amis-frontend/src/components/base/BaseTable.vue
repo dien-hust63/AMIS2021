@@ -19,7 +19,7 @@
         <tr
           v-for="(tableContent, index) in tableContents"
           :key="index"
-          @dblclick="showDetailForm"
+          @dblclick="editEntity(tableContents[index]['EmployeeId'])"
         >
           <td>
             <base-checkbox />
@@ -36,6 +36,7 @@
               :deleteData="tableContents[index]"
               @loadTable="loadTable"
               @editEntity="editEntity"
+              @copyEntity="copyEntity"
             />
           </td>
         </tr>
@@ -137,14 +138,6 @@ export default {
     },
 
     /**
-     * Hiển thị chi tiết các dữ liệu trong hàng khi double click vào hàng
-     * CreatedBy: nvdien(29/8/2021)
-     */
-    showDetailForm() {
-      return "";
-    },
-
-    /**
      * cập nhật lại nội dung bẳng
      * CreatedBy: nvdien(29/8/2021)
      */
@@ -169,6 +162,14 @@ export default {
      */
     editEntity(entityId){
       this.$emit("editEntity",entityId);
+    },
+    /**
+     * Nhân bản đối tượng
+     * @param {object} đối tượng nhân bản
+     * CreatedBY: nvdien(2/9/2021)
+     */
+    copyEntity(entity){
+      this.$emit("copyEntity",entity);
     } 
   },
   watch: {

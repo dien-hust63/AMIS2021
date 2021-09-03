@@ -1,6 +1,38 @@
 export default {
     methods: {
         /**
+         * Kiểm tra xem có vượt quá ngày hiện tại
+         * @param {string} dateString 
+         */
+        isFutureDate(dateString) {
+            var dateParts = dateString.split("/");
+            var givenDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+            let currentDate = new Date();
+            if (givenDate > currentDate) {
+                return true;
+            }
+            return false;
+
+        },
+        /**
+         * Kiểm tra string dạng DD/MM/YYYY đúng định dạng date chưa
+         * @param {} dateString string
+         * CreatedBy: nvdien(3/9/2021)
+         */
+        validateDateString(dateString) {
+            let pattern = /^(((0[1-9]|[12]\d|3[01])\/(0[13578]|1[02])\/((19|[2-9]\d)\d{2}))|((0[1-9]|[12]\d|30)\/(0[13456789]|1[012])\/((19|[2-9]\d)\d{2}))|((0[1-9]|1\d|2[0-8])\/02\/((19|[2-9]\d)\d{2}))|(29\/02\/((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|(([1][26]|[2468][048]|[3579][26])00))))$/g;
+            return pattern.test(dateString);
+        },
+        /**
+         * Chuyển từ dạng DD/MM/YYYY sang YYYY-MM-DD
+         * @param {string} dateString
+         * CreatedBy: nvdien(2/9/2021)
+         */
+        convertDateString(dateString) {
+            let dateParts = dateString.split("/");
+            return dateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T00:00:00`;
+        },
+        /**
          * Format dữ liệu ngày tháng sang định dạng khác mong muốn
          * seperator = "-" : year-month-day
          * seperator = "/" : day/month/year
@@ -11,7 +43,12 @@ export default {
          */
 
         formatDate(dateString, seperator) {
+            if(dateString == null) return "";   
+            if(dateString != null ){
+                dateString = dateString.split('T')[0];
+            }
             let dateObj = new Date(dateString);
+
             if (Number.isNaN(dateObj.getTime())) {
                 return "";
             } else {
