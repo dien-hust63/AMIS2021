@@ -15,12 +15,10 @@
         <div class="menu-item__icon mi mi-24 mi-sidebar-dashboard"></div>
         <div class="menu-item__tittle">Tổng quan</div>
       </a>
-
-      <a href="" class="menu-item">
+      <router-link to="/"  class="menu-item">
         <div class="menu-item__icon mi mi-24 mi-sidebar-cash"></div>
         <div class="menu-item__tittle">Tiền mặt</div>
-      </a>
-
+      </router-link>
       <a href="" class="menu-item">
         <div class="menu-item__icon mi mi-24 mi-sidebar-bank"></div>
         <div class="menu-item__tittle">Tiền gửi</div>

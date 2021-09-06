@@ -69,7 +69,7 @@
                 label="Đơn vị"
                 :required="true"
                 @getComboboxData="getComboboxData"
-                :comboboxDataProp ="comboboxDepartmentData"
+                :comboboxDataProp="employeeData['DepartmentId']"
                 :comboboxCheck="inputCheck"
                 :comboboxReset="inputReset"
                 @getComboboxError="getInputError"
@@ -124,7 +124,13 @@
               />
             </div>
             <div class="w-200">
-              <base-input label="Email" v-model="employeeData['Email']" />
+              <base-input
+                label="Email"
+                v-model="employeeData['Email']"
+                type="email"
+                :inputCheck="inputCheck"
+                :inputReset="inputReset"
+              />
             </div>
           </div>
           <div class="row-input">
@@ -152,7 +158,9 @@
           <div class="popup-footer-divide"></div>
           <div class="popup-footer-content">
             <div class="popup-footer--right">
-              <div class="ms-button ms-button-secondary" @click="closePopup">Hủy</div>
+              <div class="ms-button ms-button-secondary" @click="closePopup">
+                Hủy
+              </div>
             </div>
             <div class="popup-footer--left">
               <div
@@ -227,7 +235,6 @@ export default {
       isForceDataNotChange: false,
       iconMessage: "mi-exclamation-question-48",
       buttons: [],
-      comboboxDepartmentData: "",
       genderRadioData: [
         { Gender: 1, GenderName: "Nam" },
         { Gender: 0, GenderName: "Nữ" },
@@ -293,16 +300,16 @@ export default {
      * Hủy dữ liệu và đóng form
      * CreatedBy: nvdien(3/9/2021)
      */
-    closePopup(){
+    closePopup() {
       //Reset dữ liệu popup nhân viên
-        this.isResetData = true;
-        this.employeeData = Object.assign({}, {});
-        //Reset các input
-        this.inputReset = true;
-        //Clear danh sách lỗi
-        this.errorList = [];
-        //Đóng popup nhân viên
-        this.$emit("closePopup");
+      this.isResetData = true;
+      this.employeeData = Object.assign({}, {});
+      //Reset các input
+      this.inputReset = true;
+      //Clear danh sách lỗi
+      this.errorList = [];
+      //Đóng popup nhân viên
+      this.$emit("closePopup");
     },
     /**
      * Đóng đồng thời message box và popup
@@ -406,9 +413,19 @@ export default {
      */
     async validateBeforeSave() {
       try {
+        //Kiểm tra định dạng email nếu có
+        let isValidEmail = true;
+        if (this.employeeData["Email"]) {
+          isValidEmail = this.validateEmail(this.employeeData["Email"]);
+        }
         //Kiểm tra các trường không được để trống
         if (
-          !(this.employeeData["EmployeeCode"] && this.employeeData["FullName"] && this.employeeData["DepartmentId"])
+          !(
+            this.employeeData["EmployeeCode"] &&
+            this.employeeData["FullName"] &&
+            this.employeeData["DepartmentId"] &&
+            isValidEmail
+          )
         ) {
           this.inputCheck = !this.inputCheck;
           return false;
@@ -519,10 +536,6 @@ export default {
       this.inputReset = false;
       //đồng thời gán thông tin employee lên form
       this.employeeData = Object.assign({}, this.employeeInfo);
-      if(this.mode == 1){
-        //Đổ dữ liệu lên combobox
-        this.comboboxDepartmentData = this.employeeData["DepartmentId"];
-      }
     },
     employeeData: {
       handler(newValue, oldValue) {

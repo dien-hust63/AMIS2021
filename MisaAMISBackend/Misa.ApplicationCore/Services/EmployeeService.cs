@@ -60,13 +60,20 @@ namespace Misa.ApplicationCore
             serviceResult.Data = _employeeRepository.GetNewEmployeeCode();
             return serviceResult;
         }
-
+        /// <summary>
+        /// Kiểm tra trùng mã nhân viên
+        /// </summary>
+        /// <param name="employeeCode"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(27/8/2021)
+        /// ModifiedBy: nvdien(27/8/2021)
         public ServiceResult CheckEmployeeCodeExist(string employeeCode)
         {
             var serviceResult = new ServiceResult();
             serviceResult.Data = _employeeRepository.CheckEmployeeCodeExist(employeeCode);
             return serviceResult;
         }
+
         /// <summary>
         /// Export dữ liệu nhân viên ra file excel
         /// </summary>

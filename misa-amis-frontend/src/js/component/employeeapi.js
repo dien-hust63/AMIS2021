@@ -8,18 +8,12 @@ class EmployeeAPI extends BaseAPI {
 
     /**
      * lọc và phân trang nhân viên
-     * @param {string} searchVal dữ liệu search
-     * @param {string} departmentVal Id phòng ban
-     * @param {string} positionVal ID vị trí
-     * @param {int} pageIndex index trang 
-     * @param {int} pageSize số bản ghi trên trang
+     * url phân trang
      * @returns promise
      * CreatedBy: nvdien(26/8/2021)
      */
-    getEmployeePaging(pageIndex, pageSize, searchVal = "", departmentVal = "", positionVal = "") {
-        let api = this.baseApiUrl + this.controller;
-        api += `/Filter?searchData=${searchVal}&departmentId=${departmentVal}&positionId=${positionVal}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
-        return axios.get(api);
+    getEmployeePaging(url) {
+        return axios.get(url);
     }
 
     /**

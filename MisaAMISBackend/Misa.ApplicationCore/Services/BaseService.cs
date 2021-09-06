@@ -188,7 +188,7 @@ namespace Misa.ApplicationCore.Services
                 return checkRequiredField;
             }
             //Kiểm tra các trường không được phép trùng
-            var checkUniqueField = CheckDuplication(entity, entityId);
+            var checkUniqueField = CheckDuplication(entity, entityId); 
             if (checkUniqueField != null)
             {
                 return checkUniqueField;

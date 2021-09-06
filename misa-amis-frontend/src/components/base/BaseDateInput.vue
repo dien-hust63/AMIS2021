@@ -24,7 +24,7 @@
         @mouseover="mouseoverDateInput"
         @mouseout="mouseoutDateInput"
         v-on:keyup="validateDateInput"
-        @focus="focusInputDate"
+        @focus="focusInputDate($event)"
         @blur="blurDateInput"
       />
       <div
@@ -117,7 +117,11 @@ export default {
      * CreatedBY: nvdien(2/9/2021)
      */
     validateDateInput() {
-      if (this.valueDateInput === "") return;
+      if (this.valueDateInput === "") {
+        this.isInputError = false;
+        this.isShowError = false;
+        return;
+      }
       if (this.validateDateString(this.valueDateInput)) {
         if (this.isFutureDate(this.valueDateInput)) {
           this.isInputError = true;
@@ -136,8 +140,9 @@ export default {
      * focus vào input date
      * CreatedBy: nvdien(2/9/2021)
      */
-    focusInputDate() {
+    focusInputDate(event) {
       this.isFocusInput = true;
+      event.target.select();
     },
     /**
      * blur dateInput
@@ -153,10 +158,6 @@ export default {
         input: function (event) {
           self.$emit("input", event.target.value);
         },
-        // blur: function () {
-        //     console.log("test");
-        //   self.isFocusInput = false;
-        // },
         mouseover: function () {
           if (self.isInputError) {
             // hiển thị báo lỗi

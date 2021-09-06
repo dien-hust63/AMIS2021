@@ -74,15 +74,26 @@ export default {
         this.$refs.input.focus();
       });
     },
+    
     /**
      * validate input
      * CreatedBy: nvdien(2/9/2021)
      */
     validateInput(self) {
+      //các trường không để trống
       if (self.required && (self.value === null || self.value === "")) {
         this.isInputError = true;
         this.inputError = `${this.label} không được phép để trống`;
         this.$emit("getInputError", this.inputError);
+      }
+      //validate email
+      if (this.$attrs.type === "email" && this.value != "") {
+        let isValidEmail = this.validateEmail(this.value);
+        if (isValidEmail == false) {
+          this.isInputError = true;
+          this.inputError = `Email không đúng định dạng`;
+          this.$emit("getInputError", this.inputError);
+        }
       }
     },
   },
@@ -93,9 +104,9 @@ export default {
         input: function (event) {
           self.$emit("input", event.target.value);
         },
-        blur: function (event) {
-          console.log(event);
-        },
+        // blur: function (event) {
+        //   console.log(event);
+        // },
         mouseover: function () {
           if (self.isInputError) {
             // hiển thị báo lỗi
@@ -105,8 +116,12 @@ export default {
         mouseout: function () {
           self.isShowError = false;
         },
+        focus: function (event) {
+          event.target.select();
+        },
       });
     },
+
     valueInput: function () {
       if (this.$attrs.type == "date") {
         return this.formatDate(this.value, "-");
@@ -117,7 +132,7 @@ export default {
   watch: {
     value: function (newValue, oldValue) {
       if (this.required) {
-        if (this.newValue != "") {
+        if (newValue != "") {
           this.isInputError = false;
           this.isShowError = false;
         }
@@ -125,6 +140,10 @@ export default {
           this.isInputError = true;
           this.inputError = `${this.label} không được phép để trống`;
         }
+      }
+      if(this.$attrs.type === "email" && this.validateEmail(newValue) || newValue == ""){
+         this.isInputError = false;
+         this.isShowError = false;
       }
     },
     inputCheck: function () {
@@ -135,12 +154,12 @@ export default {
       this.isInputError = true;
       this.inputError = newValue;
     },
-    inputReset: function(newValue){
-      if(newValue){
+    inputReset: function (newValue) {
+      if (newValue) {
         this.isInputError = false;
         this.inputError = false;
       }
-    }
+    },
   },
 };
 </script>

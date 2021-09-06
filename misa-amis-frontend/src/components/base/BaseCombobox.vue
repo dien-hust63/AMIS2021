@@ -139,7 +139,7 @@ export default {
     validateInput(self) {
       if (
         self.required &&
-        (self.comboboxValue === null || self.comboboxValue === "")
+        (self.comboboxValue === null || self.comboboxValue === "" || self.comboboxValue === undefined)
       ) {
         this.isError = true;
         this.comboboxError = `${this.label} không được phép để trống`;
@@ -157,8 +157,9 @@ export default {
           let listData = self.comboboxListData;
           self.comboboxListShow = listData.filter(item => item['DepartmentName'].toLowerCase().includes(filterString.toLowerCase()));
         },
-        focus: function () {
+        focus: function (event) {
           self.isFocusInput = true;
+          event.target.select();
         },
         blur: function () {
           self.isFocusInput = false;
@@ -182,6 +183,7 @@ export default {
   },
   watch: {
     comboboxDataProp: function (newValue) {
+      this.comboboxData = newValue;
       //update combobox value
       DepartmentApi.getById(newValue)
         .then((response) => {
@@ -198,6 +200,8 @@ export default {
         //reset input
         this.comboboxValue = "";
         this.comboboxData = "";
+        this.currentIndex = -1;
+        this.isShowList = false;
         this.isError = false;
         this.isShowError = false;
       }

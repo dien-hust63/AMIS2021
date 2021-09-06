@@ -43,8 +43,8 @@ export default {
          */
 
         formatDate(dateString, seperator) {
-            if(dateString == null) return "";   
-            if(dateString != null ){
+            if (dateString == null) return "";
+            if (dateString != null) {
                 dateString = dateString.split('T')[0];
             }
             let dateObj = new Date(dateString);
@@ -130,6 +130,17 @@ export default {
         */
         checkEmptyObject(obj) {
             return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
+        },
+        /**
+         * validate email đúng định dạng
+         * @param {String} email xâu email người dùng nhập vào
+         * @returns {Boolean} true nếu đúng định dạng
+         * CreatedBy: nvdien(3/9/2021)
+        */
+        validateEmail(email) {
+            var re =
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
         },
     }
 }

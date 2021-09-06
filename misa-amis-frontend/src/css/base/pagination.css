@@ -5,12 +5,11 @@
     align-items: center;
 }
 
-.ms-pagination--left{
-}
 
 .total-record{
     line-height: 46px;
     height: 46px;
+    white-space: nowrap;
 }
 
 .ms-pagination--right{

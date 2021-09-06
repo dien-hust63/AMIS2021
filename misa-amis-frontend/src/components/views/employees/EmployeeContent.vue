@@ -34,14 +34,14 @@
           @editEntity="editEmployee"
           @copyEntity="copyEntity"
         />
-      </div>
-      <div class="employee-content-pagination">
-        <base-pagination
-          :totalRecord="totalRecord"
-          :totalPage="totalPage"
-          @getPagingData="getPagingData"
-          :hasSearch="hasSearch"
-        />
+        <div class="employee-content-pagination">
+          <base-pagination
+            :totalRecord="totalRecord"
+            :totalPage="totalPage"
+            @getPagingData="getPagingData"
+            :hasSearch="hasSearch"
+          />
+        </div>
       </div>
     </div>
     <employee-popup
@@ -66,7 +66,6 @@ import BasePagination from "../../base/BasePagination.vue";
 import EmployeePopup from "../../views/popup/EmployeePopup.vue";
 import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
 const EmployeesRepository = RepositoryFactory.get("employees");
-
 export default {
   name: "EmployeeContent",
   components: {
@@ -200,7 +199,7 @@ export default {
      * CreatedByL nvdien(2/9/2021)
      */
     copyEntity(entity) {
-      this.employeeData = Object.assign({},entity);
+      this.employeeData = Object.assign({}, entity);
       EmployeesRepository.getNewEmployeeCode().then((response) => {
         //set mode = 0: Thêm mới
         this.mode = 0;

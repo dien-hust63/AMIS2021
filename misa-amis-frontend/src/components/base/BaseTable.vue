@@ -49,10 +49,12 @@
 
 <script>
 import CommonMethods from "../../mixins/methods.js";
-import axios from "axios";
 import ContextMenu from "../views/contextmenu/ContextMenu.vue";
 import BaseLoading from "../base/BaseLoading.vue";
 import BaseCheckbox from "../base/BaseCheckbox.vue";
+import { RepositoryFactory } from "../../js/repository/repository.factory.js";
+
+const EmployeesRepository = RepositoryFactory.get("employees");
 export default {
   name: "BaseTable",
   components: {
@@ -142,8 +144,7 @@ export default {
      * CreatedBy: nvdien(29/8/2021)
      */
     loadTable() {
-      axios
-        .get(this.urlAPI)
+      EmployeesRepository.getEmployeePaging(this.urlAPI)
         .then((response) => {
           this.tableContents = response.data["Employees"];
           this.$emit("getTableData", response.data);
