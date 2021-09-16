@@ -24,8 +24,19 @@ var tableEmployeeHeaders = [
   { BankName: "TÊN NGÂN HÀNG", type: "0" },
   { BankBranch: "CHI NHÁNH TK NGÂN HÀNG", type: "0" },
 ]
+var message = {
+   messageConfirmChange : "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
+   messageRequired: "{0} không được để trống",
+   messageDuplication: `Mã nhân viên <{0}> đã tồn tại trong hệ thống, vui lòng kiểm tra lại.`,
+   messageEmailSyntax: "Email không đúng định dạng",
+   messageDateSyntax: `Ngày chưa đúng định dạng`,
+   messageDateFuture: "{0} vượt quá ngày hiện tại",
+}
+var mode = {
+  ADD : 0,
+  INSERT: 1,
+  BUTTONCALLBACK: 2,
+  BUTTONNORMAL: 3,
+}
 
-var confirmChangeData =  "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?";
-var requiredName = "Tên không được để trống";
-
-export { apiList, tableEmployeeHeaders, confirmChangeData, requiredName};
+export { apiList, tableEmployeeHeaders, mode, message};

@@ -45,6 +45,7 @@
     background-color: #e0e0e0;
 }
 
+/**Danh sách các item trong combobox*/
 .ms-combobox-list{
     width: 100%;
     border-radius: 2px;
@@ -100,6 +101,7 @@
     color: #fff;
 }
 
+/**Hiển thị lỗi khi hover vào combobox*/
 .block-error{
     position: absolute;
     top: 50%;

@@ -4,9 +4,6 @@
       <thead class="ms-thead">
         <tr>
           <th>
-            <!-- <div class="checkbox">
-              <i class="fas fa-check"></i>
-            </div> -->
             <base-checkbox />
           </th>
           <th v-for="(tableHeader, index) in tableHeaders" :key="index">
@@ -53,7 +50,6 @@ import ContextMenu from "../views/contextmenu/ContextMenu.vue";
 import BaseLoading from "../base/BaseLoading.vue";
 import BaseCheckbox from "../base/BaseCheckbox.vue";
 import { RepositoryFactory } from "../../js/repository/repository.factory.js";
-
 const EmployeesRepository = RepositoryFactory.get("employees");
 export default {
   name: "BaseTable",
@@ -148,13 +144,13 @@ export default {
         .then((response) => {
           this.tableContents = response.data["Employees"];
           this.$emit("getTableData", response.data);
-          this.isLoading = false;
+          // this.isLoading = false;
         })
         .catch((response) => {
           console.log(response);
-          this.isLoading = true;
+          // this.isLoading = true;
         });
-      this.isLoading = true;
+      // this.isLoading = true;
     },
     /**
      * Chỉnh sửa đối tượng

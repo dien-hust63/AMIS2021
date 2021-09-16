@@ -1,11 +1,12 @@
 .ms-button{
     border-radius: 3px;
-    height: 36px;
+    /* height: 36px; */
     font-weight: 600;
     cursor: pointer;
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
     padding:8px 20px;
     transition: all .2s ease;
+    white-space: nowrap;
 }
 .ms-button-primary{
     color: #fff;

@@ -195,6 +195,7 @@ import BaseCombobox from "../../base/BaseCombobox.vue";
 import BaseRadio from "../../base/BaseRadio.vue";
 import Mixin from "../../../mixins/methods.js";
 import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
+import { mode, message } from "../../../js/resources/resourcevn";
 
 const EmployeesRepository = RepositoryFactory.get("employees");
 
@@ -228,7 +229,7 @@ export default {
   data() {
     return {
       employeeData: {},
-      messageText: "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
+      messageText: message.messageConfirmChange,
       isShowMessage: false,
       isChangeData: false,
       isResetData: false,
@@ -240,7 +241,6 @@ export default {
         { Gender: 0, GenderName: "Nữ" },
         { Gender: 2, GenderName: "Khác" },
       ],
-      genderRadioValue: 1,
       errorList: [],
       inputCheck: false,
       inputReset: false,
@@ -266,7 +266,7 @@ export default {
       //Kiểm tra có thay đổi dữ liệu không
       if (this.isChangeData) {
         //Hiệm message cảnh báo
-        this.messageText = "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?";
+        this.messageText = message.messageConfirmChange;
         this.iconMessage = "mi-exclamation-question-48";
         this.buttons = [
           {
@@ -338,12 +338,15 @@ export default {
         if (isValid == false) {
           return;
         }
-        if (this.mode == 0) {
+        if (this.mode == mode.ADD) {
           //Thực hiện thêm mới
-          this.$set(this.employeeData, "Gender", this.genderRadioValue);
+          if (this.employeeData["Gender"] == null) {
+            //mặc định ngươi dùng không thay đổi gì thì giới tính sẽ là nam
+            this.$set(this.employeeData, "Gender", 1);
+          }
           await EmployeesRepository.post(this.employeeData);
         }
-        if (this.mode == 1) {
+        if (this.mode == mode.INSERT) {
           //Thực hiện sửa thông tin
           await EmployeesRepository.put(
             this.employeeData["EmployeeId"],
@@ -367,11 +370,16 @@ export default {
         if (isValid == false) {
           return;
         }
-        if (this.mode == 0) {
+        if (this.mode == mode.ADD) {
+          //Thực hiện thêm mới
+          if (this.employeeData["Gender"] == null) {
+            //mặc định ngươi dùng không thay đổi gì thì giới tính sẽ là nam
+            this.$set(this.employeeData, "Gender", 1);
+          }
           //Thực hiện thêm mới
           await EmployeesRepository.post(this.employeeData);
         }
-        if (this.mode == 1) {
+        if (this.mode == mode.INSERT) {
           //Thực hiện sửa thông tin
           if (this.isChangeData) {
             await EmployeesRepository.put(
@@ -395,6 +403,7 @@ export default {
      */
     async insertAfterSave() {
       try {
+        this.$emit("changeMode", mode.ADD);
         let newEmployeeCode = await EmployeesRepository.getNewEmployeeCode();
         this.inputReset = true;
         this.$refs.employeeCodeInput.focusInput();
@@ -432,7 +441,7 @@ export default {
         }
         //Kiểm tra trùng mã
         if (
-          this.mode == 1 &&
+          this.mode == mode.INSERT &&
           this.employeeData["EmployeeCode"] == this.employeeInfo["EmployeeCode"]
         ) {
           return true;
@@ -442,7 +451,10 @@ export default {
             this.employeeData["EmployeeCode"]
           );
         if (employeeCodeExist.data == 1) {
-          this.inputErrorCustom = `Mã nhân viên <${this.employeeData["EmployeeCode"]}> đã tồn tại trong hệ thống, vui lòng kiểm tra lại.`;
+          this.inputErrorCustom = this.formatString(
+            message.messageDuplication,
+            this.employeeData["EmployeeCode"]
+          );
           this.errorList.push(this.inputErrorCustom);
           //Hiển thị thông báo
           this.messageText = this.errorList[0];
@@ -498,30 +510,21 @@ export default {
      * CreatedBy: nvdien(1/9/2021)
      */
     chooseGenderRadio(options) {
-      this.genderRadioValue = options["Gender"];
-      this.$set(this.employeeData, "Gender", this.genderRadioValue);
+      this.$set(this.employeeData, "Gender", options["Gender"]);
     },
     /**
      * Lấy giá trị ngày từ input ngày sinh
      * CreatedBy: nvdien(3/9/2021)
      */
     getDateOfBirth(dateValue) {
-      this.$set(
-        this.employeeData,
-        "DateOfBirth",
-        this.convertDateString(dateValue)
-      );
+      this.$set(this.employeeData, "DateOfBirth", dateValue);
     },
     /**
      * Lấy giá trị ngày từ input nơi cấp
      * CreatedBy: nvdien(3/9/2021)
      */
     getIdentityDate(dateValue) {
-      this.$set(
-        this.employeeData,
-        "IdentityDate",
-        this.convertDateString(dateValue)
-      );
+      this.$set(this.employeeData, "IdentityDate", dateValue);
     },
   },
 
@@ -543,7 +546,7 @@ export default {
           this.isForceDataNotChange ||
           this.checkEmptyObject(oldValue) ||
           (this.isResetData && this.checkEmptyObject(newValue)) ||
-          (this.mode == 1 &&
+          (this.mode == mode.INSERT &&
             this.deepEqual(newValue, this.employeeInfo) &&
             this.isObject(newValue))
         ) {
@@ -560,5 +563,5 @@ export default {
 </script>
 
 <style scoped>
-@import url("../../../css/views/popup/employeepopup.css");
+@import url("../../../css/views/employees/employeedetail.css");
 </style>

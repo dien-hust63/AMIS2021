@@ -169,7 +169,6 @@ export default {
      * CreatedBy:nvdien(30/8/2021)
      */
     choosePage(item) {
-      console.log(item);
       if (item == "...") {
         return;
       } else {

@@ -9,7 +9,7 @@
     <div class="notify mi mi-24 mi-bell"></div>
     <div class="account">
         <div class="account__avatar mi mi-32 mi-user-avatar"></div>
-        <div class="account__name">Nguyễn Văn Mạnh</div>
+        <div class="account__name">Nguyễn Văn Diện</div>
         <div class="account__icon mi mi-14 mi-chevron-down"></div>
     </div>
   </div>

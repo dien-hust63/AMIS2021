@@ -55,10 +55,13 @@
 </template>
 
 <script>
+import {message} from "../../js/resources/resourcevn.js";
+import Mixin from "../../mixins/methods.js";
 import { RepositoryFactory } from "../../js/repository/repository.factory.js";
 const DepartmentApi = RepositoryFactory.get("departments");
 export default {
   name: "BaseCombobox",
+  mixins: [Mixin],
   props: {
     label: {
       type: String,
@@ -142,7 +145,7 @@ export default {
         (self.comboboxValue === null || self.comboboxValue === "" || self.comboboxValue === undefined)
       ) {
         this.isError = true;
-        this.comboboxError = `${this.label} không được phép để trống`;
+        this.comboboxError = this.formatString(message.messageRequired, this.label);
         this.$emit("getComboboxError", this.comboboxError);
       }
     },
@@ -163,7 +166,6 @@ export default {
         },
         blur: function () {
           self.isFocusInput = false;
-          // self.isShowList = false;
         },
       });
     },

@@ -106,13 +106,12 @@ export default {
     deleteRow() {
       this.isShowMessage = false;
       EmployeesRepository.delete(this.deleteData["EmployeeId"])
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.$emit("loadTable");
         })
         .catch((response) => console.log(response));
       this.loadData = true;
-    },
+  },
     /**
      * Sửa nhân viên
      * CreatedBy: nvdien(1/9/2021)

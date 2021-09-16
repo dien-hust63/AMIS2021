@@ -23,6 +23,7 @@
 
 <script>
 import Mixin from "../../mixins/methods.js";
+import {message} from "../../js/resources/resourcevn.js";
 export default {
   name: "BaseInput",
   inheritAttrs: false,
@@ -83,7 +84,7 @@ export default {
       //các trường không để trống
       if (self.required && (self.value === null || self.value === "")) {
         this.isInputError = true;
-        this.inputError = `${this.label} không được phép để trống`;
+        this.inputError = this.formatString(message.messageRequired, this.label);
         this.$emit("getInputError", this.inputError);
       }
       //validate email
@@ -91,7 +92,7 @@ export default {
         let isValidEmail = this.validateEmail(this.value);
         if (isValidEmail == false) {
           this.isInputError = true;
-          this.inputError = `Email không đúng định dạng`;
+          this.inputError = message.messageEmailSyntax;
           this.$emit("getInputError", this.inputError);
         }
       }
@@ -138,7 +139,7 @@ export default {
         }
         if (oldValue != "" && newValue == "" && this.inputReset == false) {
           this.isInputError = true;
-          this.inputError = `${this.label} không được phép để trống`;
+          this.inputError = this.formatString(message.messageRequired, this.label);
         }
       }
       if(this.$attrs.type === "email" && this.validateEmail(newValue) || newValue == ""){

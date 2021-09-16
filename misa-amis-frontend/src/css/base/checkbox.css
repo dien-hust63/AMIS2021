@@ -20,8 +20,7 @@
     display:none;
 }
 
-.checkbox--active{
-    background-color: #019160;
+.mi-checkbox-active.checkbox{
     border:1px solid #019160;
 }
 

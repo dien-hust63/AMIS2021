@@ -13,7 +13,7 @@
       <div class="toolbar">
         <div class="toolbar__search">
           <base-input
-            placeholder="Tìm theo mã, tên nhân viên"
+            placeholder="Tìm theo mã, tên nhân viên, số điện thoại"
             class="input-search"
             v-model="inputSearchValue"
             @keyup="search"
@@ -51,6 +51,7 @@
       @closePopup="closePopup"
       :mode="mode"
       @loadTable="refreshData"
+      @changeMode="changeMode"
     />
   </div>
 </template>
@@ -63,7 +64,8 @@ import {
 import BaseTable from "../../base/BaseTable.vue";
 import BaseInput from "../../base/BaseInput.vue";
 import BasePagination from "../../base/BasePagination.vue";
-import EmployeePopup from "../../views/popup/EmployeePopup.vue";
+import EmployeePopup from "./EmployeeDetail.vue";
+import { mode } from "../../../js/resources/resourcevn.js";
 import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
 const EmployeesRepository = RepositoryFactory.get("employees");
 export default {
@@ -101,8 +103,7 @@ export default {
       //lấy mã nhân viên mới
       EmployeesRepository.getNewEmployeeCode()
         .then((response) => {
-          //set mode = 0: thêm mới
-          this.mode = 0;
+          this.mode = mode.ADD;
           //hiển thị form thêm mới nhân viên
           this.isShowPopup = true;
           //focus vào ô mã nhân viên
@@ -182,8 +183,8 @@ export default {
     editEmployee(employeeId) {
       EmployeesRepository.getById(employeeId)
         .then((response) => {
-          //set mode = 1: chỉnh sửa
-          this.mode = 1;
+          
+          this.mode = mode.INSERT;
           //lấy giá trị
           this.employeeData = response.data;
           //focus vào ô mã nhân viên
@@ -201,8 +202,7 @@ export default {
     copyEntity(entity) {
       this.employeeData = Object.assign({}, entity);
       EmployeesRepository.getNewEmployeeCode().then((response) => {
-        //set mode = 0: Thêm mới
-        this.mode = 0;
+        this.mode = mode.ADD;
         this.$set(this.employeeData, "EmployeeCode", response.data);
         //focus vào ô mã nhân viên
         this.isFocusCode = !this.isFocusCode;
@@ -210,6 +210,13 @@ export default {
         this.isShowPopup = true;
       });
     },
+    /**
+     * Đổi mode popup
+     * Created By: nvdien(3/9/2021)
+     */
+    changeMode(value){
+      this.mode = value;
+    }
   },
   computed: {
     employeeApiFilter: function () {

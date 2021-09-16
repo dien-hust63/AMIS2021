@@ -142,5 +142,16 @@ export default {
                 /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             return re.test(email);
         },
+        /**
+         * format string
+         * @returns string
+         * CreatedBy: nvdien(3/9/2021)
+         */
+        formatString(targetString, ...strings){
+            for (let i=0; i<strings.length; i++){
+                targetString = targetString.replace("{" + i + "}", strings[i]);
+            }
+            return targetString;
+        }
     }
 }

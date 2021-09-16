@@ -97,12 +97,6 @@
     min-width: var(--width-column-3);
 }
 /**CỘT CUỐI*/
-/* .ms-table th:last-child {
-    position: sticky;
-    right: 0px;
-    z-index: 1000;
-    border-left: 1px solid #c7c7c7;
-}  */
  .ms-table tr td:last-child {
     overflow-x: unset;
     text-overflow: unset;

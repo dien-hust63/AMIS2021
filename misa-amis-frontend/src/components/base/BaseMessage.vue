@@ -11,7 +11,14 @@
       </div>
       <div class="message-line"></div>
       <div class="message-footer">
-        <base-button :value="btn.value" :class="[btn.feature]" v-for="(btn, i) in buttons" :key="i" :onclick="btn.callback"/>
+        <base-button
+          :value="btn.value"
+          :class="[btn.feature]"
+          v-for="(btn, i) in buttons"
+          :key="i"
+          :onclick="btn.callback"
+          :buttonMode="buttonMode"
+        />
       </div>
     </div>
   </div>
@@ -19,6 +26,7 @@
 
 <script>
 import BaseButton from "../base/BaseButton.vue";
+import { mode } from "../../js/resources/resourcevn.js";
 export default {
   name: "BaseMessageTest",
   components: {
@@ -41,7 +49,7 @@ export default {
           {
             // position:"center",
             // color: "ms-button-primary",
-            feature:"center ms-button-primary",
+            feature: "center ms-button-primary",
             callback: () => {
               this.$emit("closePopup");
             },
@@ -52,7 +60,9 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      buttonMode: mode.BUTTONCALLBACK,
+    };
   },
   methods: {},
 };

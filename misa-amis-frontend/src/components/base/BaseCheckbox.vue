@@ -1,7 +1,6 @@
 <template>
-  <div class="ms-checkbox">
-    <div class="checkbox">
-      <i class="fas fa-check"></i>
+  <div class="ms-checkbox" @click="chooseCheckbox" >
+    <div class="checkbox mi mi-16 " :class="{'mi-checkbox-active': isActive}">
     </div>
     <div v-if="label" class="checkbox-label">{{ label }}</div>
   </div>
@@ -16,6 +15,17 @@ export default {
       default: "",
     },
   },
+  data(){
+    return{
+      isActive:false,
+    }
+  },
+  methods:{
+    chooseCheckbox(){
+      this.isActive = !this.isActive;
+      this.$emit("chooseCheckbox", this.isActive);
+    }
+  }
 };
 </script>
 

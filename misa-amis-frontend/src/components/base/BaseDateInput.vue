@@ -10,12 +10,17 @@
         'ms-input--focus': isFocusInput,
       }"
     >
-      <input
-        ref="input"
-        v-bind="$attrs"
-        v-on="inputListeners"
-        :value="valueInput"
-      />
+      <v2-datepicker
+        class="datepicker"
+        format="DD/MM/YYYY"
+        :lang="lang"
+        :customLocals="locals"
+        :picker-options="datePickerOptions"
+        placeholder="DD/MM/YYYY"
+        v-on:input="inputDatePicker($event)"
+        ref="datePicker"
+      >
+      </v2-datepicker>
       <input
         type="text"
         class="input-date"
@@ -39,6 +44,9 @@
 
 <script>
 import Mixin from "../../mixins/methods.js";
+import {message} from "../../js/resources/resourcevn.js";
+import locals from "../../js/locales/locales.js";
+import moment from "moment";
 export default {
   name: "BaseDateInput",
   inheritAttrs: false,
@@ -81,9 +89,25 @@ export default {
       valueDateInput: "",
       notWatch: false,
       isFocusInput: false,
+      lang: "it",
+      locals,
+      //Max date là ngày hiện tại
+      datePickerOptions: {
+        disabledDate(date) {
+          return date > new Date();
+        },
+      },
     };
   },
   methods: {
+    /**
+     * lấy giá trị từ date picker và emit lên
+     * @param {datetime} e: datetime lấy được từ datepicker
+     * CreatedBy: nvdien(3/9/2021)
+     */
+    inputDatePicker(e) {
+      this.$emit("input", moment(e).format("YYYY-MM-DD"));
+    },
     /**
      * validate input
      * CreatedBy: nvdien(2/9/2021)
@@ -91,7 +115,7 @@ export default {
     validateInput(self) {
       if (self.required && (self.value === null || self.value === "")) {
         this.isInputError = true;
-        this.inputError = `${this.label} không được phép để trống`;
+        this.inputError = this.formatString(message.messageRequired, this.label);
         this.$emit("getInputError", this.inputError);
       }
     },
@@ -120,20 +144,24 @@ export default {
       if (this.valueDateInput === "") {
         this.isInputError = false;
         this.isShowError = false;
+        this.$emit("getDate", null);
         return;
       }
       if (this.validateDateString(this.valueDateInput)) {
         if (this.isFutureDate(this.valueDateInput)) {
           this.isInputError = true;
-          this.inputError = `${this.label} vượt quá ngày hiện tại`;
+          this.inputError =this.formatString(message.messageDateFuture, this.label);
           return;
         }
         this.isInputError = false;
         this.isShowError = false;
-        this.$emit("getDate", this.valueDateInput);
+        this.$emit(
+          "getDate",
+          moment(this.valueDateInput, "DD/MM/YYYY").format("YYYY-MM-DD")
+        );
       } else {
         this.isInputError = true;
-        this.inputError = `Ngày chưa đúng định dạng`;
+        this.inputError = message.messageDateSyntax;
       }
     },
     /**
@@ -151,32 +179,6 @@ export default {
       this.isFocusInput = false;
     },
   },
-  computed: {
-    inputListeners: function () {
-      var self = this;
-      return Object.assign({}, this.$listeners, {
-        input: function (event) {
-          self.$emit("input", event.target.value);
-        },
-        mouseover: function () {
-          if (self.isInputError) {
-            // hiển thị báo lỗi
-            self.isShowError = true;
-          }
-        },
-        mouseout: function () {
-          self.isShowError = false;
-        },
-      });
-    },
-
-    valueInput: function () {
-      if (this.$attrs.type == "date") {
-        return this.formatDate(this.value, "-");
-      }
-      return this.value;
-    },
-  },
   watch: {
     value: function (newValue, oldValue) {
       if (this.required) {
@@ -186,12 +188,18 @@ export default {
         }
         if (oldValue != "" && newValue == "" && this.inputReset == false) {
           this.isInputError = true;
-          this.inputError = `${this.label} không được phép để trống`;
+           this.inputError = this.formatString(message.messageRequired, this.label);
         }
       }
       if (this.$attrs.type == "date") {
-        this.valueDateInput = this.formatDate(this.value, "/");
-        this.validateDateInput();
+        if (newValue != null && newValue != "") {
+          this.valueDateInput = moment(newValue, "YYYY-MM-DD").format(
+            "DD/MM/YYYY"
+          );
+        }
+        else{
+          this.valueDateInput = "";
+        }
       }
     },
     inputCheck: function () {
