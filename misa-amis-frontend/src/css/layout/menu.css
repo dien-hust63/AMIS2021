@@ -56,6 +56,12 @@
     margin-right: 8px;
 }
 
+.menu-item-active{
+    border-left: 6px solid #2ca01c;
+    background-color: rgba(235, 237, 240, 0.2);
+    font-weight: 700;
+}
+
 
 
 

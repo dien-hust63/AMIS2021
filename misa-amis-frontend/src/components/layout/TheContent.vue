@@ -1,6 +1,6 @@
 <template>
   <div class="content-area">
-    <inward-detail />
+    <!-- <inward-detail /> -->
     <the-navbar />
     <div class="content-area__body">
         <router-view></router-view>
@@ -10,12 +10,12 @@
 
 <script>
 import TheNavbar from '../layout/TheNavbar.vue';
-import InwardDetail from "../../components/views/warehouse/InwardDetail.vue";
+// import InwardDetail from "../../components/views/warehouse/InwardDetail.vue";
 export default {
     name: "TheContent",
     components:{
         TheNavbar,
-        InwardDetail,
+        // InwardDetail,
     }
 }
 </script>

@@ -59,7 +59,6 @@
 <script>
 import {
   apiList,
-  tableEmployeeHeaders,
 } from "../../../js/resources/resourcevn.js";
 import BaseTable from "../../base/BaseTable.vue";
 import BaseInput from "../../base/BaseInput.vue";
@@ -78,7 +77,7 @@ export default {
   },
   data() {
     return {
-      tableEmployeeHeaders: tableEmployeeHeaders,
+      tableEmployeeHeaders: this.$resourcesVN.tableEmployeeHeaders,
       isShowPopup: false,
       employeeData: {},
       mode: -1,
