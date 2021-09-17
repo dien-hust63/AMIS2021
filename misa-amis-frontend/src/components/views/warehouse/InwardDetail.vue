@@ -7,15 +7,21 @@
         </div>
         <div class="title">Phiếu nhập kho BK025</div>
         <div class="header-detail-input">
-          <div class="combobox"></div>
+          <base-dropdown v-model="dropdownData" :dropdownList="inwardTypeList" :defaultData="dropdownInwardTypeDefault"/>
           <div class="combobox"></div>
         </div>
         <div class="header-detail-button">
           <div class="mi mi-24 mi-tour"></div>
           <div class="tour-label">Hướng dẫn</div>
-          <div class="mi mi-24 mi-setting__detail"></div>
-          <div class="mi mi-24 mi-help"></div>
-          <div class="mi mi-24 mi-close"></div>
+          <div class="button-setting button-group">
+            <div class="mi mi-24 mi-setting__detail"></div>
+          </div>
+          <div class="button-help button-group" >
+            <div class="mi mi-24 mi-help"></div>
+          </div>
+          <div class="button-close button-group">
+            <div class="mi mi-24 mi-close" @click="closeInwardDetail"></div>
+          </div>
         </div>
       </div>
       <div class="inward-detail-body">
@@ -27,7 +33,7 @@
                   <div class="w-3/7">
                     <base-input label="Khách hàng" />
                   </div>
-                  <div class="w-4/7">
+                  <div class="w-4/7 px-13 border-box">
                     <base-input label="Địa chỉ" />
                   </div>
                 </div>
@@ -35,7 +41,7 @@
                   <div class="w-3/7">
                     <base-input label="Người giao hàng" />
                   </div>
-                  <div class="w-4/7">
+                  <div class="w-4/7 px-13 border-box">
                     <base-input label="Diễn giải" />
                   </div>
                 </div>
@@ -43,19 +49,23 @@
                   <div class="w-3/7">
                     <base-input label="Nhân viên bán hàng" />
                   </div>
-                  <div class="w-4/7">
+                  <div class="w-4/7 px-13 border-box">
                     <base-input label="Kèm theo" />
                   </div>
                 </div>
+                <div class="row-input flex">
+                  <div class="reference-title">Tham chiếu</div>
+                  <div class="reference-show-more">...</div>
+                </div>
               </div>
-              <div class="w-1/5">
-                <div class="row-input">
+              <div class="w-1/5 ">
+                <div class="row-input-right">
                   <base-input label="Ngày hạch toán" />
                 </div>
-                <div class="row-input">
+                <div class="row-input-right">
                   <base-input label="Ngày chứng từ" />
                 </div>
-                <div class="row-input">
+                <div class="row-input-right voucher-number">
                   <base-input label="Số chứng từ" />
                 </div>
               </div>
@@ -69,12 +79,10 @@
         <div class="tab-inward-detail">
           <div class="inward-detail-table">
             <div class="table-above">
-              <div class="table-above-title">
-                Hàng tiền
-              </div>
-              <div class="table-above-control flex">
+              <div class="table-above-title">Hàng tiền</div>
+              <div class="table-above-control">
                 <div>Đơn giá nhập kho</div>
-                <div class="base-dropdown"></div>
+                <base-dropdown :dropdownList="inwardMethodList" :defaultData="dropdownInwardMethodDefault"/>
               </div>
             </div>
             <base-table :tableHeaders="tableInwardDetailHeaders" />
@@ -85,10 +93,9 @@
         </div>
         <div class="grid-control-item">
           <div class="btn-grid-control">
-            <base-button value="Thêm dòng"/>
+            <base-button value="Thêm dòng" />
             <base-button value="Thêm ghi chú" />
             <base-button value="Xóa hết dòng" />
-            
           </div>
           <div class="input-grid-control">
             <div class="flex">
@@ -120,6 +127,7 @@ import BaseInput from "../../base/BaseInput.vue";
 import BaseButton from "../../base/BaseButton.vue";
 import BaseTable from "../../base/BaseTable.vue";
 import BasePagination from "../../base/BasePagination.vue";
+import BaseDropdown from "../../base/BaseDropdown.vue";
 export default {
   name: "InwardDetail",
   components: {
@@ -127,22 +135,28 @@ export default {
     BaseButton,
     BaseTable,
     BasePagination,
+    BaseDropdown,
   },
   data() {
     return {
-      tableInwardDetailHeaders: [
-        { EmployeeCode: "MÃ NHÂN VIÊN", type: "0" },
-        { FullName: "TÊN NHÂN VIÊN", type: "0" },
-        { Gender: "GIỚI TÍNH", type: "0" },
-        { DateOfBirth: "NGÀY SINH", type: "1" },
-        { IdentityNumber: "SỐ CMND", type: "0" },
-        { PositionName: "CHỨC DANH", type: "0" },
-        { DepartmentName: "TÊN ĐƠN VỊ", type: "0" },
-        { BankAccount: "SỐ TÀI KHOẢN", type: "0" },
-        { BankName: "TÊN NGÂN HÀNG", type: "0" },
-        { BankBranch: "CHI NHÁNH TK NGÂN HÀNG", type: "0" },
-      ],
+      tableInwardDetailHeaders: this.$resourcesVN.tableInwardDetailHeaders,
+      dropdownInwardTypeDefault: this.$resourcesVN.inwardTypeList[1],
+      dropdownInwardTypeData: this.$resourcesVN.inwardTypeList[1].data,
+      inwardTypeList: this.$resourcesVN.inwardTypeList,
+
+      dropdownInwardMethodDefault: this.$resourcesVN.inwardMethodList[0],
+      inwardMethodList: this.$resourcesVN.inwardMethodList,
+      isShowInwardDetail: false,
     };
+  },
+  methods: {
+    /**Đóng form popup
+     * CreaedBy: nvdien(17/9/2021)
+     */
+    closeInwardDetail() {
+      this.dropdownData = 20;
+      this.$emit("closeInwardDetail");
+    },
   },
 };
 </script>

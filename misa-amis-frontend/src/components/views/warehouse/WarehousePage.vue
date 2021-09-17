@@ -1,15 +1,18 @@
 <template lang="">
 	<div class="content-tab">
 		<base-tab :currTab="currTab" :listTab="listTab" v-model="currTab" />
-		<router-view />
+		<router-view @showInwardDetail="showInwardDetail"/>
+		<inward-detail v-show="isShowInwardDetail" @closeInwardDetail = "closeInwardDetail"/>
 	</div>
 </template>
 <script>
 	import BaseTab from "../../base/BaseTab.vue";
+	import InwardDetail from "./InwardDetail.vue";
 	export default {
 		name: "WarehousePage",
 		components: {
 			BaseTab,
+			InwardDetail
 		},
 		data() {
 			return {
@@ -23,12 +26,17 @@
 						name: this.$resourcesVN.WAREHOUSE_TABS.InwardOutwardList,
 						path: "/warehouse/InwardOutwardList",
 					},
-					{
-						name: this.$resourcesVN.WAREHOUSE_TABS.Report,
-						path: "/warehouse/report",
-					},
 				],
+				isShowInwardDetail: false,
 			};
+		},
+		methods: {
+			showInwardDetail(){
+				this.isShowInwardDetail = true;
+			},
+			closeInwardDetail(){
+				this.isShowInwardDetail = false;
+			}
 		},
 		watch: {
 			/**

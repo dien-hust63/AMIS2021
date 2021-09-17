@@ -1,0 +1,9 @@
+.inward-list .input-search .ms-input__input{
+    width: 200px;
+}
+.inward-list .warehouse-table{
+    box-sizing: border-box;
+    display: block;
+    padding: 0 20px 0 20px;
+    flex: 1;
+}

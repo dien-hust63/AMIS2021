@@ -24,12 +24,21 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 700;
+    font-size: 24px;
+    margin-left:16px;
+    margin-right: 50px;
+    font-family: MISANotoSans-Bold;
 }
 .header-detail-input{
     display: flex;
     align-items: center;
 }
+.header-detail-input .ms-dropdown,.header-detail-input .selected-options__list{
+    width: 300px;
+}
 .header-detail-input .combobox{
+    margin-left: 8px;
     width: 300px;
     background-color: yellowgreen;
     height: 36px;
@@ -42,6 +51,26 @@
     position: absolute;
     align-items: center;
 }
+.header-detail-button .button-group{
+    width: 36px;
+    height: 36px;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}   
+.header-detail-button .button-group:hover{
+    background-color: #ccc;
+}
+.header-detail-button .tour-label{
+    color: #0075c0;;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 4px;
+}
+.header-detail-button .button-setting{
+   margin-left: 8px;
+}
 
 /*Body*/
 .inward-detail-body{
@@ -52,9 +81,32 @@
     /**main infomation*/
     .main-infomation{
         background-color: #f4f5f8;
+        box-sizing: border-box;
+        padding: 0 24px;
+    }
+    .main-infomation .reference-title{
+        margin-right: 16px;
+        padding-bottom:12px;
+    }
+    .main-infomation .row-input-right{
+        border-left: 1px solid #d4d7dc;
+        padding-left: 16px;
+        box-sizing: border-box;
+        padding-right:25px;
+        width: 100%;
+        display: flex;
+        padding-bottom:12px;
+    }
+    .main-infomation .voucher-number{
+        padding-bottom:0px;
     }
     .summary-info{
         text-align: right;
+    }
+    .summary-info-number{
+        font-family: MISANotoSans-Bold;
+        font-size: 36px;
+        font-weight: 700;
     }
     /**table and paging*/
     .table-above{
@@ -63,9 +115,17 @@
         align-items: center;
         height: 68px;
         box-sizing: border-box;
-        padding: 18px 0 18px 18px;
+        padding: 18px 24px;
     }
-    .tab-inward-detail{
+    .table-above-control{
+        display: flex;
+        align-items: center;
+    }
+    .table-above-control .ms-dropdown{
+        margin-left: 16px;
+    }
+    .table-above-title{
+        font-weight: 700;
     }
     /**grid control*/
     .btn-grid-control{

@@ -31,13 +31,13 @@
     justify-content: flex-end;
     align-items: flex-end;
     box-sizing: border-box;
-    padding: 16px 16px 24px 16px;
+    padding: 16px 20px 24px 20px;
 }
 .toolbar-refresh, .toolbar-excel{
     margin-left: 12px;
 }
 .employee-table{
-    height: calc(100vh - 188px);
+    flex:1;
     box-sizing: border-box;
     display: block;
     padding: 0 20px 0 20px;

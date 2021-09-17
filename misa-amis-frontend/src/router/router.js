@@ -5,27 +5,33 @@ import EmployeeContent from "../components/views/employees/EmployeeContent.vue";
 import WarehousePage from "../components/views/warehouse/WarehousePage";
 import WarehouseProcess from "../components/views/warehouse/tabs/WarehouseProcess";
 import WarehouseInwardOutwardList from "../components/views/warehouse/tabs/WarehouseInwardOutwardList";
-import WarehouseReport from "../components/views/warehouse/tabs/WarehouseReport";
+import WarehouseInwardList from "../components/views/warehouse/tabs/WarehouseInwardList";
 Vue.use(VueRouter)
 
 const routes = [
-    { path: "/", redirect: "/warehouse" },
-    {path: "/employees", name:"EmployeeContent", component: EmployeeContent},
-    {
+	{ path: "/", redirect: "/warehouse" },
+	{ path: "/employees", name: "EmployeeContent", component: EmployeeContent },
+	{
 		path: "/warehouse",
 		redirect: "/warehouse/process",
 		component: WarehousePage,
 		children: [
 			{ path: "/warehouse/process", component: WarehouseProcess },
-			{ path: "/warehouse/InwardOutwardList", component: WarehouseInwardOutwardList },
-			{ path: "/warehouse/report", component: WarehouseReport },
+			{
+				path: "/warehouse/InwardOutwardList",
+				redirect: "/warehouse/InwardOutwardList/INInwardList",
+				component: WarehouseInwardOutwardList,
+				children: [
+					{ path: "/warehouse/InwardOutwardList/INInwardList", component: WarehouseInwardList },
+				],
+			}
 		],
 	},
 ]
 
 const router = new VueRouter({
-    mode: 'history',
-    routes : routes 
+	mode: 'history',
+	routes: routes
 })
 
 export default router;

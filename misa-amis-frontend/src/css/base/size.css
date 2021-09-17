@@ -41,7 +41,9 @@
 .p-l-6{
     padding-left: 6px;
 }
-
+.px-13{
+    padding: 0 13px;
+}
 .border-box{
     box-sizing: border-box;
 }

@@ -13,7 +13,7 @@
 					<div class="warehouse__node">
 						Xuất kho
 					</div>
-					<div class="warehouse__node">
+					<div class="warehouse__node" @click="showInwardDetail">
 						Nhập kho
 					</div>
 					<div class="warehouse__node">
@@ -67,6 +67,11 @@
 	export default {
 		name: "WarehouseProcess",
 		mixins: [WarehouseProcessFunction],
+		methods:{
+			showInwardDetail(){
+				this.$emit("showInwardDetail");
+			}
+		}
 	};
 </script>
 <style>

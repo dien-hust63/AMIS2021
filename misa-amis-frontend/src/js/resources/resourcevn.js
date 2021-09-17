@@ -14,16 +14,37 @@ module.exports = {
    * type = 2 : dữ liệu căn phải
    */
   tableEmployeeHeaders: [
-    { EmployeeCode: "MÃ NHÂN VIÊN", type: "0" },
-    { FullName: "TÊN NHÂN VIÊN", type: "0" },
-    { Gender: "GIỚI TÍNH", type: "0" },
-    { DateOfBirth: "NGÀY SINH", type: "1" },
-    { IdentityNumber: "SỐ CMND", type: "0" },
-    { PositionName: "CHỨC DANH", type: "0" },
-    { DepartmentName: "TÊN ĐƠN VỊ", type: "0" },
-    { BankAccount: "SỐ TÀI KHOẢN", type: "0" },
-    { BankName: "TÊN NGÂN HÀNG", type: "0" },
-    { BankBranch: "CHI NHÁNH TK NGÂN HÀNG", type: "0" },
+    { employee_code: "MÃ NHÂN VIÊN", type: "0" },
+    { employee_name: "TÊN NHÂN VIÊN", type: "0" },
+    { gender: "GIỚI TÍNH", type: "0" },
+    { date_of_birth: "NGÀY SINH", type: "1" },
+    { identity_number: "SỐ CMND", type: "0" },
+    { position: "CHỨC DANH", type: "0" },
+    { department_name: "TÊN ĐƠN VỊ", type: "0" },
+  ],
+  /**
+   * mảng chứa thông tin tiêu đề bảng chứng từ nhập kho
+   */
+  tableInwardListHeaders: [
+    { mathematics_date: "NGÀY HẠCH TOÁN", type: "1" },
+    { voucher_number: "SỐ CHỨNG TỪ", type: "0" },
+    { description: "DIỄN GIẢI", type: "0" },
+    { total_price: "TỔNG TIỀN", type:"2"},
+    { mathematics_date: "NGƯỜI GIAO/NGƯỜI NHẬN", type: "0" },
+    { voucher_type:"LOẠI CHỨNG TỪ", type: "0" },
+  ],
+  /**mảng chứa thông tin tiêu đề bảng hàng tiền trong phiếu nhập kho */
+  tableInwardDetailHeaders: [
+    { commodity_code: "MÃ HÀNG", type: "0" },
+    { commodity_name: "TÊN HÀNG", type: "0" },
+    { warehouse_code: "KHO", type: "0" },
+    { debit_account: "TK NỢ", type: "0"},
+    { credit_account: "TK CÓ", type: "0"},
+    { unit: "DVT", type:"0"},
+    { quantity: "SỐ LƯỢNG", type:"2"},
+    { debit_amount: "ĐƠN GIÁ", type:"2"},
+    { price: "THÀNH TIỀN", type:"2"},
+
   ],
   message: {
     messageConfirmChange: "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
@@ -44,27 +65,15 @@ module.exports = {
   WAREHOUSE_TABS: {
     Process: 'Quy trình',
     InwardOutwardList: 'Nhập, xuất kho',
-    Report: 'Báo cáo'
   },
-  WAREHOUSE_REPORT: {
-    Title: 'Báo cáo',
-    All: 'Tất cả báo cáo'
-  },
+
   WAREHOUSE_FUNCTION_LABELS: {
     Warehouse: 'Kho',
     GoodsAndMaterials: 'Vật tư hàng hoá',
     Unit: 'Đơn vị tính',
     Utilities: 'Tiện ích'
   },
-  WAREHOUSE_MAP_LABELS: {
-    ProductionOrder: 'Lệnh sản xuất',
-    AssembleDismantlingOrder: 'Lắp đặt, tháo dỡ',
-    ExportInventory: 'Xuất kho',
-    ImportInventory: 'Nhập kho',
-    Transfer: 'Chuyển kho',
-    OutwardPrice: 'Tính giá xuất kho',
-    Audit: 'Kiểm kê'
-  },
+  //MENU
   listMenu: [
     { href: "/", menuIcon: "mi-sidebar-dashboard", menuItemTitle: "Tổng quan" },
     { href: "/employees", menuIcon: "mi-sidebar-cash", menuItemTitle: "Tiền mặt" },
@@ -80,6 +89,25 @@ module.exports = {
     { href: "/", menuIcon: "mi-sidebar-budget", menuItemTitle: "Ngân sách" },
     { href: "/", menuIcon: "mi-sidebar-report", menuItemTitle: "Báo cáo" },
     { href: "/", menuIcon: "mi-sidebar-finance", menuItemTitle: "Phân tích tài chính" },
+  ],
+  //DATA DROPDOWN
+  pagingDropdownList: [
+    { data: 10, value: "10 bản ghi trên trang" },
+    { data: 20, value: "20 bản ghi trên trang" },
+    { data: 30, value: "30 bản ghi trên trang" },
+    { data: 50, value: "50 bản ghi trên trang" },
+    { data: 100, value: "100 bản ghi trên trang" },
+  ],
+  //Inward Type List
+  inwardTypeList: [
+    {data: "Nhập kho thành phẩm sản xuất", value: "1. Thành phẩm sản xuất"},
+    {data: "Nhập kho từ hàng bán trả lại", value: "2. Hàng bán bị trả lại"},
+    {data: "Nhập kho khác", value: "3. Khác (NVL thừa, HH thuê gia công, ...)"},
+  ],
+  inwardMethodList: [
+    {data: "Nhập đơn giá bằng tay", value: "Nhập đơn giá bằng tay"},
+    {data: "Lấy từ giá xuất kho", value: "Lấy từ giá xuất kho"},
   ]
+
 }
 

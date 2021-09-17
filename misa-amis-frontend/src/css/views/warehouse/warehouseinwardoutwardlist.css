@@ -1,0 +1,42 @@
+/**Header list */
+.warehouse .header-list{
+    padding :24px 20px 24px 0;
+}
+.header-group-button{
+    display: flex;
+    align-items: center;
+}
+.header-group-button .tour-label{
+    color: #0075c0;;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 4px;
+    margin-right: 10px;
+}
+/**warehouse content body*/
+.warehouse-content-body{
+    background-color: white;
+}
+.warehouse-content-body .tab{
+    background-color: #f8f8f8;
+    border-bottom: 1px solid transparent;
+    display: flex;
+    align-items: flex-start;
+}
+.warehouse-content-body .tab__item{
+    height: 32px;
+    align-items: center;
+    display: flex;
+    border-radius: 30px;
+    box-sizing: border-box;
+}
+.warehouse-content-body .tab__item--selected{
+    background-color: #ebedf0;
+    color: #2ca01c;
+    font-weight: 700;
+    
+}
+.warehouse-content-body  .tab__item.tab__item--selected::after {
+    display: none !important;
+  
+}
