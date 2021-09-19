@@ -9,7 +9,16 @@
         v-bind="$attrs"
         v-on="inputListeners"
         :value="valueInput"
+        v-if="typeInput == ''"
       />
+      <textarea
+        ref="input"
+        v-bind="$attrs"
+        v-on="inputListeners"
+        :value="valueInput"
+        v-if="typeInput == 'textarea'"
+      />
+     
       <div class="ms-input__icon--after mi mi-16 mi-search"></div>
       <div
         class="ms-input__error"
@@ -57,6 +66,10 @@ export default {
       type: String,
       default: "",
     },
+    typeInput: {
+      type: String,
+      default: "",
+    }
   },
   data() {
     return {

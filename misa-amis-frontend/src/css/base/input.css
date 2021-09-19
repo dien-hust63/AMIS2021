@@ -15,7 +15,7 @@
     width: 100%;
     position: relative;
 }
-.ms-input__input input{
+.ms-input__input input, .ms-input__input textarea{
     height: 32px;
     box-sizing: border-box;
     border-radius: 2px;
@@ -24,16 +24,25 @@
     width: 100%;
     padding: 6px 10px;
 }
-.ms-input--error input{
+.ms-input__input textarea{
+    resize: none;
+    height: 64px;
+}
+.ms-input--error input, .ms-input--error textarea{
     border: 1px solid red;
 }
 
 .ms-input__input:not(.ms-input--error) input:focus{
     border-color: #019160;
 }
-.ms-input__input input::placeholder{
+.ms-input__input:not(.ms-input--error) textarea:focus{
+    border-color: #019160;
+}
+
+.ms-input__input input::placeholder, .ms-input__input textarea::placeholder{
     font-size: 12px;
     font-style: italic;
+    font-family:  MISANotoSans-Regular !important;
 }
 
 .ms-input__icon--after{
@@ -69,4 +78,7 @@
 }
 .ms-input__error--show{
     display: block;
+}
+.label--hidden .ms-input__label{
+    visibility: hidden;
 }

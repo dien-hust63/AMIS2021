@@ -1,4 +1,4 @@
-.employee-popup-wrap{
+.customer-detail-wrap{
     position: fixed;
     left:0;
     top:0;
@@ -9,44 +9,52 @@
     transition: all .25s ease;
     opacity: 1;
     display: none;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
 }
 
-.employee-popup-wrap.employee-popup--show{
+.customer-detail-wrap.customer-popup--show{
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.employee-popup{
+.customer-popup{
     position: absolute;
     width: 900px;
-    height: 612px;
+    max-height: 800px;
     background-color: #fff !important;
     display: flex;
     flex-direction: column;
     border-radius: 2px;
 }
 
-.employee-popup__header{
+.customer-popup__header{
     display: flex;
     width: 100%;
     align-items: center;
     height: 72px;
 }
 
-.employee-popup-title{
+.customer-popup-title{
     flex:1;
     display: flex;
     align-items: center;
     padding: 0 12px 0 32px;
     box-sizing: border-box;
 }
+.customer-popup-title .ms-checkbox{
+    margin-left: 100px !important;
+}
+
 .popup-title{
     font-size: 24px;
     color: #111;
     font-weight: 700;
+    font-family: MISANotoSans-Bold;
 }
-.employee-popup-close{
+.customer-popup-close{
     display: flex;
     align-items: center;
     padding:12px;
@@ -64,17 +72,48 @@
     cursor: pointer;
 }
 
-.employee-popup-title .ms-checkbox{
+.customer-popup-title .ms-checkbox{
     margin: 0 20px;
 }
 
-.employee-popup__content{
+.customer-popup__content{
     flex:1;
     padding:0 32px 20px 32px;
     display: flex;
     flex-direction: column;
 }
+.customer-popup__content .input-address .ms-input__input textarea{
+    height: 64px;
+    padding: 10px;
+}
+.customer-popup__content .contact-content__title{
+    height: 32px;
+    background-color: #cce4f9;
+    padding: 0 8px;
+    line-height: 32px;
+    border-radius: 2px;
+    border: 1px solid #babec5;
+    border-bottom:none;
+    width: fit-content;
 
+}
+.contact-content__content{
+    border: 1px solid #babec5;
+    padding: 8px 10px;
+}
+.contact-content__content .row-input{
+    padding-bottom: 7px;
+}
+.contact-content__content--left{
+    padding-right: 26px;
+    box-sizing: border-box;
+}
+.contact-content__content--left .contact-person{
+    padding-right: 8px;
+    box-sizing: border-box;
+}
+
+/**pop common*/
 .popup-content{
     flex:1;
 }

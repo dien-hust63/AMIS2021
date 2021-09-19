@@ -16,7 +16,7 @@
 						<div class="radio__icon"></div>
 					</div>
 				</div>
-				<div class="radio__value">{{ item['GenderName'] }}</div>
+				<div class="radio__value">{{ item['value'] }}</div>
 			</div>
 		</div>
 	</div>
@@ -66,7 +66,7 @@ export default {
      * CreatedBy: nvdien (31/08/2021)
      */
     value: function (newValue) {
-      if (newValue != null) this.currIdx = this.options.findIndex(x => x['Gender'] === newValue);
+      if (newValue != null) this.currIdx = this.options.findIndex(x => x['data'] === newValue);
     },
     /**
      * reset radio về nam

@@ -39,6 +39,19 @@
     min-width: 48px;
     min-height: 48px;
 }
+.mi-50{
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+}
+
+.mi-85{
+    width: 85px;
+    height: 85px;
+    min-width: 85px;
+    min-height: 85px;
+}
 .mi-sidebar-dashboard{
     background-position: -30px -1628px;
 }
@@ -148,4 +161,28 @@
 }
 .mi-arrow-up--white {
     background-position: -848px -359px;
+}
+.mi-inventory-item-category {
+    background-position: -31px -631px;
+}
+.mi-chevron-left {
+    background-position: -35px -360px;
+}
+.mi-construct-category {
+    background-position: -264px -631px;
+}
+.mi-matarial-category {
+    background-position: -960px -631px;
+}
+.mi-cloth-category {
+    background-position: -148px -631px;
+}
+.mi-su-category {
+    background-position: -1078px -631px;
+}
+.mi-inventory-item-category-detail {
+    background-position: -33px -748px;
+}
+.mi-arrow-right--black {
+    background-position: -320px -360px;
 }
