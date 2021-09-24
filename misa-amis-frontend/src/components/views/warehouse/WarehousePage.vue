@@ -3,19 +3,16 @@
 		<base-tab :currTab="currTab" :listTab="listTab" v-model="currTab" />
 		<router-view @showInwardDetail="showInwardDetail"/>
 		<inward-detail v-show="isShowInwardDetail" @closeInwardDetail = "closeInwardDetail"/>
-		<commodity-detail />
 	</div>
 </template>
 <script>
 import BaseTab from "../../base/BaseTab.vue";
 import InwardDetail from "./InwardDetail.vue";
-import CommodityDetail from "../commodity/CommodityDetail.vue";
 export default {
   name: "WarehousePage",
   components: {
     BaseTab,
     InwardDetail,
-	CommodityDetail
   },
   data() {
     return {

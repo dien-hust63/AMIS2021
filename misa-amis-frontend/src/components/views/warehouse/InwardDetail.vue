@@ -7,7 +7,11 @@
         </div>
         <div class="title">Phiếu nhập kho BK025</div>
         <div class="header-detail-input">
-          <base-dropdown v-model="dropdownData" :dropdownList="inwardTypeList" :defaultData="dropdownInwardTypeDefault"/>
+          <base-dropdown
+            v-model="dropdownData"
+            :dropdownList="inwardTypeList"
+            :defaultData="dropdownInwardTypeDefault"
+          />
           <div class="combobox"></div>
         </div>
         <div class="header-detail-button">
@@ -16,11 +20,14 @@
           <div class="button-setting button-group">
             <div class="mi mi-24 mi-setting__detail"></div>
           </div>
-          <div class="button-help button-group" >
+          <div class="button-help button-group">
             <div class="mi mi-24 mi-help"></div>
           </div>
           <div class="button-close button-group">
-            <div class="mi mi-24 mi-close" @click="closeInwardDetail"></div>
+            <div
+              class="mi mi-24 mi-close"
+              @click="closeInwardDetail()"
+            ></div>
           </div>
         </div>
       </div>
@@ -58,7 +65,7 @@
                   <div class="reference-show-more">...</div>
                 </div>
               </div>
-              <div class="w-1/5 ">
+              <div class="w-1/5">
                 <div class="row-input-right">
                   <base-input label="Ngày hạch toán" />
                 </div>
@@ -82,7 +89,10 @@
               <div class="table-above-title">Hàng tiền</div>
               <div class="table-above-control">
                 <div>Đơn giá nhập kho</div>
-                <base-dropdown :dropdownList="inwardMethodList" :defaultData="dropdownInwardMethodDefault"/>
+                <base-dropdown
+                  :dropdownList="inwardMethodList"
+                  :defaultData="dropdownInwardMethodDefault"
+                />
               </div>
             </div>
             <base-table :tableHeaders="tableInwardDetailHeaders" />

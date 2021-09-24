@@ -87,12 +87,13 @@
     margin: 32px 0 20px 0;
     position: relative;    
 }
-/* .popup-footer-content{
+
+.employee-popup .popup-footer-content{
     height: 36px;
     width: 100%;
     display: flex;
     justify-content: space-between;
-} */
+}
 .popup-footer--left{
     display: flex;
 }

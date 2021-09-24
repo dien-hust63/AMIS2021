@@ -3,62 +3,43 @@
     <table class="ms-table">
       <thead class="ms-thead">
         <tr>
-          <th>
-            <base-checkbox />
+          <th v-for="(item, index) in tableHeaders" :key="index">
+            <base-checkbox v-if="item.type == 'checkbox'" />
+            <div v-if="item.label">{{ item.label }}</div>
           </th>
-          <th v-for="(tableHeader, index) in tableHeaders" :key="index">
-            {{ Object.values(tableHeader)[0] }}
-          </th>
-          <th>CHỨC NĂNG</th>
         </tr>
       </thead>
       <tbody class="ms-tbody">
-        <tr
-          v-for="(tableContent, index) in tableContents"
-          :key="index"
-          @dblclick="editEntity(tableContents[index]['EmployeeId'])"
-        >
-          <td>
-            <base-checkbox />
-          </td>
-          <td
-            v-for="(tableHeader, index) in tableHeaders"
-            :key="index"
-            :class="alignContent(index)"
-          >
-            <span>{{ formatTableContent(tableContent, tableHeader) }}</span>
-          </td>
-          <td>
-            <context-menu
-              :deleteData="tableContents[index]"
-              @loadTable="loadTable"
-              @editEntity="editEntity"
-              @copyEntity="copyEntity"
-            />
+        <tr v-for="(tableContent, index) in tableContents" :key="index">
+          <td v-for="(tableHeader, index) in tableHeaders" :key="index">
+            <base-checkbox v-if="tableHeader.type == 'checkbox'" />
+            <div v-if="tableHeader.type == 'normal'">
+              {{ tableContent[tableHeader.fieldName] }}
+            </div>
+            <div v-if="tableHeader.type == 'contextmenu'">
+              <div class="row-context-menu">
+                <div class="row-context-menu__text">Xem</div>
+                <div class="row-context-menu__icon"  @click="toogleContextMenu($event)" >
+                  <div class="mi mi-16 mi-arrow-up--blue"></div>
+                </div>
+              </div>
+            </div>
+            <div v-if="tableHeader.type == 'number'">{{index + 1}}</div>
           </td>
         </tr>
       </tbody>
     </table>
-    <base-loading :class="{ 'ms-loading--show': isLoading }" />
   </div>
 </template>
 
 
 <script>
-import CommonMethods from "../../mixins/methods.js";
-import ContextMenu from "../views/contextmenu/ContextMenu.vue";
-import BaseLoading from "../base/BaseLoading.vue";
-import BaseCheckbox from "../base/BaseCheckbox.vue";
-import { RepositoryFactory } from "../../js/repository/repository.factory.js";
-const EmployeesRepository = RepositoryFactory.get("employees");
+import BaseCheckbox from "./BaseCheckbox.vue";
 export default {
   name: "BaseTable",
   components: {
-    ContextMenu,
-    BaseLoading,
     BaseCheckbox,
   },
-  mixins: [CommonMethods],
   props: {
     tableHeaders: {
       type: Array,
@@ -66,117 +47,25 @@ export default {
         return [];
       },
     },
-    urlAPI: {
-      type: String,
-      default: "",
-    },
-    forceLoadTable: {
-      type: Boolean,
-      default() {
-        return false;
-      },
-    },
-  },
-  mounted() {
-    this.loadTable();
+    tableContents:{
+      type: Array,
+      default(){
+        return [];
+      }
+    }
   },
   data() {
     return {
-      tableContents: [],
       isLoading: false,
     };
   },
   methods: {
-    /**
-     * Định dạng dữ liệu trong ô của table bên trái, giữa hay phải
-     *  @param {Int} index : chỉ số ứng với header của table
-     *  @return chuỗi class định dạng
-     * CreatedBy: nvdien(29/8/2021)
-     */
-    alignContent(index) {
-      let typeFormat = this.tableHeaders[index].type;
-      switch (typeFormat) {
-        case "0":
-          return "text-align-left";
-        case "1":
-          return "text-align-center";
-        case "2":
-          return "text-align-right";
-        default:
-          return "";
-      }
-    },
-
-    /**
-     * Lấy giá trị của ô trong table và định dạng theo convention ngày, tiền lương
-     * @param {Object} tableContent : chứa thông tin api trả về
-     * @param {Object} tableHeader: chứa thông tin  Header của bảng
-     * return chuỗi chứa giá trị được đổ lên bảng theo đúng định dạng
-     * CreatedBy: nvdien(28/8/2021)
-     */
-    formatTableContent(tableContent, tableHeader) {
-      let cellData;
-      if (Object.keys(tableHeader)[0] == "Gender") {
-        cellData = this.showGenderName(
-          tableContent[Object.keys(tableHeader)[0]]
-        );
-      } else {
-        cellData = tableContent[Object.keys(tableHeader)[0]];
-      }
-      let typeFormat = Object.values(tableHeader)[1];
-      if (typeFormat === "1") {
-        // định dạng ngày
-        return this.formatDate(cellData, "/");
-      }
-      if (typeFormat === "2") {
-        // định dạng tiền lương
-        return this.formatMoney(cellData);
-      }
-      return cellData;
-    },
-
-    /**
-     * cập nhật lại nội dung bẳng
-     * CreatedBy: nvdien(29/8/2021)
-     */
-    loadTable() {
-      EmployeesRepository.getEmployeePaging(this.urlAPI)
-        .then((response) => {
-          this.tableContents = response.data["Employees"];
-          this.$emit("getTableData", response.data);
-          // this.isLoading = false;
-        })
-        .catch((response) => {
-          console.log(response);
-          // this.isLoading = true;
-        });
-      // this.isLoading = true;
-    },
-    /**
-     * Chỉnh sửa đối tượng
-     * @param {string} entityId: Id của đối tượng
-     * CreadtedBy: nvdien(1/9/2021)
-     */
-    editEntity(entityId){
-      this.$emit("editEntity",entityId);
-    },
-    /**
-     * Nhân bản đối tượng
-     * @param {object} đối tượng nhân bản
-     * CreatedBY: nvdien(2/9/2021)
-     */
-    copyEntity(entity){
-      this.$emit("copyEntity",entity);
-    } 
+    /**Hiển thị context menu */
+    toogleContextMenu(event){
+      this.$emit("toogleContextMenu", event);
+    }
   },
-  watch: {
-    urlAPI: function () {
-      this.loadTable();
-    },
-    forceLoadTable: function () {
-      this.loadTable();
-    },
-  },
+
 };
 </script>
 

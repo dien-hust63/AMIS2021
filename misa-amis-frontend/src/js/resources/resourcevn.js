@@ -8,42 +8,43 @@ module.exports = {
   },
 
   /**
-   * mảng chứa thông tin các tiêu đề của bảng nhân viên
-   * type = 0 : dữ liệu căn trái
-   * type = 1 : dữ liệu căn giữa
-   * type = 2 : dữ liệu căn phải
+   * table
    */
   tableEmployeeHeaders: [
-    { employee_code: "MÃ NHÂN VIÊN", type: "0" },
-    { employee_name: "TÊN NHÂN VIÊN", type: "0" },
-    { gender: "GIỚI TÍNH", type: "0" },
-    { date_of_birth: "NGÀY SINH", type: "1" },
-    { identity_number: "SỐ CMND", type: "0" },
-    { position: "CHỨC DANH", type: "0" },
-    { department_name: "TÊN ĐƠN VỊ", type: "0" },
+    { type: "checkbox" },
+    { fieldName: 'employee_code', label: 'MÃ NHÂN VIÊN', textAlign: 'left', type: "normal" },
+    { fieldName: 'employee_name', label: 'TÊN NHÂN VIÊN', textAlign: 'left', type: "normal" },
+    { fieldName: 'gender', label: 'GIỚI TÍNH', textAlign: 'left', type: "normal" },
+    { fieldName: 'date_of_birth', label: 'NGÀY SINH', textAlign: 'center', type: "normal" },
+    { fieldName: 'identity_number', label: 'SỐ CMND', textAlign: 'left', type: "normal" },
+    { fieldName: 'position', label: 'CHỨC DANH', textAlign: 'left', type: "normal" },
+    { fieldName: 'department_name', label: 'TÊN ĐƠN VỊ', textAlign: 'left', type: "normal" },
+    { label: 'CHỨC NĂNG', type:'contextmenu' }
   ],
   /**
    * mảng chứa thông tin tiêu đề bảng chứng từ nhập kho
    */
   tableInwardListHeaders: [
-    { mathematics_date: "NGÀY HẠCH TOÁN", type: "1" },
-    { voucher_number: "SỐ CHỨNG TỪ", type: "0" },
-    { description: "DIỄN GIẢI", type: "0" },
-    { total_price: "TỔNG TIỀN", type:"2"},
-    { mathematics_date: "NGƯỜI GIAO/NGƯỜI NHẬN", type: "0" },
-    { voucher_type:"LOẠI CHỨNG TỪ", type: "0" },
+    { type: "checkbox" },
+    { fieldName: 'mathematics_date', label: 'NGÀY HẠCH TOÁN', textAlign: 'left', type: "normal" },
+    { fieldName: 'voucher_code', label: 'SỐ CHỨNG TỪ', textAlign: 'left', type: "normal" },
+    { fieldName: 'description', label: 'DIỄN GIẢI', textAlign: 'left', type: "normal" },
+    { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'right', type: "normal" },
+    { fieldName: 'contact_name', label: 'NGƯỜI GIAO/NGƯỜI NHẬN', textAlign: 'left', type: "normal" },
+    { fieldName: 'voucher_type', label: 'LOẠI CHỨNG TỪ', textAlign: 'left', type: "normal" },
+    { label: 'CHỨC NĂNG', type:'contextmenu' }
   ],
   /**mảng chứa thông tin tiêu đề bảng hàng tiền trong phiếu nhập kho */
   tableInwardDetailHeaders: [
     { commodity_code: "MÃ HÀNG", type: "0" },
     { commodity_name: "TÊN HÀNG", type: "0" },
     { warehouse_code: "KHO", type: "0" },
-    { debit_account: "TK NỢ", type: "0"},
-    { credit_account: "TK CÓ", type: "0"},
-    { unit: "DVT", type:"0"},
-    { quantity: "SỐ LƯỢNG", type:"2"},
-    { debit_amount: "ĐƠN GIÁ", type:"2"},
-    { price: "THÀNH TIỀN", type:"2"},
+    { debit_account: "TK NỢ", type: "0" },
+    { credit_account: "TK CÓ", type: "0" },
+    { unit: "DVT", type: "0" },
+    { quantity: "SỐ LƯỢNG", type: "2" },
+    { debit_amount: "ĐƠN GIÁ", type: "2" },
+    { price: "THÀNH TIỀN", type: "2" },
 
   ],
   message: {
@@ -100,14 +101,18 @@ module.exports = {
   ],
   //Inward Type List
   inwardTypeList: [
-    {data: "Nhập kho thành phẩm sản xuất", value: "1. Thành phẩm sản xuất"},
-    {data: "Nhập kho từ hàng bán trả lại", value: "2. Hàng bán bị trả lại"},
-    {data: "Nhập kho khác", value: "3. Khác (NVL thừa, HH thuê gia công, ...)"},
+    { data: "Nhập kho thành phẩm sản xuất", value: "1. Thành phẩm sản xuất" },
+    { data: "Nhập kho từ hàng bán trả lại", value: "2. Hàng bán bị trả lại" },
+    { data: "Nhập kho khác", value: "3. Khác (NVL thừa, HH thuê gia công, ...)" },
   ],
   inwardMethodList: [
-    {data: "Nhập đơn giá bằng tay", value: "Nhập đơn giá bằng tay"},
-    {data: "Lấy từ giá xuất kho", value: "Lấy từ giá xuất kho"},
-  ]
-
+    { data: "Nhập đơn giá bằng tay", value: "Nhập đơn giá bằng tay" },
+    { data: "Lấy từ giá xuất kho", value: "Lấy từ giá xuất kho" },
+  ],
+  /**tooltip */
+  tooltipType: {
+    NORMAL: 0,
+    ADVANCED: 1
+  }
 }
 

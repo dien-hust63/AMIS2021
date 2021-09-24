@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1losV3Djg+q8Fwg/zyTbIte1KpUag0DC8SJtG7fcwuopDw3ox+v26ZUAHQSJvPiGbU/P/8hUa3TdewZQY9bxLA==",
+  "dgSpecHash": "Lb2GUo5lA6M1KBYLmbSDxFd/xKnEUAMN9fByfCwpq6R8e+s/UbHQzlu+sGQ/GIEtW8zya1AfIGSkZtYH+HgU0Q==",
   "success": true,
   "projectFilePath": "F:\\MISA\\MISA Test\\MisaAMISBackend\\Misa.Infrastructure\\Misa.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -20,6 +20,7 @@
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\mysqlconnector\\1.4.0-beta.1\\mysqlconnector.1.4.0-beta.1.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\npgsql\\6.0.0-preview7\\npgsql.6.0.0-preview7.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
@@ -62,6 +63,7 @@
     "C:\\Users\\HP\\.nuget\\packages\\system.reflection.typeextensions\\4.3.0\\system.reflection.typeextensions.4.3.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.resources.resourcemanager\\4.3.0\\system.resources.resourcemanager.4.3.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.runtime\\4.3.0\\system.runtime.4.3.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.runtime.extensions\\4.3.0\\system.runtime.extensions.4.3.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.runtime.handles\\4.3.0\\system.runtime.handles.4.3.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.runtime.interopservices\\4.3.0\\system.runtime.interopservices.4.3.0.nupkg.sha512",

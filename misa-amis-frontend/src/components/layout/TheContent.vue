@@ -1,21 +1,24 @@
 <template>
   <div class="content-area">
-    <!-- <inward-detail /> -->
     <the-navbar />
+    <base-tooltip />
     <div class="content-area__body">
         <router-view></router-view>
     </div>
+    <commodity-detail />
   </div>
 </template>
 
 <script>
 import TheNavbar from '../layout/TheNavbar.vue';
-// import InwardDetail from "../../components/views/warehouse/InwardDetail.vue";
+import BaseTooltip from "../base/BaseTooltip.vue";
+import CommodityDetail from "../../components/views/commodity/CommodityDetail.vue";
 export default {
     name: "TheContent",
     components:{
         TheNavbar,
-        // InwardDetail,
+        BaseTooltip,
+        CommodityDetail
     }
 }
 </script>

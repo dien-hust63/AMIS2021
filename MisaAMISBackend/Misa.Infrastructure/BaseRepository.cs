@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Misa.ApplicationCore.Attributes;
 using Misa.ApplicationCore.Interfaces.Base;
-using MySqlConnector;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -27,7 +27,7 @@ namespace Misa.Infrastructure
         {
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("MisaCukcukConnection");
-            _className = typeof(TEntity).Name;
+            _className = typeof(TEntity).Name.ToLower();
         }
 
 
@@ -43,11 +43,11 @@ namespace Misa.Infrastructure
         /// ModifiedBy: nvdien(27/8/2021)
         public int Delete(Guid entityId)
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
-                var sqlCommand = $"DELETE FROM {_className} WHERE {_className}Id = @{_className}Id";
+                var sqlCommand = $"DELETE FROM {_className} WHERE {_className}_id = @{_className}_id";
                 DynamicParameters parameters = new DynamicParameters();
-                parameters.Add($"@{_className}Id", entityId);
+                parameters.Add($"@{_className}_id", entityId);
                 var rowEffects = _dbConnection.Execute(sqlCommand, param: parameters);
                 return rowEffects;
             }
@@ -71,7 +71,7 @@ namespace Misa.Infrastructure
             }
             tmp = tmp.Remove(tmp.Length - 1);
             tmp += ")";
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
                 var sqlCommand = $"DELETE FROM {_className} WHERE {_className}Id IN {tmp}";
                 var rowEffects = _dbConnection.Execute(sqlCommand);
@@ -87,11 +87,12 @@ namespace Misa.Infrastructure
         /// ModifiedBy: nvdien(17/8/2021)
         public IEnumerable<TEntity> GetAllEntities()
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
-                var sqlCommand = $"SELECT * from {_className} ORDER BY CreatedDate DESC";
+                var sqlCommand = $"SELECT * from {_className} ORDER BY created_date DESC";
                 var entities = _dbConnection.Query<TEntity>(sqlCommand);
                 return entities;
+               
             }
 
         }
@@ -105,11 +106,11 @@ namespace Misa.Infrastructure
         /// ModifiedBy: nvdien(17/8/2021) 
         public TEntity GetEntityById(Guid entityId)
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
-                var sqlCommand = $"SELECT * from {_className} WHERE {_className}Id = @{_className}Id";
+                var sqlCommand = $"SELECT * from {_className} WHERE {_className}_id = @{_className}_id";
                 DynamicParameters dynamicParameters = new DynamicParameters();
-                dynamicParameters.Add($"@{_className}Id", entityId);
+                dynamicParameters.Add($"@{_className}_id", entityId);
                 var entity = _dbConnection.QueryFirstOrDefault<TEntity>(sqlCommand, param: dynamicParameters);
                 return entity;
             }
@@ -125,7 +126,7 @@ namespace Misa.Infrastructure
         /// ModifiedBy: nvdien(19/8/2021)
         public TEntity GetEntityByProperty(string propName, object propValue)
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
                 var sqlCommand = $"SELECT * from {_className} WHERE {propName} = @{propName}";
                 DynamicParameters dynamicParameters = new DynamicParameters();
@@ -144,7 +145,7 @@ namespace Misa.Infrastructure
         /// ModifiedBy: nvdien(17/8/2021)
         public int Insert(TEntity entity)
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
                 var properties = entity.GetType().GetProperties();
@@ -156,7 +157,7 @@ namespace Misa.Infrastructure
                     dynamicParameters.Add($"@{propName}", propValue);
 
                 }
-                var proceduce = $"Proc_Insert{_className}";
+                var proceduce = $"func_insert_{_className}";
                 var rowEffects = _dbConnection.Execute(proceduce, param: dynamicParameters, commandType: CommandType.StoredProcedure);
                 return rowEffects;
             }
@@ -172,7 +173,7 @@ namespace Misa.Infrastructure
         /// ModifiedBy: nvdien(17/8/2021)
         public int Update(TEntity entity, Guid entityId)
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
                 var properties = entity.GetType().GetProperties();

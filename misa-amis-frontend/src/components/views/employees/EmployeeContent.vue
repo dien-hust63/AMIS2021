@@ -28,11 +28,7 @@
       <div class="employee-table">
         <base-table
           :tableHeaders="tableEmployeeHeaders"
-          :urlAPI="employeeApiFilter"
-          @getTableData="getTableData"
-          :forceLoadTable="forceLoadTable"
-          @editEntity="editEmployee"
-          @copyEntity="copyEntity"
+          :tableContents="tableEmployeeContents"
         />
         <div class="employee-content-pagination">
           <base-pagination
@@ -91,6 +87,9 @@ export default {
       hasSearch: false,
       forceLoadTable: false,
       isFocusCode: false,
+      tableEmployeeContents:[
+        {"employee_code":"NV-00001", "employee_name":"Nguyễn Văn Tiến"}
+      ]
     };
   },
   methods: {

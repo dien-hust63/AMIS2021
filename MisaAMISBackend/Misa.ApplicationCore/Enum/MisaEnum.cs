@@ -11,7 +11,7 @@ namespace Misa.ApplicationCore.Enum
     /// </summary>
     /// CreatedBy: nvdien(27/8/2021)
     /// ModifiedBy: nvdien(27/8/2021)
-    public enum Gender
+    public enum gender
     {
         Male = 1,
         Female = 0,

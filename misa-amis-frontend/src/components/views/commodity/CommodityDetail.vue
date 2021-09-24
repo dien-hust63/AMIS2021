@@ -65,10 +65,10 @@
           <base-input label="Diễn giải khi bán" />
         </div>
         <div class="commodity-feature flex">
-          <div class="mi mi-16 mi-arrow-right--black"></div>
+          <div class="mi mi-16 mi-arrow-right--black" @click="showImplicitInfoSection"></div>
           <div class="commodity-feature-text">Thông tin ngầm định</div>
         </div>
-        <div class="content-drop-section">
+        <div class="content-drop-section" :class="{'content-drop-section--show': isShowInmplicitSection}">
           <div class="w-150 p-r-26 border-box">
             <div class="row-input">
               <base-input label="Kho ngầm định" />
@@ -159,13 +159,24 @@ export default {
   data() {
     return {
       isFullScreen: false,
+      isShowInmplicitSection: false,
     };
   },
   methods: {
-    /**Chuyển form ra full màn hình và ngược lại*/
+    /**Chuyển form ra full màn hình và ngược lại
+    * CreatedBy: nvdien(20/9/2021)
+    */
     changeFullScreen() {
       this.isFullScreen = !this.isFullScreen;
     },
+    /*Toogle thông tin ngầm định
+    * CreatedBy: nvdien(20/9/2021)
+    */
+    showImplicitInfoSection(){
+      console.log("Test");
+      this.isShowInmplicitSection = !this.isShowInmplicitSection;
+    }
+    
   },
 };
 </script>

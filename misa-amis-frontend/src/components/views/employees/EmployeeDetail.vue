@@ -237,9 +237,9 @@ export default {
       iconMessage: "mi-exclamation-question-48",
       buttons: [],
       genderRadioData: [
-        { Gender: 1, GenderName: "Nam" },
-        { Gender: 0, GenderName: "Nữ" },
-        { Gender: 2, GenderName: "Khác" },
+        { data: 1, value: "Nam" },
+        { data: 0, value: "Nữ" },
+        { data: 2, value: "Khác" },
       ],
       errorList: [],
       inputCheck: false,

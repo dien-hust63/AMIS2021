@@ -6,28 +6,24 @@ using System.Threading.Tasks;
 
 namespace Misa.ApplicationCore.Entities
 {
-    public class Department
+    public class Department:BaseEntity
     {
         #region Property
         /// <summary>
         /// Id đơn vị
         /// </summary>
-        public Guid DepartmentId { get; set; }
+        public Guid department_id { get; set; }
 
         /// <summary>
         /// Mã đơn vị
         /// </summary>
-        public string DepartmentCode { get; set; }
+        public string department_code { get; set; }
 
         /// <summary>
         /// Tên đơn vị
         /// </summary>
-        public string DepartmentName { get; set; }
+        public string department_name { get; set; }
 
-        /// <summary>
-        /// Mô tả đơn vị
-        /// </summary>
-        public string Description { get; set; }
         #endregion
     }
 }

@@ -1,7 +1,7 @@
 :root {
     --width-column-1: 40px;
     --width-column-2: 120px;
-    --width-column-3: 150px;
+    --width-column-3: 200px;
     --max-width-column: 200px;
 }
 
@@ -56,10 +56,12 @@
     left: 0px;
     z-index: 1000;
     min-width: var(--width-column-1);
+    width: var(--width-column-1);
 }
 .ms-table tr td:first-child {
     position: sticky;
     left: 0px;
+    text-align: center;
 }
 .ms-table th:first-child::before,
 .ms-tbody tr td:first-child::before {
@@ -78,11 +80,13 @@
     left:var(--width-column-1);
     z-index: 1000;
     min-width: var(--width-column-2);
+    width: var(--width-column-2);
 }
 .ms-table tr td:nth-child(2) {
     position: sticky;
     left: var(--width-column-1);
     min-width: var(--width-column-2);
+    width: var(--width-column-2);
 }
 /**Cột thứ 3 */
 .ms-table th:nth-child(3) {
@@ -90,16 +94,40 @@
     left: calc(var(--width-column-1) +var(--width-column-2));
     z-index: 1000;
     min-width: var(--width-column-3);
+    width: var(--width-column-3);
 }
 .ms-table tr td:nth-child(3) {
     position: sticky;
     left: calc(var(--width-column-1) + var(--width-column-2));
     min-width: var(--width-column-3);
+    width: var(--width-column-3);
 }
 /**CỘT CUỐI*/
- .ms-table tr td:last-child {
+ .ms-table tr td:last-child , .ms-table tr th:last-child{
     overflow-x: unset;
     text-overflow: unset;
+    position: sticky;
+    right: 0;
+    border-left: 1px dotted #c7c7c7;
+    width: 150px;
+}
+/**context menu in table*/
+.row-context-menu{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.row-context-menu__text{
+    color: #0075c0;
+    font-weight: 700;
+}
+.row-context-menu__icon{
+    width: 26px;
+    height: 16px;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Misa.ApplicationCore.Entities;
 using Misa.ApplicationCore.Interfaces;
 using MySqlConnector;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,25 +34,28 @@ namespace Misa.Infrastructure
         /// modifiedBy: nvdien(27/8/2021)
         public object GetEmployeeFilterPaging(string searchData, int pageIndex, int pageSize)
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
                 var employeeFilter = searchData == null ? string.Empty : searchData;
-                dynamicParameters.Add("@EmployeeFilter", employeeFilter);
-                dynamicParameters.Add("@PageIndex", pageIndex);
-                dynamicParameters.Add("@PageSize", pageSize);
-                dynamicParameters.Add("@TotalRecord", dbType: DbType.Int32, direction: ParameterDirection.Output);
-                dynamicParameters.Add("@TotalPage", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                dynamicParameters.Add("@employeefilter", employeeFilter);
+                dynamicParameters.Add("@pageindex", pageIndex - 1);
+                dynamicParameters.Add("@pagesize", pageSize);
+                var sql = "create temp table filtertable as (select * from public.view_employee_department e where e.employee_code ILIKE concat('%', @employeefilter, '%') order by e.created_date desc);";
+                sql += "select * from filtertable  ft limit @pagesize offset @pageindex;";
+                sql += "select count(*) from filtertable as a; drop table filtertable";
 
-                var proceduce = "Proc_GetEmployeeFilterPaging";
-                var employees = _dbConnection.Query(proceduce, param: dynamicParameters, commandType: CommandType.StoredProcedure);
-                var totalRecord = dynamicParameters.Get<int>("TotalRecord");
-                var totalPage = dynamicParameters.Get<int>("TotalPage");
+                var response = _dbConnection.QueryMultiple(sql, param:dynamicParameters, commandType: CommandType.Text);
+
+                //var vmodel = Activator.CreateInstance<Employee>();
+                var employees = response.Read<Employee>().ToList();
+                var totalRecord = response.Read<int>().FirstOrDefault();
+                var totalPage = Math.Ceiling((double)totalRecord / pageSize);
                 var result = new
                 {
+                    Employees = employees,
                     TotalRecord = totalRecord,
                     TotalPage = totalPage,
-                    Employees = employees,
                 };
                 return result;
             }
@@ -65,12 +69,14 @@ namespace Misa.Infrastructure
         /// ModifiedBy: nvdien(27/8/2021)
         public string GetNewEmployeeCode()
         {
-            using (_dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
-                var proceduce = "Proc_GetNewEmployeeCode";
+                var proceduce = "func_test";
 
-                var newEmployeecCode = _dbConnection.QueryFirstOrDefault<string>(proceduce, commandType: CommandType.StoredProcedure);
-                return newEmployeecCode;
+                var newEmployeecCode = _dbConnection.Query<dynamic>(proceduce, commandType: CommandType.StoredProcedure);
+                string test = "adfd";
+                return test;
+
             }
         }
 

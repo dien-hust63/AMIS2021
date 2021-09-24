@@ -11,6 +11,9 @@ Vue.config.productionTip = false
 // ResoucesVN
 Vue.prototype.$resourcesVN = ResourcesVN;
 
+const eventBus = new Vue();
+Vue.prototype.$eventBus = eventBus;
+
 new Vue({
   render: h => h(App),
   router,

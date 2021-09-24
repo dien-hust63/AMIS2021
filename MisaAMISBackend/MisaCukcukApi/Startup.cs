@@ -10,6 +10,8 @@ using Microsoft.OpenApi.Models;
 using Misa.ApplicationCore;
 using Misa.ApplicationCore.Interfaces;
 using Misa.ApplicationCore.Interfaces.Base;
+using Misa.ApplicationCore.Interfaces.Repository;
+using Misa.ApplicationCore.Interfaces.Services;
 using Misa.ApplicationCore.Services;
 using Misa.Infrastructure;
 using System;
@@ -37,10 +39,11 @@ namespace MisaCukcukApi
             //Reppository DI
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
+            services.AddScoped<IAccountVoucherRepository, AccountVoucherRepository>();
             //Service DI
             services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IAccountVoucherService, AccountVoucherService>();
 
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
