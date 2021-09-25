@@ -8,7 +8,7 @@
         <div class="title">Phiếu nhập kho BK025</div>
         <div class="header-detail-input">
           <base-dropdown
-            v-model="dropdownData"
+            v-model="dropdownInwardTypeData"
             :dropdownList="inwardTypeList"
             :defaultData="dropdownInwardTypeDefault"
           />
@@ -164,7 +164,7 @@ export default {
      * CreaedBy: nvdien(17/9/2021)
      */
     closeInwardDetail() {
-      this.dropdownData = 20;
+      // this.dropdownData = 20;
       this.$emit("closeInwardDetail");
     },
   },

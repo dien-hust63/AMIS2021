@@ -47,6 +47,8 @@
     background-color: #fff;
     border: 1px solid #babec5;
     display: none;
+    max-height: 134px;
+    overflow-y: auto;
 }
 .seleted-options--active{
     border: 1px solid #2ca01c;

@@ -14,7 +14,7 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Khóa chính
         /// </summary>
-        public Guid account_voucher_id { get; set; }
+        public Guid accountvoucher_id { get; set; }
 
         /// <summary>
         /// Mã khách hàng
@@ -54,7 +54,7 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Mã đối tượng
         /// </summary>
-        public Guid? account_object_id { get; set; }
+        public Guid? accountobject_id { get; set; }
 
         /// <summary>
         /// Loại chứng từ

@@ -173,7 +173,6 @@ export default {
     * CreatedBy: nvdien(20/9/2021)
     */
     showImplicitInfoSection(){
-      console.log("Test");
       this.isShowInmplicitSection = !this.isShowInmplicitSection;
     }
     

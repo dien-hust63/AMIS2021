@@ -12,13 +12,13 @@ module.exports = {
    */
   tableEmployeeHeaders: [
     { type: "checkbox" },
-    { fieldName: 'employee_code', label: 'MÃ NHÂN VIÊN', textAlign: 'left', type: "normal" },
-    { fieldName: 'employee_name', label: 'TÊN NHÂN VIÊN', textAlign: 'left', type: "normal" },
-    { fieldName: 'gender', label: 'GIỚI TÍNH', textAlign: 'left', type: "normal" },
-    { fieldName: 'date_of_birth', label: 'NGÀY SINH', textAlign: 'center', type: "normal" },
-    { fieldName: 'identity_number', label: 'SỐ CMND', textAlign: 'left', type: "normal" },
-    { fieldName: 'position', label: 'CHỨC DANH', textAlign: 'left', type: "normal" },
-    { fieldName: 'department_name', label: 'TÊN ĐƠN VỊ', textAlign: 'left', type: "normal" },
+    { fieldName: 'employee_code', label: 'MÃ NHÂN VIÊN', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'employee_name', label: 'TÊN NHÂN VIÊN', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'gender', label: 'GIỚI TÍNH', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'date_of_birth', label: 'NGÀY SINH', textAlign: 'text-center', type: "normal" },
+    { fieldName: 'identity_number', label: 'SỐ CMND', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'position', label: 'CHỨC DANH', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'department_name', label: 'TÊN ĐƠN VỊ', textAlign: 'text-left', type: "normal" },
     { label: 'CHỨC NĂNG', type:'contextmenu' }
   ],
   /**
@@ -26,14 +26,15 @@ module.exports = {
    */
   tableInwardListHeaders: [
     { type: "checkbox" },
-    { fieldName: 'mathematics_date', label: 'NGÀY HẠCH TOÁN', textAlign: 'left', type: "normal" },
-    { fieldName: 'voucher_code', label: 'SỐ CHỨNG TỪ', textAlign: 'left', type: "normal" },
-    { fieldName: 'description', label: 'DIỄN GIẢI', textAlign: 'left', type: "normal" },
-    { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'right', type: "normal" },
-    { fieldName: 'contact_name', label: 'NGƯỜI GIAO/NGƯỜI NHẬN', textAlign: 'left', type: "normal" },
-    { fieldName: 'voucher_type', label: 'LOẠI CHỨNG TỪ', textAlign: 'left', type: "normal" },
+    { fieldName: 'mathematics_date', label: 'NGÀY HẠCH TOÁN', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
+    { fieldName: 'voucher_code', label: 'SỐ CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'description', label: 'DIỄN GIẢI', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'text-right', type: "normal" , footerValue:0},
+    { fieldName: 'contact_name', label: 'NGƯỜI GIAO/NGƯỜI NHẬN', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'voucher_type', label: 'LOẠI CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
     { label: 'CHỨC NĂNG', type:'contextmenu' }
   ],
+ 
   /**mảng chứa thông tin tiêu đề bảng hàng tiền trong phiếu nhập kho */
   tableInwardDetailHeaders: [
     { commodity_code: "MÃ HÀNG", type: "0" },
@@ -113,6 +114,45 @@ module.exports = {
   tooltipType: {
     NORMAL: 0,
     ADVANCED: 1
-  }
+  },
+  /**
+   * metion state dropdown list
+   */
+  mentionStateDropdownList: [
+    {data: "", value: "Tất cả"},
+    {data: 1, value: "Đã ghi sổ"},
+    {data: 0, value: "Chưa ghi sổ"}
+  ],
+  /**
+   * loại nhập kho
+   */
+  inwardTypeDropdownList: [
+    {data: "", value: "Tất cả"},
+    {data: "NK001", value: "Nhập kho thành phẩm sản xuất"},
+    {data: "NK002", value: "Nhập kho từ hàng bán trả lại"},
+    {data: "NK003", value:"Nhập kho khác"}
+  ],
+  /**
+   * Kỳ báo cáo
+   */
+  timeReportDropdownList: [
+    {data: "today", value: "Hôm nay"},
+    {data: "week", value: "Tuần này"},
+    {data: "month", value: "Tháng này"},
+    {data: "year", value: "Đầu năm đến hiện tại"},
+    {data: "jan", value: "Tháng 1"},
+    {data: "feb", value: "Tháng 2"},
+    {data: "mar", value: "Tháng 3"},
+    {data: "apr", value: "Tháng 4"},
+    {data: "may", value: "Tháng 5"},
+    {data: "june", value: "Tháng 6"},
+    {data: "july", value: "Tháng 7"},
+    {data: "aug", value: "Tháng 8"},
+    {data: "sep", value: "Tháng 9"},
+    {data: "oct", value: "Tháng 10"},
+    {data: "nov", value: "Tháng 11"},
+    {data: "dec", value: "Tháng 12"},
+
+  ]
 }
 

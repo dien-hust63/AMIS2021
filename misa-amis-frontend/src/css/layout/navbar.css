@@ -1,5 +1,6 @@
  .navbar-wrapper{
     height: 48px; 
+    min-height: 48px;
     display: flex;
     align-items: center;
     background-color: #fff !important;

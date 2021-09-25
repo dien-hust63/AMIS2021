@@ -85,11 +85,11 @@ export default {
     }
   },
   data() {
-    return {
+  return {
       numberItemsPerPage: [10, 20, 30, 50, 100],
-      currentIndex: 0,
+      currentIndex: 1,
       isShowList: false,
-      pageSize: 10,
+      pageSize: 20,
       pageIndex: 1,
       isFocusOptions: false,
     };

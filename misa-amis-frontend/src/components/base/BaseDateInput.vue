@@ -80,13 +80,17 @@ export default {
       type: String,
       default: "",
     },
+    defaultValue:{
+      type:String,
+      default: "",
+    }
   },
   data() {
     return {
       isInputError: false,
       isShowError: false,
       inputError: "",
-      valueDateInput: "",
+      valueDateInput: this.defaultValue,
       notWatch: false,
       isFocusInput: false,
       lang: "it",

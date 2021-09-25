@@ -1,6 +1,8 @@
 /**Header list */
 .warehouse .header-list{
     padding :24px 20px 24px 0;
+    height: 84px;
+    box-sizing: border-box;
 }
 .header-group-button{
     display: flex;
@@ -16,6 +18,9 @@
 /**warehouse content body*/
 .warehouse-content-body{
     background-color: white;
+    flex:1;
+    display: flex;
+    flex-direction: column;
 }
 .warehouse-content-body .tab{
     background-color: #f8f8f8;

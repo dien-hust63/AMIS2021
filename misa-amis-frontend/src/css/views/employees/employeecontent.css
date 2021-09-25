@@ -28,10 +28,20 @@
 .toolbar{
     height: 72px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: flex-end;
     box-sizing: border-box;
     padding: 16px 20px 24px 20px;
+}
+.toolbar__right{
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+.toolbar__left{
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
 }
 .toolbar-refresh, .toolbar-excel{
     margin-left: 12px;

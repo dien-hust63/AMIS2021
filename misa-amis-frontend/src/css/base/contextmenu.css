@@ -1,0 +1,55 @@
+.context-menu-container {
+    position: fixed;
+    z-index: 9999;
+    top: 50%;
+    left: 50%;
+    /* display: none; */
+}
+.context-menu {
+    width: 26px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.1 ease;
+}
+/* .context-menu:hover, */
+/* .context-menu--selected {
+    border: 1px solid #0075c0;
+} */
+.context-menu-container .selectbox__list {
+    cursor: pointer;
+    left: unset !important;
+    z-index: 5;
+    width: 120px;
+    border: 1px solid #c7c7c7;
+    background-color: #fff;
+    border-radius: 2px;
+    padding: 2px 0px;
+    box-sizing: border-box;
+    color: #111;
+    list-style-type: none;
+    margin:0 !important;
+    padding:0;
+    display: none;
+}
+.context-menu-container .selectbox__list li{
+    height: 28px;
+    padding: 5px 10px;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+.context-menu-container .selectbox__list li:hover{
+    color: #43ca54;
+    font-weight: 600;
+    background-color: #e8e9ec;
+}
+.selectbox--up .selectbox__list {
+    bottom: calc(100% + 4px);
+    top: unset;
+}
+.selectbox--show .selectbox__list {
+    display: block;
+}

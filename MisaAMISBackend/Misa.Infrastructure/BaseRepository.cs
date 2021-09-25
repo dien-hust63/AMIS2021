@@ -182,18 +182,18 @@ namespace Misa.Infrastructure
                     if (property.IsDefined(typeof(MisaNotMap), false)) continue;
                     var propName = property.Name;
                     var propValue = property.GetValue(entity);
-                    var propId = $"{_className}Id";
+                    var propId = $"{_className}_id";
                     if (propName == propId)
                     {
-                        dynamicParameters.Add($"{propName}", entityId);
+                        dynamicParameters.Add($"{propName}_update", entityId);
                     }
                     else
                     {
-                        dynamicParameters.Add($"{propName}", propValue);
+                        dynamicParameters.Add($"{propName}_update", propValue);
                     }
                 }
 
-                var proceduce = $"Proc_Update{_className}";
+                var proceduce = $"func_update_{_className}";
                 var rowEffects = _dbConnection.Execute(proceduce, param: dynamicParameters, commandType: CommandType.StoredProcedure);
                 return rowEffects;
             }

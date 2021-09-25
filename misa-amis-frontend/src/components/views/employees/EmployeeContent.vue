@@ -11,19 +11,25 @@
     </div>
     <div class="employee-content-body">
       <div class="toolbar">
-        <div class="toolbar__search">
-          <base-input
-            placeholder="Tìm theo mã, tên nhân viên, số điện thoại"
-            class="input-search"
-            v-model="inputSearchValue"
-            @keyup="search"
-          />
+        <div class="toolbar__left"></div>
+        <div class="toolbar__right">
+          <div class="toolbar-search">
+            <base-input
+              placeholder="Tìm theo mã, tên nhân viên, số điện thoại"
+              class="input-search"
+              v-model="inputSearchValue"
+              @keyup="search"
+            />
+          </div>
+          <div
+            class="mi mi-24 mi-refresh toolbar-refresh"
+            @click="refreshData"
+          ></div>
+          <div
+            class="mi mi-24 mi-excel toolbar-excel"
+            @click="exportData"
+          ></div>
         </div>
-        <div
-          class="mi mi-24 mi-refresh toolbar-refresh"
-          @click="refreshData"
-        ></div>
-        <div class="mi mi-24 mi-excel toolbar-excel" @click="exportData"></div>
       </div>
       <div class="employee-table">
         <base-table
@@ -53,9 +59,7 @@
 </template>
 
 <script>
-import {
-  apiList,
-} from "../../../js/resources/resourcevn.js";
+import { apiList } from "../../../js/resources/resourcevn.js";
 import BaseTable from "../../base/BaseTable.vue";
 import BaseInput from "../../base/BaseInput.vue";
 import BasePagination from "../../base/BasePagination.vue";
@@ -87,9 +91,9 @@ export default {
       hasSearch: false,
       forceLoadTable: false,
       isFocusCode: false,
-      tableEmployeeContents:[
-        {"employee_code":"NV-00001", "employee_name":"Nguyễn Văn Tiến"}
-      ]
+      tableEmployeeContents: [
+        { employee_code: "NV-00001", employee_name: "Nguyễn Văn Tiến" },
+      ],
     };
   },
   methods: {
@@ -181,7 +185,6 @@ export default {
     editEmployee(employeeId) {
       EmployeesRepository.getById(employeeId)
         .then((response) => {
-          
           this.mode = mode.INSERT;
           //lấy giá trị
           this.employeeData = response.data;
@@ -212,9 +215,9 @@ export default {
      * Đổi mode popup
      * Created By: nvdien(3/9/2021)
      */
-    changeMode(value){
+    changeMode(value) {
       this.mode = value;
-    }
+    },
   },
   computed: {
     employeeApiFilter: function () {

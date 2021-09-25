@@ -8,6 +8,11 @@
     transition: all .2s ease;
     white-space: nowrap;
 }
+.ms-button-around{
+    border-radius: 30px !important;
+    height: 36px;
+    box-sizing: border-box;
+}
 .ms-button-primary{
     color: #fff;
     background-color: #2ca01c;
@@ -30,4 +35,9 @@
 }
 .ms-button-secondary:active{
     background-color: #bbbcbc;
+}
+/**button around with dropdown*/
+.ms-button-content{
+    display: flex;
+    align-items: center;
 }

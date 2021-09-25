@@ -1,9 +1,65 @@
 .inward-list .input-search .ms-input__input{
     width: 200px;
 }
+.inward-list .toolbar__left .filter, .inward-list .toolbar__left .mi-arrow-check-all, .inward-list .toolbar__left .batch-execution{
+    margin-left: 10px;
+}
 .inward-list .warehouse-table{
     box-sizing: border-box;
     display: block;
     padding: 0 20px 0 20px;
     flex: 1;
+    max-height: calc(100vh - 332px);
+    height: calc(100vh - 332px);
+}
+.warehouse-table .ms-table-wrap{
+    height: calc(100%  - 46px);
+    overflow-y: auto;
+}
+.warehouse-table .ms-table th:nth-child(3) {
+    min-width: var(--width-column-2);
+    width: var(--width-column-2);
+}
+.warehouse-table .ms-table tr td:nth-child(3) {
+    min-width: var(--width-column-2);
+    width: var(--width-column-2);
+}
+.warehouse-content-pagination .selected-options__list{
+    top: -138px;
+    z-index: 2000;
+}
+.context-menu--selected{
+    border: 1px solid #0075c0;
+}
+/**filter */
+.filter{
+    position: relative;
+}
+.filter-panel{
+    width: 650px;
+    height: 300px;
+    background-color: #fff;
+    border-radius: 2px;
+    border:1px solid #ccc;
+    position: absolute;
+    top: 40px;
+    right: -200px;
+    z-index: 1500;
+    box-sizing: border-box;
+    padding: 10px;
+}
+.filter-panel .ms-dropdown, .filter-panel .ms-dropdown-wrap{
+    width: 100%;
+}
+.filter-panel .ms-input__label{
+    margin-bottom: 6px;
+}
+.filter-panel-footer{
+    display: flex;
+    justify-content: space-between;
+    height: 36px;
+    margin-top: 30px;
+}
+.filter-panel .selected-options__list{
+    width: 100%;
 }

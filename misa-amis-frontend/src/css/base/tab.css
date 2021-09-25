@@ -1,6 +1,7 @@
 
 .tab {
     min-height: 58px;
+    height: 58px;
     border-bottom: 1px solid #C7C7C7;
     background-color: #F4F5F8;
     color: #111;

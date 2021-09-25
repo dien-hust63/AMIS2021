@@ -1,6 +1,6 @@
 :root {
     --width-column-1: 40px;
-    --width-column-2: 120px;
+    --width-column-2: 150px;
     --width-column-3: 200px;
     --max-width-column: 200px;
 }
@@ -50,21 +50,35 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
 }
+/**footer*/
+.ms-tfoot td{
+    min-height: 34px;
+    height: 34px;
+    position: sticky;
+    bottom:0;
+    z-index:800;
+    background-color: #fff;
+    padding: 0px 10px;
+    box-sizing: border-box;
+    font-weight: 700;
+    border-top: 2px solid #ccc;
+}
 /* CỘT ĐẦU */
-.ms-table th:first-child {
+.ms-thead th:first-child {
     position: sticky;
     left: 0px;
     z-index: 1000;
     min-width: var(--width-column-1);
     width: var(--width-column-1);
 }
-.ms-table tr td:first-child {
+.ms-tbody tr td:first-child {
     position: sticky;
     left: 0px;
     text-align: center;
 }
-.ms-table th:first-child::before,
-.ms-tbody tr td:first-child::before {
+.ms-thead th:first-child::before,
+.ms-tbody tr td:first-child::before 
+.ms-tfoot td:first-child::before{
     display: block;
     content: "";
     position: absolute; 
@@ -75,40 +89,40 @@
     left: -20px;
 }
 /* CỘT THỨ 2 */
-.ms-table th:nth-child(2) {
+.ms-thead th:nth-child(2) , .ms-tfoot td:nth-child(2){
     position: sticky;
     left:var(--width-column-1);
     z-index: 1000;
     min-width: var(--width-column-2);
     width: var(--width-column-2);
 }
-.ms-table tr td:nth-child(2) {
+.ms-tbody tr td:nth-child(2) {
     position: sticky;
     left: var(--width-column-1);
     min-width: var(--width-column-2);
     width: var(--width-column-2);
 }
 /**Cột thứ 3 */
-.ms-table th:nth-child(3) {
+.ms-thead th:nth-child(3) ,.ms-tfoot td:nth-child(3){
     position: sticky;
     left: calc(var(--width-column-1) +var(--width-column-2));
     z-index: 1000;
     min-width: var(--width-column-3);
     width: var(--width-column-3);
 }
-.ms-table tr td:nth-child(3) {
+.ms-tbody tr td:nth-child(3) {
     position: sticky;
     left: calc(var(--width-column-1) + var(--width-column-2));
     min-width: var(--width-column-3);
     width: var(--width-column-3);
 }
 /**CỘT CUỐI*/
- .ms-table tr td:last-child , .ms-table tr th:last-child{
+ .ms-tbody tr td:last-child , .ms-thead tr th:last-child, .ms-tfoot tr td:last-child{
     overflow-x: unset;
     text-overflow: unset;
     position: sticky;
     right: 0;
-    border-left: 1px dotted #c7c7c7;
+    /* border-left: 1px dotted #c7c7c7; */
     width: 150px;
 }
 /**context menu in table*/
