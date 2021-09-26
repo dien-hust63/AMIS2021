@@ -109,6 +109,9 @@
         font-weight: 700;
     }
     /**table and paging*/
+    .tab-inward-detail{
+        padding: 0 24px;
+    }
     .table-above{
         display: flex;
         justify-content: space-between;
@@ -128,6 +131,9 @@
         font-weight: 700;
     }
     /**grid control*/
+    .grid-control-item{
+        padding: 0 24px;
+    }
     .btn-grid-control{
         display: flex;
         margin: 10px 0 32px;

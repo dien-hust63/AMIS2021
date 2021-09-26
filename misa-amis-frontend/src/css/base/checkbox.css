@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: center;
 }
-.checkbox{
+.ms-checkbox-icon{
     width: 18px;
     height: 18px;
     border-radius: 2px;
@@ -12,23 +12,20 @@
     box-sizing: border-box;
     margin:0px;
     cursor: pointer;
-    text-align: center;
     padding:2px;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.checkbox i{
-    display:none;
+.ms-checkbox-icon .mi-checkbox-active{
+    visibility: hidden;
 }
-
-.mi-checkbox-active.checkbox{
+.ms-checkbox--active .mi-checkbox-active{
+    visibility: visible;
+}
+.ms-checkbox--active .ms-checkbox-icon{
     border:1px solid #019160;
 }
-
-.checkbox.checkbox--active i{
-    display:block;
-    color:#fff;
-}
-
 .checkbox-label{
     margin-left: 10px;
 }

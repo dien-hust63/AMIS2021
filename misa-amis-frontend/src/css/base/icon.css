@@ -32,7 +32,18 @@
     min-width: 32px;
     min-height: 32px;
 }
-
+.mi-34{
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+}
+.mi-36{
+    width:36px;
+    height:36px;
+    min-width:36px;
+    min-height:36px;
+}
 .mi-48{
     width: 48px;
     height: 48px;
@@ -194,4 +205,13 @@
 }
 .mi-arrow-up--black {
     background-position: -560px -359px;
+}
+.mi-notifications–success {
+    background-position: -95px -962px;
+}
+.mi-delete {
+    background-position: -464px -312px;
+}
+.mi-plus--success {
+    background-position: -32px -312px;
 }

@@ -4,6 +4,9 @@
 .inward-list .toolbar__left .filter, .inward-list .toolbar__left .mi-arrow-check-all, .inward-list .toolbar__left .batch-execution{
     margin-left: 10px;
 }
+.inward-list .batch-execution.ms-button--disabled .mi-arrow-up--black{
+    opacity: 0.5;
+}
 .inward-list .warehouse-table{
     box-sizing: border-box;
     display: block;
@@ -16,13 +19,24 @@
     height: calc(100%  - 46px);
     overflow-y: auto;
 }
+
+
 .warehouse-table .ms-table th:nth-child(3) {
     min-width: var(--width-column-2);
     width: var(--width-column-2);
+    
 }
 .warehouse-table .ms-table tr td:nth-child(3) {
     min-width: var(--width-column-2);
     width: var(--width-column-2);
+    
+}
+.warehouse-table .ms-table tr td:nth-child(3) div{
+    color: #0075c0 !important;
+}
+.warehouse-table .ms-table tr td:nth-child(3):hover{
+    text-decoration: underline;
+    text-decoration-color:#0075c0 ;
 }
 .warehouse-content-pagination .selected-options__list{
     top: -138px;

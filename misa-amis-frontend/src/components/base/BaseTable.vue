@@ -4,18 +4,33 @@
       <thead class="ms-thead">
         <tr>
           <th v-for="(item, index) in tableHeaders" :key="index">
-            <base-checkbox v-if="item.type == 'checkbox'" />
+            <base-checkbox
+              v-if="item.type == 'checkbox'"
+              @click.native="chooseCheckboxAll"
+              :class="{ 'ms-checkbox--active': isChooseCheckboxAll }"
+            />
             <div v-if="item.label">{{ item.label }}</div>
           </th>
         </tr>
       </thead>
       <tbody class="ms-tbody">
-        <tr v-for="(tableContent, index) in tableContents" :key="index">
-          <td v-for="(tableHeader, headerIndex) in tableHeaders" :key="headerIndex">
-            <base-checkbox v-if="tableHeader.type == 'checkbox'" />
+        <tr
+          v-for="(tableContent, index) in tableContents"
+          :key="index"
+          :class="{ 'ms-table-row--selected': isSelectedRow(index) }"
+        >
+          <td
+            v-for="(tableHeader, headerIndex) in tableHeaders"
+            :key="headerIndex"
+          >
+            <base-checkbox
+              v-if="tableHeader.type == 'checkbox'"
+              @click.native="chooseTableRow(tableContent, index)"
+              :class="{ 'ms-checkbox--active': isSelectedRow(index) }"
+            />
             <div
               v-if="tableHeader.type == 'normal'"
-              :class="[tableHeader.textAlign, styleCustom]"
+              :class="getClass(tableContent, tableHeader)"
             >
               {{ formatTableContent(tableContent, tableHeader) }}
             </div>
@@ -25,7 +40,9 @@
                 <div
                   class="row-context-menu__icon"
                   @click="toogleContextMenu($event, tableContent, index)"
-                  :class="{ 'context-menu--selected': currentSelectedRow == index }"
+                  :class="{
+                    'context-menu--selected': currentSelectedRow == index,
+                  }"
                   :tabindex="0"
                 >
                   <div class="mi mi-16 mi-arrow-up--blue"></div>
@@ -33,6 +50,9 @@
               </div>
             </div>
             <div v-if="tableHeader.type == 'number'">{{ index + 1 }}</div>
+            <div v-if="tableHeader.type == 'delete'">
+              <div class="mi mi-16 mi-delete"></div>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -91,17 +111,15 @@ export default {
         };
       },
     },
-    styleCustom: {
-      type: String,
-      default(){
-        return "";
-      }
-    }
   },
   data() {
     return {
       isShowContextMenu: false,
       currentSelectedRow: -1,
+      customStyle: "",
+      isChooseCheckboxAll: false,
+      listSelectedRow: [],
+      listSelectedContent: [],
     };
   },
   methods: {
@@ -113,6 +131,9 @@ export default {
      * CreatedBy: nvdien(24/9/2021)
      */
     formatTableContent(tableContent, tableHeader) {
+      // if(tableContent['is_mention'] == 1) this.customStyle = 'text--green ';
+      // if(tableContent['is_mention'] == 0) this.customStyle = 'text--red ';
+
       let cellData;
       cellData = tableContent[tableHeader.fieldName];
       if (tableHeader.format == "date") {
@@ -120,6 +141,9 @@ export default {
         cellData = moment(tableContent[tableHeader.fieldName]).format(
           "DD/MM/YYYY"
         );
+      }
+      if (tableHeader.format == "number") {
+        if (cellData == "0") cellData = "0,0";
       }
       return cellData;
     },
@@ -145,8 +169,60 @@ export default {
           pos: elementPos,
         });
       } else {
+        this.currentSelectedRow = -1;
         this.$eventBus.$emit("hideContextMenu");
       }
+    },
+    /**trả về custom style cho cell */
+    getClass(tableContent, tableHeader) {
+      let customClass = "";
+      if (tableContent["is_mention"] == 1) customClass = "text--green";
+      if (tableContent["is_mention"] == 0) customClass = "text--black";
+      let listCustomClass = `${customClass} ${tableHeader.textAlign}`;
+      return listCustomClass;
+    },
+    /**
+     * chọn tất cả check box
+     * CreatedBy: nvdien(26/9/2021)
+     */
+    chooseCheckboxAll() {
+      this.isChooseCheckboxAll = !this.isChooseCheckboxAll;
+      if (this.isChooseCheckboxAll) {
+        for (let i = 0; i < this.tableContents.length; ++i) {
+          this.listSelectedRow.push(i);
+          this.listSelectedContent.push(this.tableContents[i]);
+        }
+      } else {
+        this.listSelectedRow = [];
+        this.listSelectedContent = [];
+      }
+      this.$emit("getSelectedRowList", this.listSelectedContent);
+    },
+    /**
+     * thêm hoặc bớt chỉ số của hàng vào trong danh sách các hàng được chọn
+     * @param {Int} index chỉ số của hàng chọn
+     * @param {object} tableContent nội dung hàng
+     * CreatedBy: nvdien(26/9/2021)
+     */
+    chooseTableRow(tableContent, index) {
+      const position = this.listSelectedRow.indexOf(index);
+      if (position == -1) {
+        this.listSelectedRow.push(index);
+        this.listSelectedContent.push(tableContent);
+      } else {
+        this.listSelectedRow.splice(position, 1);
+        this.listSelectedContent.splice(tableContent, 1);
+      }
+      this.$emit("getSelectedRowList", this.listSelectedContent);
+    },
+    /**
+     * Kiểm tra xem index đã có trong danh sách hàng được chọn chưa
+     * @param {Int} index index của hàng được chọn
+     * @return {boolean} đúng nếu đã có trong đanh sách, sai nếu chưa co
+     * author: nvdien(26/9/2021)
+     */
+    isSelectedRow(index) {
+      return this.listSelectedRow.includes(index);
     },
   },
 };

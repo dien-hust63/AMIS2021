@@ -5,6 +5,9 @@
       <the-content />
     </div>
     <base-context-menu />
+    <base-toast-message />
+    <base-message />
+    <base-combo-dropdown />
   </div>
 </template>
 
@@ -12,12 +15,18 @@
 import TheMenu from "./components/layout/TheMenu.vue";
 import TheContent from "./components/layout/TheContent.vue";
 import BaseContextMenu from "./components/base/BaseContextMenu.vue";
+import BaseToastMessage from "./components/base/BaseToastMessage.vue";
+import BaseMessage from './components/base/BaseMessage.vue';
+import BaseComboDropdown from './components/base/BaseComboDropdown.vue';
 export default {
   name: "App",
   components: {
     TheMenu,
     TheContent,
-    BaseContextMenu
+    BaseContextMenu,
+    BaseToastMessage,
+    BaseMessage,
+    BaseComboDropdown,
   },
 };
 </script>

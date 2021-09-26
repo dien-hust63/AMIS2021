@@ -12,7 +12,7 @@
             :dropdownList="inwardTypeList"
             :defaultData="dropdownInwardTypeDefault"
           />
-          <div class="combobox"></div>
+          <!-- <div class="combobox"></div> -->
         </div>
         <div class="header-detail-button">
           <div class="mi mi-24 mi-tour"></div>
@@ -38,7 +38,7 @@
               <div class="w-4/5">
                 <div class="row-input">
                   <div class="w-3/7">
-                    <base-input label="Khách hàng" />
+                   <base-combobox-custom label="Khách hàng" @showComboDropdown="showCustomerDropdownPanel"/>
                   </div>
                   <div class="w-4/7 px-13 border-box">
                     <base-input label="Địa chỉ" />
@@ -95,7 +95,7 @@
                 />
               </div>
             </div>
-            <base-table :tableHeaders="tableInwardDetailHeaders" />
+            <base-table :tableHeaders="tableInwardDetailHeaders" :tableContents="tableContents"/>
             <div class="inward-detail-pagination">
               <base-pagination />
             </div>
@@ -138,6 +138,7 @@ import BaseButton from "../../base/BaseButton.vue";
 import BaseTable from "../../base/BaseTable.vue";
 import BasePagination from "../../base/BasePagination.vue";
 import BaseDropdown from "../../base/BaseDropdown.vue";
+import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue"
 export default {
   name: "InwardDetail",
   components: {
@@ -146,6 +147,7 @@ export default {
     BaseTable,
     BasePagination,
     BaseDropdown,
+    BaseComboboxCustom,
   },
   data() {
     return {
@@ -157,7 +159,8 @@ export default {
       dropdownInwardMethodDefault: this.$resourcesVN.inwardMethodList[0],
       inwardMethodList: this.$resourcesVN.inwardMethodList,
       isShowInwardDetail: false,
-    };
+      /**table */
+  };
   },
   methods: {
     /**Đóng form popup
@@ -167,6 +170,10 @@ export default {
       // this.dropdownData = 20;
       this.$emit("closeInwardDetail");
     },
+    /**hiển thị combo dropdown panel của khách hàng */
+    showCustomerDropdownPanel(){
+      
+    }
   },
 };
 </script>

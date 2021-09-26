@@ -29,7 +29,7 @@ module.exports = {
     { fieldName: 'mathematics_date', label: 'NGÀY HẠCH TOÁN', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
     { fieldName: 'voucher_code', label: 'SỐ CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
     { fieldName: 'description', label: 'DIỄN GIẢI', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'text-right', type: "normal" , footerValue:0},
+    { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
     { fieldName: 'contact_name', label: 'NGƯỜI GIAO/NGƯỜI NHẬN', textAlign: 'text-left', type: "normal" },
     { fieldName: 'voucher_type', label: 'LOẠI CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
     { label: 'CHỨC NĂNG', type:'contextmenu' }
@@ -37,15 +37,19 @@ module.exports = {
  
   /**mảng chứa thông tin tiêu đề bảng hàng tiền trong phiếu nhập kho */
   tableInwardDetailHeaders: [
-    { commodity_code: "MÃ HÀNG", type: "0" },
-    { commodity_name: "TÊN HÀNG", type: "0" },
-    { warehouse_code: "KHO", type: "0" },
-    { debit_account: "TK NỢ", type: "0" },
-    { credit_account: "TK CÓ", type: "0" },
-    { unit: "DVT", type: "0" },
-    { quantity: "SỐ LƯỢNG", type: "2" },
-    { debit_amount: "ĐƠN GIÁ", type: "2" },
-    { price: "THÀNH TIỀN", type: "2" },
+    { label: '#',type: "number" },
+    { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
+    { fieldName: 'commodity_name', label: 'TÊN HÀNG', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'debit_account_code', label: 'TK NỢ', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
+    { fieldName: 'credit_account_code', label: 'TK CÓ', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'unit', label: 'DVT', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
+    { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
+    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-left', type: "normal" },
+    { type:'delete' }
 
   ],
   message: {
@@ -55,6 +59,8 @@ module.exports = {
     messageEmailSyntax: "Email không đúng định dạng",
     messageDateSyntax: `Ngày chưa đúng định dạng`,
     messageDateFuture: "{0} vượt quá ngày hiện tại",
+    messageDeleteWarning: "Bạn có chắc muốn xóa {0} không?",
+    messageDeleteSuccess: "xóa {0} thành công"
   },
   mode: {
     ADD: 0,

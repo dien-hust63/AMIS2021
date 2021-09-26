@@ -38,8 +38,8 @@
             positionOfContextMenu() {
                 if (this.isUp) {
                     return {
-                        top: this.top + 'px',
-                        left: this.left + this.leftChange+ 'px'
+                        top: this.top - this.topChange + 'px',
+                        left: this.left - this.leftChange+ 'px'
                     }
                 } else {
                     return {
@@ -72,9 +72,7 @@
 			 * CreatedBy: nvdien (20/09/2021)
 			 */
 			this.$eventBus.$on("hideContextMenu", () => {
-				setTimeout(() => {	
 					this.contextMenuState = false;
-				}, 100);
 			});
 		},
 		methods: {

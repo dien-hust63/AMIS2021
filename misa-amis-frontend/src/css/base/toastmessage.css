@@ -1,0 +1,20 @@
+
+.base-toast-message{
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #2ca01c;
+    background-color: #fff;
+    z-index: 2000;
+    display: none;
+}
+.base-toast-message__text{
+    margin-left: 10px
+}
+.base-toast-message--show{
+    display: flex;
+    align-items: center;
+}

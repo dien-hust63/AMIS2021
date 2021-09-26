@@ -1,5 +1,5 @@
 <template>
-  <div class="ms-message-wrap">
+  <div class="ms-message-wrap" :class="{ 'ms-message--show': isShowMessage }">
     <div class="ms-message">
       <div class="message-content">
         <div class="content__icon">
@@ -32,36 +32,42 @@ export default {
   components: {
     BaseButton,
   },
-  props: {
-    icon: {
-      type: String,
-      required: true,
-    },
-    messageText: {
-      type: String,
-      required: true,
-    },
-    buttons: {
-      type: Array,
-      required: false,
-      default() {
-        return [
-          {
-            // position:"center",
-            // color: "ms-button-primary",
-            feature: "center ms-button-primary",
-            callback: () => {
-              this.$emit("closePopup");
-            },
-            value: "Đóng",
-          },
-        ];
-      },
-    },
+
+  created() {
+    /**
+     * Tạo event hiển thị toast message
+     * CreatedBy: nvdien (20/09/2021)
+     */
+    this.$eventBus.$on("showMessageBox", (messageContent) => {
+      this.icon = messageContent.icon;
+      this.messageText = messageContent.messageText;
+      this.buttons = messageContent.buttons;
+      this.isShowMessage = true;
+    });
+    /**
+     * Tạo event ẩn toast message
+     * CreatedBy: nvdien (20/09/2021)
+     */
+    this.$eventBus.$on("hideMessageBox", () => {
+      console.log("ttes");
+      this.isShowMessage = false;
+    });
+  },
+  destroyed() {
+    /**
+     * Huỷ các sự kiện
+     * CreatedBy: nvdien (20/09/2021)
+     */
+    this.$eventBus.$off("showMessageBox");
+    this.$eventBus.$off("hideMessageBox");
   },
   data() {
     return {
       buttonMode: mode.BUTTONCALLBACK,
+      isShowMessage: false,
+      icon: "",
+      messageText: "",
+      buttons: [],
     };
   },
   methods: {},

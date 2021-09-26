@@ -5,9 +5,10 @@
         <div class="mi mi-24 mi-arrow-check-all"></div>
         <div
           class="batch-execution ms-button ms-button-around ms-button-secondary"
+          :class="{'ms-button--disabled':isDisabled}"
         >
           <div class="ms-button-content">
-            <div class="ms-button__text">Thực hiện hàng loạt</div>
+            <div class="ms-button__text" @click="batchExecution($event)">Thực hiện hàng loạt</div>
             <div class="mi mi-16 mi-arrow-up--black"></div>
           </div>
         </div>
@@ -90,7 +91,7 @@
             @keyup="search"
           />
         </div>
-        <div class="mi mi-24 mi-refresh toolbar-refresh"></div>
+        <div class="mi mi-24 mi-refresh toolbar-refresh" @click="loadData"></div>
         <div class="mi mi-24 mi-excel toolbar-excel"></div>
       </div>
     </div>
@@ -101,6 +102,7 @@
         :hasFooter="true"
         :contextMenuData="contextMenuData"
         @getContextTableData="getContextTableData"
+        @getSelectedRowList="getSelectedRowList"
       />
       <div class="warehouse-content-pagination">
         <base-pagination
@@ -123,11 +125,12 @@ import { RepositoryFactory } from "../../../../js/repository/repository.factory"
 import BaseDropdown from "../../../base/BaseDropdown.vue";
 import BaseDateInput from "../../../base/BaseDateInput.vue";
 import DateMixin from "../../../../mixins/date/date";
+import MethodMixin from "../../../../mixins/methods";
 const VoucherRepository = RepositoryFactory.get("vouchers");
 import moment from "moment";
 export default {
   name: "WarehouseInwardList",
-  mixins: [DateMixin],
+  mixins: [DateMixin, MethodMixin],
   components: {
     BaseTable,
     BasePagination,
@@ -166,6 +169,7 @@ export default {
       /**loading */
       isLoading: false,
       /**context menu */
+      isShowContextMenu:false,
       contextMenuData: {
         topChange: 20,
         leftChange: -80,
@@ -180,6 +184,8 @@ export default {
       },
       /**dữ liệu hàng được chọn */
       currentRowData: {},
+      /**Button thực hiện hàng loạt */
+      isDisabled: true,
     };
   },
   methods: {
@@ -206,8 +212,13 @@ export default {
       )
         .then((response) => {
           this.tableInwardListContents = response.data["Vouchers"];
-          this.tableInwardListHeaders[4]["footerValue"] =
+          //format tiền
+          if(response.data["TotalPrices"] == "0") this.tableInwardListHeaders[4]["footerValue"] = "0,0"
+          else{
+            this.tableInwardListHeaders[4]["footerValue"] =
             response.data["TotalPrices"];
+          }
+          //total record
           this.totalRecord = response.data["TotalRecord"];
           this.totalPage = response.data["TotalPage"];
           this.isLoading = false;
@@ -250,7 +261,6 @@ export default {
      * CreatedBy: nvdien(25/9/2021)
      */
     getContextTableData(rowContent) {
-      console.log(rowContent);
       Object.assign(this.currentRowData, rowContent);
       if (rowContent["is_mention"] == 1) {
         //trạng thái đã ghi sổ
@@ -258,7 +268,7 @@ export default {
           {
             name: "Bỏ ghi",
             function: () => {
-              this.functionTest("hello");
+              this.unSaveBook(rowContent);
             },
           },
           {
@@ -270,17 +280,17 @@ export default {
         ];
       } else {
         //trạng thái chưa ghi sổ
-         this.contextMenuData["contextFunction"] = [
+        this.contextMenuData["contextFunction"] = [
           {
             name: "Ghi sổ",
             function: () => {
-              this.functionTest("hello");
+              this.saveBook(this.currentRowData);
             },
           },
           {
             name: "Xóa",
             function: () => {
-              this.functionTest("hello");
+              this.showWarningDelete(this.currentRowData);
             },
           },
           {
@@ -292,6 +302,146 @@ export default {
         ];
       }
     },
+    /**hiển thị cảnh báo khi xóa
+     * @param {object} rowContent
+     * CreatedBy: nvdien(26/9/2021)
+     */
+    showWarningDelete(rowContent) {
+      let messageText = this.formatString(
+        this.$resourcesVN.message.messageDeleteWarning,
+        `chứng từ <${rowContent["voucher_code"]}>`
+      );
+      this.$eventBus.$emit("showMessageBox", {
+        icon: "mi-exclamation-warning-48",
+        messageText: messageText,
+        buttons: [
+          {
+            feature: "left ms-button-secondary",
+            callback: () => {
+              this.closeMessageBox();
+            },
+            value: "Không",
+          },
+          {
+            feature: "right-first ms-button-primary",
+            callback: () => {
+              this.deleteRow(rowContent);
+            },
+            value: "Có",
+          },
+        ],
+      });
+    },
+    /**xóa chứng từ */
+    deleteRow(rowContent) {
+      let rowId = rowContent["accountvoucher_id"];
+      VoucherRepository.delete(rowId)
+        .then(() => {
+          //thông báo xóa thành công
+          let toastMessageText = this.formatString(
+            this.$resourcesVN.message.messageDeleteSuccess,
+            `chứng từ`
+          );
+          this.$eventBus.$emit("showToastMessage", {
+            icon: "mi-notifications–success",
+            text: toastMessageText,
+          });
+          this.closeMessageBox();
+          this.loadData();
+        })
+        .catch((response) => console.log(response));
+    },
+    /**Đóng message box */
+    closeMessageBox() {
+      this.$eventBus.$emit("hideMessageBox");
+    },
+    /**ghi sổ
+     * @param {object} rowContent
+     * CreatedBy: nvdien(26/9/2021)
+     */
+    saveBook(rowContent) {
+      rowContent['is_mention'] = 1;
+       VoucherRepository.put(rowContent['accountvoucher_id'],rowContent)
+        .then(() => {
+          this.loadData();
+        })
+        .catch((response) => console.log(response));
+    },
+    /**bỏ ghi sổ
+     * @param {object} rowContent
+     * CreatedBy: nvdien(26/9/2021)
+     */
+    unSaveBook(rowContent){
+       rowContent['is_mention'] = 0;
+       VoucherRepository.put(rowContent['accountvoucher_id'], rowContent)
+        .then(() => {
+          this.loadData();
+        })
+        .catch((response) => console.log(response));
+    },
+    /**Thực hiện hàng loạt
+     * CreatedBy: nvdien(26/9/2021)
+     */
+    batchExecution(event){
+      if(!this.isDisabled){
+        this.toogleContextMenu(event);
+      }
+      
+    },
+    /**
+     * hiển thị context menu
+     * CreatedBy: nvdien(25/9/2021)
+     */
+    toogleContextMenu(event) {
+      let contextMenuData = [
+        {
+            name: "Ghi sổ",
+            function: () => {
+               this.functionTest("hello");
+            },
+          },
+          {
+            name: "Bỏ ghi",
+            function: () => {
+              this.functionTest("hello");
+            },
+          },
+          {
+            name: "Xóa",
+            function: () => {
+              this.functionTest("hello");
+            },
+          },
+      ];
+      this.isShowContextMenu = !this.isShowContextMenu;
+      if (this.isShowContextMenu) {
+        
+        let element = event.target;
+        let elementRect = element.getBoundingClientRect();
+        let elementPos = {
+          top: elementRect.top,
+          left: elementRect.left,
+          topChange: 36,
+          leftChange: 30,
+        };
+        this.$eventBus.$emit("showContextMenu", {
+          contextFunction: contextMenuData,
+          pos: elementPos,
+        });
+      } else {
+        this.$eventBus.$emit("hideContextMenu");
+      }
+    },
+    /**Lấy danh sách các selected row */
+    getSelectedRowList(selectedRowList){
+      if(selectedRowList.length > 1){
+        this.isDisabled = false;
+      }
+      else{
+        this.isDisabled = true;
+      }
+      console.log(selectedRowList);
+    }
   },
   watch: {
     timeReportDropdownData(newValue) {

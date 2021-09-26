@@ -1,0 +1,93 @@
+.ms-combo-dropdown-panel{
+    position: fixed;
+    z-index: 3000;
+    top: 400px;
+    left: 400px;
+    min-width: 100px;
+    box-shadow: 0 -8px 34px 0 rgb(0 0 0 / 5%);
+    background-color: #fff;
+    border: 1px solid #babec5;
+    border-radius: 2px;
+    display: none;
+}
+/**header*/
+.combo-dropdown-header{
+    background: #f4f5f8;
+}
+.combo-dropdown-header th{
+    height: 32px;
+    padding:0 10px;
+    text-align: left;
+}
+/**body*/
+.combo-dropdown-body{
+    max-height: 160px;
+    overflow-y: scroll;
+    white-space: nowrap;
+    padding: 2px 0;
+}
+.combo-dropdown-body table{
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.combo-dropdown-row{
+    cursor: pointer;
+}
+.combo-dropdown-row--active{
+    background-color: #2ca01c;
+    color: #fff;
+}
+.combo-dropdown-row:hover{
+    color: #43ca54;
+    font-weight: 600;
+    background-color: #e8e9ec;
+}
+.combo-dropdown-row-td{
+    height: 32px;
+    padding: 0 10px;
+    text-overflow: ellipsis;
+}
+/**footer*/
+.combo-dropdown-footer{
+    height: 32px;
+    display: flex;
+    background: #ebedf0;
+    align-items: center;
+    padding: 4px 10px;
+    box-sizing: border-box;
+}
+.btn-add-combo-dropdown{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.btn-add-combo-dropdown .btn-add-text{
+    margin-left: 6px;
+    font-weight: 600;
+    color: #35bf22;
+}
+/**Loading*/
+.combo-dropdown-loading{
+    height: 32px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.combo-dropdown-loading-icon{
+    background: url("../../assets/img/loading.svg") no-repeat;
+    background-size: contain;
+    width: 28px;
+    height: 28px;
+    animation: spin 1s linear infinite;
+}
+
+
+@keyframes spin {
+    0% {
+        transform:rotate(0deg);
+    }
+    100% {
+        transform:rotate(360deg);
+    }
+}

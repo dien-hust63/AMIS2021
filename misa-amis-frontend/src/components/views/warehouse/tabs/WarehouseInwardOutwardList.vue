@@ -5,7 +5,17 @@
         <div class="header-group-button"> 
           <div class="mi mi-24 mi-tour"></div>
           <div class="tour-label">Hướng dẫn</div>
-          <base-button-custom value="Thêm phiếu nhập" color="ms-button-primary"/>
+          <div
+            class="base-button-custom"
+          >
+            <div class="button-custom-left ms-button-primary">
+              <div class="buttom-custom-text" @click="addInwardForm">Thêm phiếu nhập</div>
+            </div>
+            <div class="button-custom-right ms-button-primary">
+              <div class="line"></div>
+              <div class="mi mi-16 mi-arrow-up--white"></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="warehouse-content-body">
@@ -15,37 +25,35 @@
     </div>
 </template>
 <script>
-
-import BaseButtonCustom from "../../../base/BaseButtonCustom.vue";
 import BaseTab from "../../../base/BaseTab.vue";
 export default {
   name: "WarehouseInwardOutwardList",
   components: {
-    BaseButtonCustom,
-    BaseTab
+    BaseTab,
   },
-  data(){
-    return{
+  data() {
+    return {
       currTab: 1,
       listTab: [
-          {
-						name: "Tất cả",
-						path: "/warehouse/InwardOutwardList/INInwardList",
-					},
-					{
-						name: "Nhập kho",
-						path: "/warehouse/InwardOutwardList/INInwardList",
-					},
-				],
-    }
+        {
+          name: "Tất cả",
+          path: "/warehouse/InwardOutwardList/INInwardList",
+        },
+        {
+          name: "Nhập kho",
+          path: "/warehouse/InwardOutwardList/INInwardList",
+        },
+      ],
+    };
   },
   methods: {
-    /**export data
-     * CreatedBy: ndien(17/9/2021)
+    /**
+     * thêm phiếu nhập
+     * CreadtedBy: nvdien(26/9/2021)
      */
-    exportData() {
-      console.log("export Data");
-    },
+    addInwardForm(){
+       this.$emit('showInwardDetail', this.$resourcesVN.mode.ADD);
+    }
   },
 };
 </script>

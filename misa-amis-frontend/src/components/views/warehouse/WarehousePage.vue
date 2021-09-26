@@ -31,7 +31,8 @@ export default {
     };
   },
   methods: {
-    showInwardDetail() {
+    showInwardDetail(mode) {
+      console.log(mode);
       this.isShowInwardDetail = true;
     },
     closeInwardDetail() {
