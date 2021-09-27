@@ -40,10 +40,12 @@ namespace MisaCukcukApi
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IAccountVoucherRepository, AccountVoucherRepository>();
+            services.AddScoped<IAccountObjectRepository, AccountObjectRepository>();
             //Service DI
             services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IAccountVoucherService, AccountVoucherService>();
+            services.AddScoped<IAccountObjectService, AccountObjectService>();
 
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {

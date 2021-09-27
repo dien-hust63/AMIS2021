@@ -4,7 +4,9 @@ module.exports = {
     departmentApi: "https://localhost:44350/api/v1/Departments/",
     positionApi: "https://localhost:44350/api/v1/Positions/",
     employeeApi: "https://localhost:44350/api/v1/Employees/",
-    customerApi: "https://localhost:44350/api/v1/Custoemers/"
+    customerApi: "https://localhost:44350/api/v1/Custoemers/",
+    accountvoucherPagingFilter:"https://localhost:44350/api/v1/AccountVouchers/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+    accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}"
   },
 
   /**
@@ -52,6 +54,23 @@ module.exports = {
     { type:'delete' }
 
   ],
+  /**mảng chứa thông tin tiêu đề của combo dropdown khách hàng */
+  tableCustomerHeaders:[
+    { fieldName: 'account_object_code', label: 'Mã khách hàng', textAlign: 'text-left', type: "normal", width: '100px'},
+    { fieldName: 'account_object_name', label: 'Tên khách hàng', textAlign: 'text-left', type: "normal", width: '200px' },
+    { fieldName: 'contact_address', label: 'Địa chỉ', textAlign: 'text-left', type: "normal" ,width: '250px'},
+  ],
+  /**mảng chứa thông tin tiêu đề của combo dropdown nhân viên */
+  tableEmployeeComboboxHeaders:[
+    { fieldName: 'employee_code', label: 'Mã nhân viên', textAlign: 'text-left', type: "normal", width: '100px'},
+    { fieldName: 'employee_name', label: 'Tên nhân viên', textAlign: 'text-left', type: "normal", width: '200px' },
+  ],
+  InwardEmployeeComboboxHeaders:[
+    { fieldName: 'employee_code', label: 'Mã nhân viên', textAlign: 'text-left', type: "normal", width: '100px'},
+    { fieldName: 'employee_name', label: 'Tên nhân viên', textAlign: 'text-left', type: "normal", width: '200px' },
+    { fieldName: 'department_name', label: 'Đơn vị', textAlign: 'text-left', type: "normal", width: '200px'},
+  ],
+  
   message: {
     messageConfirmChange: "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
     messageRequired: "{0} không được để trống",

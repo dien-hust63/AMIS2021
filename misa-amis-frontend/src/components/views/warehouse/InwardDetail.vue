@@ -24,10 +24,7 @@
             <div class="mi mi-24 mi-help"></div>
           </div>
           <div class="button-close button-group">
-            <div
-              class="mi mi-24 mi-close"
-              @click="closeInwardDetail()"
-            ></div>
+            <div class="mi mi-24 mi-close" @click="closeInwardDetail()"></div>
           </div>
         </div>
       </div>
@@ -38,7 +35,13 @@
               <div class="w-4/5">
                 <div class="row-input">
                   <div class="w-3/7">
-                   <base-combobox-custom label="Khách hàng" @showComboDropdown="showCustomerDropdownPanel"/>
+                    <base-combobox-custom
+                      label="Khách hàng"
+                      @showComboDropdown="showCustomerDropdownPanel"
+                      @showAddForm="addCustomer"
+                      v-model="customerComboboxValue"
+                      @keyup="searchCustomerCombobox($event)"
+                    />
                   </div>
                   <div class="w-4/7 px-13 border-box">
                     <base-input label="Địa chỉ" />
@@ -54,7 +57,13 @@
                 </div>
                 <div class="row-input">
                   <div class="w-3/7">
-                    <base-input label="Nhân viên bán hàng" />
+                    <base-combobox-custom
+                      label="Khách hàng"
+                      @showComboDropdown="showEmployeeDropdownPanel"
+                      @showAddForm="addEmployee"
+                      v-model="employeeComboboxValue"
+                      @keyup="searchEmployeeCombobox($event)"
+                    />
                   </div>
                   <div class="w-4/7 px-13 border-box">
                     <base-input label="Kèm theo" />
@@ -95,7 +104,10 @@
                 />
               </div>
             </div>
-            <base-table :tableHeaders="tableInwardDetailHeaders" :tableContents="tableContents"/>
+            <base-table
+              :tableHeaders="tableInwardDetailHeaders"
+              :tableContents="tableInwardDetailContents"
+            />
             <div class="inward-detail-pagination">
               <base-pagination />
             </div>
@@ -138,9 +150,15 @@ import BaseButton from "../../base/BaseButton.vue";
 import BaseTable from "../../base/BaseTable.vue";
 import BasePagination from "../../base/BasePagination.vue";
 import BaseDropdown from "../../base/BaseDropdown.vue";
-import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue"
+import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue";
+import MethodMixin from "../../../mixins/methods";
+import { RepositoryFactory } from "../../../js/repository/repository.factory";
+const AccountObjectRepository = RepositoryFactory.get("accountobjects");
+const EmployeeRepository = RepositoryFactory.get("employees");
+import axios from "axios";
 export default {
   name: "InwardDetail",
+  mixins: [MethodMixin],
   components: {
     BaseInput,
     BaseButton,
@@ -160,7 +178,13 @@ export default {
       inwardMethodList: this.$resourcesVN.inwardMethodList,
       isShowInwardDetail: false,
       /**table */
-  };
+      tableInwardDetailContents: [],
+      /**combobox customer*/
+      customerComboboxValue: "",
+      timeDelaySearch: null,
+      /**combobox employee */
+      employeeComboboxValue: "",
+    };
   },
   methods: {
     /**Đóng form popup
@@ -170,11 +194,186 @@ export default {
       // this.dropdownData = 20;
       this.$emit("closeInwardDetail");
     },
+    /**
+     * Hàm tính ra element cha chứa lớp được truyền vào
+     * @param {Element} childE
+     * @param {String} parentClass
+     */
+    findParentByClass(childE, parentClass) {
+      var parentE = childE;
+      if (parentE) {
+        // Nếu không chứa class thì tiếp tục vòng lặp
+        while (parentE.classList.contains(parentClass) == false) {
+          // Đi ra một element cha
+          parentE = parentE.parentElement;
+          // Khi đã duyệt hết mà không có thì set null và thoát vòng lặp
+          if (parentE.tagName == "BODY") {
+            parentE = null;
+            break;
+          }
+        }
+      }
+      return parentE;
+    },
+    //#region Combobox Customer
+
     /**hiển thị combo dropdown panel của khách hàng */
-    showCustomerDropdownPanel(){
+    showCustomerDropdownPanel(event) {
+      let element = event.target;
+      let elementRect = element.getBoundingClientRect();
+      let leftChange =
+        -this.findParentByClass(element, "combobox-custom-content")
+          .clientWidth +
+        element.clientWidth +
+        6;
+      let elementPos = {
+        top: elementRect.top,
+        left: elementRect.left,
+        topChange: 30,
+        leftChange: leftChange,
+      };
+      axios.get(this.formatString(this.$resourcesVN.apiList.accountobjectPagingFilter, "", 1, 20))
+        .then((response) => {
+          console.log(response);
+          let functionEmit = "bindAccountObjectCombobox";
+          let comboDropdownData = {
+            tableHeaders: this.$resourcesVN.tableCustomerHeaders,
+            tableContents: response.data["AccountObjects"],
+            hasFooter: false,
+            position: elementPos,
+            functionEmit: functionEmit,
+          };
+          this.$eventBus.$emit("showComboDropdown", comboDropdownData);
+          this.$eventBus.$on(functionEmit, (data) =>{
+            this.customerComboboxValue = data["account_object_name"];
+           this.$eventBus.$emit("hideComboDropdown");
+          })
+          
+           
+        })
+        .catch((response) => console.log(response));
+    },
+    /**filter combobox khách hàng */
+    searchCustomerCombobox(event) {
+      if (this.timeDelaySearch) {
+        clearTimeout(this.timeDelaySearch);
+      }
+      this.timeDelaySearch = setTimeout(() => {
+        let element = event.target;
+        let elementRect = element.getBoundingClientRect();
+        let elementPos = {
+          top: elementRect.top,
+          left: elementRect.left,
+          topChange: 30,
+          leftChange: -10,
+        };
+        AccountObjectRepository.getAccountObjectPagingFilter(this.customerComboboxValue, 1, 20)
+          .then((response) => {
+            let comboDropdownData = {
+              tableHeaders: this.$resourcesVN.tableCustomerHeaders,
+              tableContents: response.data["AccountObjects"],
+              hasFooter: false,
+              position: elementPos,
+              isLoading: false,
+            };
+            this.$eventBus.$emit("showComboDropdown", comboDropdownData);
+          })
+          .catch((response) => console.log(response));
+        this.$eventBus.$emit("showComboDropdown", {position: elementPos,isLoading: true});
+      }, 500);
       
+    },
+    
+    /**Thêm mới khách hàng */
+    addCustomer(){
+      console.log("hiển thị khách hàng");
+      this.$eventBus.$emit("showCustomerDetail");
+    },
+    //#endregion
+    //#region Combobox Employee
+  
+    /**hiển thị combo dropdown panel của khách hàng */
+    showEmployeeDropdownPanel(event) {
+      let element = event.target;
+      let elementRect = element.getBoundingClientRect();
+      let leftChange =
+        -this.findParentByClass(element, "combobox-custom-content")
+          .clientWidth +
+        element.clientWidth +
+        6;
+      let elementPos = {
+        top: elementRect.top,
+        left: elementRect.left,
+        topChange: 30,
+        leftChange: leftChange,
+      };
+      EmployeeRepository.getEmployeePagingFilter("", 1, 20)
+        .then((response) => {
+          let comboDropdownData = {
+            tableHeaders: this.$resourcesVN.InwardEmployeeComboboxHeaders,
+            tableContents: response.data["Employees"],
+            hasFooter: false,
+            position: elementPos,
+          };
+          this.$eventBus.$emit("showComboDropdown", comboDropdownData);
+        })
+        .catch((response) => console.log(response));
+    },
+    /**filter combobox khách hàng */
+    searchEmployeeCombobox(event) {
+      if (this.timeDelaySearch) {
+        clearTimeout(this.timeDelaySearch);
+      }
+      this.timeDelaySearch = setTimeout(() => {
+        let element = event.target;
+        let elementRect = element.getBoundingClientRect();
+        let elementPos = {
+          top: elementRect.top,
+          left: elementRect.left,
+          topChange: 30,
+          leftChange: -10,
+        };
+        EmployeeRepository.getEmployeePagingFilter(this.employeeComboboxValue, 1, 20)
+          .then((response) => {
+            let comboDropdownData = {
+              tableHeaders: this.$resourcesVN.InwardEmployeeComboboxHeaders,
+              tableContents: response.data["Employees"],
+              hasFooter: false,
+              position: elementPos,
+              isLoading: false,
+            };
+            this.$eventBus.$emit("showComboDropdown", comboDropdownData);
+          })
+          .catch((response) => console.log(response));
+        this.$eventBus.$emit("showComboDropdown", {position: elementPos,isLoading: true});
+      }, 500);
+      
+    },
+    
+    /**Thêm mới nhân viên */
+    addEmployee(){
+      this.$eventBus.$emit("showEmployeeDetail");
     }
+    //#endregion
   },
+  // created() {
+  //   /**
+  //    * Tạo event hiển thị context menu
+  //    * CreatedBy: nvdien (20/09/2021)
+  //    */
+  //   this.$eventBus.$on("bindComboboxValue", (data) => {
+  //     this.customerComboboxValue = data["account_object_name"];
+  //     this.employeeComboboxValue = data["employee_name"];
+  //     this.$eventBus.$emit("hideComboDropdown");
+  //   });
+  // },
+  // destroyed() {
+	// 		/**
+	// 		 * Huỷ các sự kiện
+	// 		 * CreatedBy: nvdien (20/09/2021)
+	// 		 */
+	// 		this.$eventBus.$off("bindComboboxValue");
+	// },
 };
 </script>
 

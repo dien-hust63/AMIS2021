@@ -38,12 +38,11 @@ namespace Misa.Infrastructure
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
                 var employeeFilter = searchData == null ? string.Empty : searchData;
-                dynamicParameters.Add("@employeefilter", employeeFilter);
-                dynamicParameters.Add("@pageindex", pageIndex - 1);
-                dynamicParameters.Add("@pagesize", pageSize);
-                var sql = "create temp table filtertable as (select * from public.view_employee_department e where e.employee_code ILIKE concat('%', @employeefilter, '%') order by e.created_date desc);";
-                sql += "select * from filtertable  ft limit @pagesize offset @pageindex;";
-                sql += "select count(*) from filtertable as a; drop table filtertable";
+                dynamicParameters.Add("@search_data", employeeFilter);
+                dynamicParameters.Add("@offset", (pageIndex - 1) * pageSize);
+                dynamicParameters.Add("@page_size", pageSize);
+                var sql = "select * from  public.func_get_employee_paging_filter(@search_data) limit @page_size offset @offset;";
+                sql += "select count(*) from (select * from  public.func_get_employee_paging_filter(@search_data)) as filtertable;";
 
                 var response = _dbConnection.QueryMultiple(sql, param:dynamicParameters, commandType: CommandType.Text);
 

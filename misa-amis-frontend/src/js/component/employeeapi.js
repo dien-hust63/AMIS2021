@@ -7,12 +7,13 @@ class EmployeeAPI extends BaseAPI {
     }
 
     /**
-     * lọc và phân trang nhân viên
-     * url phân trang
-     * @returns promise
-     * CreatedBy: nvdien(26/8/2021)
-     */
-    getEmployeePaging(url) {
+    * lọc và phân trang nhân viên
+    * url phân trang
+    * @returns promise
+    * CreatedBy: nvdien(24/9/2021)
+    */
+     getEmployeePagingFilter(searchData,pageIndex, pageSize) {
+        let url = this.baseApiUrl + this.controller + `/filter?searchData=${searchData}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
         return axios.get(url);
     }
 

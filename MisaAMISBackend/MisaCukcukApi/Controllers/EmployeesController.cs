@@ -47,11 +47,11 @@ namespace MisaCukcukApi.Controllers
         /// CreatedBy: nvdien(20/8/2021)
         /// ModifiedBy: nvdien(20/8/2021)
         [HttpGet("Filter")]
-        public IActionResult GetEmployeeFilterPaging([FromQuery] string employeeFilter, [FromQuery] int pageIndex, [FromQuery] int pageSize)
+        public IActionResult GetEmployeeFilterPaging([FromQuery] string searchData, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
             try
             {
-                var serviceResult = _employeeService.GetEmployeeFilterPaging(employeeFilter, pageIndex, pageSize);
+                var serviceResult = _employeeService.GetEmployeeFilterPaging(searchData, pageIndex, pageSize);
                 return Ok(serviceResult.Data);
             }
             catch (Exception ex)

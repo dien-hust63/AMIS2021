@@ -440,7 +440,6 @@ export default {
       else{
         this.isDisabled = true;
       }
-      console.log(selectedRowList);
     }
   },
   watch: {

@@ -1,6 +1,7 @@
 .ms-combobox-custom{
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 /**label*/
 .combobox-custom-label{
@@ -42,6 +43,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
         }
         .combobox-custom-actions .btn-actions:hover{
             background-color: #e0e0e0;

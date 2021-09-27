@@ -5,13 +5,13 @@
     </label>
     <div class="combobox-custom-content">
       <div class="combobox-custom-input">
-        <input type="text" v-on="inputListeners" />
+        <input type="text" v-on="inputListeners" :value="value"/>
       </div>
       <div class="combobox-custom-actions">
-        <div class="btn-add btn-actions">
+        <div class="btn-add btn-actions" @click="showAddForm">
           <div class="mi mi-16 mi-plus--success"></div>
         </div>
-        <div class="btn-dropdown btn-actions" @click="showComboDropdown">
+        <div class="btn-dropdown btn-actions" @click="showComboDropdown($event)">
           <div class="mi mi-16 mi-arrow-dropdown"></div>
         </div>
       </div>
@@ -33,6 +33,16 @@ export default {
       type: String,
       default: "",
     },
+    value:{
+      type: String,
+      default: "",
+    }
+  },
+  data(){
+    return{
+      isShowComboDropdown: false,
+      inputValue:"",
+    }
   },
  
   methods:{
@@ -40,9 +50,21 @@ export default {
        * Hiển thị combo dropdown panel
        * CreatedBy: nvdien(26/9/2021)
        */
-      showComboDropdown(){
-          this.$emit("showComboDropdown");
+      showComboDropdown(event){
+        this.isShowComboDropdown = !this.isShowComboDropdown;
+        if(this.isShowComboDropdown){
+          this.$emit("showComboDropdown",event);
+        }
+        else{
+          this.$eventBus.$emit("hideComboDropdown");
+        }
+        
+      },
+      /**Hiển thị form thêm */
+      showAddForm(){
+        this.$emit("showAddForm");
       }
+      
   },
   computed: {
     inputListeners: function () {

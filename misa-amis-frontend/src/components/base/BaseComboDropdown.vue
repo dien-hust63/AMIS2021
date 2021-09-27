@@ -1,11 +1,20 @@
 <template>
-  <div class="ms-combo-dropdown-panel" :style="positionOfPanel" :class="{ 'combo-dropdown-panel--show': isShowPanel}" >
+  <div
+    class="ms-combo-dropdown-panel"
+    :style="positionOfPanel"
+    :class="{ 'combo-dropdown-panel--show': isShowPanel }"
+  >
     <div class="combo-dropdown-header">
       <table>
         <thead>
           <tr>
-            <th :style="{ width: '100px' }">Mã kho</th>
-            <th :style="{ width: '200px' }">Tên kho</th>
+            <th
+              v-for="(tableHeader, index) in tableHeaders"
+              :key="index"
+              :style="{ width: tableHeader.width }"
+            >
+              {{ tableHeader.label }}
+            </th>
           </tr>
         </thead>
       </table>
@@ -13,21 +22,19 @@
     <div class="combo-dropdown-body">
       <table>
         <tbody>
-          <tr class="combo-dropdown-row">
-            <td class="combo-dropdown-row-td" :style="{ width: '100px' }">
-              001
-            </td>
-            <td class="combo-dropdown-row-td" :style="{ width: '200px' }">
-              KHO THỰC PHẨM TƯƠI
-            </td>
-          </tr>
-
-          <tr class="combo-dropdown-row">
-            <td class="combo-dropdown-row-td" :style="{ width: '100px' }">
-              001
-            </td>
-            <td class="combo-dropdown-row-td" :style="{ width: '200px' }">
-              KHO THỰC PHẨM TƯƠI
+          <tr
+            class="combo-dropdown-row"
+            v-for="(tableContent, index) in tableContents"
+            :key="index"
+            @click="bindValue(tableContent)"
+          >
+            <td
+              class="combo-dropdown-row-td"
+              v-for="(tableHeader, headerIndex) in tableHeaders"
+              :key="headerIndex"
+              :style="{ width: tableHeader.width }"
+            >
+              {{tableContent[tableHeader.fieldName]}}
             </td>
           </tr>
         </tbody>
@@ -36,7 +43,7 @@
     <div class="combo-dropdown-loading" v-if="isLoading">
       <div class="combo-dropdown-loading-icon"></div>
     </div>
-    <div class="combo-dropdown-footer">
+    <div class="combo-dropdown-footer" v-if="hasFooter">
       <div class="btn-add-combo-dropdown">
         <div class="mi mi-16 mi-plus--success"></div>
         <div class="btn-add-text">Thêm mới</div>
@@ -55,9 +62,13 @@ export default {
      */
     this.$eventBus.$on("showComboDropdown", (data) => {
       this.isShowPanel = true;
+      /**loading */
+      this.isLoading = data["position"]["isLoading"];
       /**table */
       this.tableHeaders = data["tableHeaders"];
-      this.tableContents = data["tableContents"];
+      if(!this.isLoading){
+        this.tableContents = data["tableContents"];
+      }
       /**footer */
       this.hasFooter = data["hasFooter"];
       /**position */
@@ -65,17 +76,20 @@ export default {
       this.left = data["position"]["left"];
       this.topChange = data["position"]["topChange"];
       this.leftChange = data["position"]["leftChange"];
-
-      this.$nextTick(() => {
-        this.setPositionPanel();
-      });
+      /**element call */
+      this.functionEmit = data["functionEmit"];
+      console.log(this.functionEmit);
+      // this.$nextTick(() => {
+      //   this.setPositionPanel();
+      // });
     });
     /**
      * Tạo event ẩn context menu
      * CreatedBy: nvdien (20/09/2021)
      */
     this.$eventBus.$on("hideComboDropdown", () => {
-        this.isShowPanel = false;
+      this.$eventBus.$off(this.functionEmit);
+      this.isShowPanel = false;
     });
   },
   data() {
@@ -89,19 +103,38 @@ export default {
       hasFooter: null,
       /**position */
       top: 0,
-      left:0,
+      left: 0,
       topChange: 0,
       leftChange: 0,
+      /*element call*/
+      elementCall: null,
+      /**listenFunction */
+      listenFunction: "",
     };
   },
+  methods:{
+    /**gán giá trị */
+    bindValue(tableContent){
+      this.$eventBus.$emit(this.functionEmit,tableContent);
+    }
+  },
   computed: {
-      positionOfPanel: function(){
-          return {
-                top: this.top + this.topChange +'px',
-                left: this.left + this.leftChange + 'px'
-            }
-      }
-  }
+    positionOfPanel: function () {
+      return {
+        top: this.top + this.topChange + "px",
+        left: this.left + this.leftChange + "px",
+      };
+    },
+    
+  },
+  destroyed() {
+			/**
+			 * Huỷ các sự kiện
+			 * CreatedBy: nvdien (20/09/2021)
+			 */
+			this.$eventBus.$off("showComboDropdown");
+			this.$eventBus.$off("hideComboDropdown");
+		},
 };
 </script>
 
