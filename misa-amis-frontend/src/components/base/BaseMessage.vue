@@ -49,7 +49,6 @@ export default {
      * CreatedBy: nvdien (20/09/2021)
      */
     this.$eventBus.$on("hideMessageBox", () => {
-      console.log("ttes");
       this.isShowMessage = false;
     });
   },

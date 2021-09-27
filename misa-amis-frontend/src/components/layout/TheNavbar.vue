@@ -28,12 +28,6 @@ export default {
     }
   },
   methods:{
-    delete(){
-      console.log("delete");
-    },
-    duplicate(){
-      console.log("duplicate");
-    },
    
   }
 };

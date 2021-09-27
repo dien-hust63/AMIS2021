@@ -118,7 +118,6 @@
         align-items: center;
         height: 68px;
         box-sizing: border-box;
-        padding: 18px 24px;
     }
     .table-above-control{
         display: flex;
@@ -129,6 +128,16 @@
     }
     .table-above-title{
         font-weight: 700;
+    }
+    /**table*/
+    .inward-detail-table .ms-table-wrap{
+        overflow: auto;
+    }
+    .inward-detail-table .ms-table tbody td{
+        height: 40px;
+    }
+    .inward-detail-table .ms-thead tr th:last-child, .inward-detail-table tbody tr td:last-child{
+        width: 40px;
     }
     /**grid control*/
     .grid-control-item{

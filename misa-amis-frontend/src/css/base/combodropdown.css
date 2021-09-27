@@ -32,15 +32,21 @@
 .combo-dropdown-body table{
     border-collapse: collapse;
     border-spacing: 0;
+    width: 100%;
+    
 }
 .combo-dropdown-row{
     cursor: pointer;
+}
+.null-data td{
+    text-align: center;
+    line-height: 32px;
 }
 .combo-dropdown-row--active{
     background-color: #2ca01c;
     color: #fff;
 }
-.combo-dropdown-row:hover{
+.combo-dropdown-row:not(.combo-dropdown-row--active):hover{
     color: #43ca54;
     font-weight: 600;
     background-color: #e8e9ec;

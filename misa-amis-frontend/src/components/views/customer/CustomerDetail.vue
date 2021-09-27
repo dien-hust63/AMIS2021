@@ -179,7 +179,6 @@ export default {
       };
       EmployeeRepository.getEmployeePagingFilter("", 1, 20)
         .then((response) => {
-          console.log(response);
           let comboDropdownData = {
             tableHeaders: this.$resourcesVN.tableEmployeeComboboxHeaders,
             tableContents: response.data["Employees"],
@@ -249,7 +248,6 @@ export default {
     },
     /**Thêm mới khách hàng */
     addEmployee() {
-      console.log("hiển thị nhân viên");
       this.$eventBus.$emit("showEmployeeDetail");
     },
     //#endregion
@@ -268,7 +266,7 @@ export default {
     });
   },
   destroyed() {
-    this.$evenBus.$off("showCustomerDetail");
+    this.$eventBus.$off("showCustomerDetail");
     /**
      * Huỷ các sự kiện
      * CreatedBy: nvdien (20/09/2021)

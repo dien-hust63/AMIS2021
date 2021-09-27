@@ -6,7 +6,8 @@ module.exports = {
     employeeApi: "https://localhost:44350/api/v1/Employees/",
     customerApi: "https://localhost:44350/api/v1/Custoemers/",
     accountvoucherPagingFilter:"https://localhost:44350/api/v1/AccountVouchers/filter?searchData={0}&pageIndex={1}&pageSize={2}",
-    accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}"
+    accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+    employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}"
   },
 
   /**
@@ -40,17 +41,17 @@ module.exports = {
   /**mảng chứa thông tin tiêu đề bảng hàng tiền trong phiếu nhập kho */
   tableInwardDetailHeaders: [
     { label: '#',type: "number" },
-    { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
+    { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "combobox"},
     { fieldName: 'commodity_name', label: 'TÊN HÀNG', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'debit_account_code', label: 'TK NỢ', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
+    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "combobox" },
+    { fieldName: 'debit_account_code', label: 'TK NỢ', textAlign: 'text-right', type: "normal"},
     { fieldName: 'credit_account_code', label: 'TK CÓ', textAlign: 'text-left', type: "normal" },
     { fieldName: 'unit', label: 'DVT', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
+    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "normal"},
     { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "normal" },
     { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
-    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-right', type: "normal"},
+    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-left', type: "date" },
     { type:'delete' }
 
   ],
@@ -69,6 +70,49 @@ module.exports = {
     { fieldName: 'employee_code', label: 'Mã nhân viên', textAlign: 'text-left', type: "normal", width: '100px'},
     { fieldName: 'employee_name', label: 'Tên nhân viên', textAlign: 'text-left', type: "normal", width: '200px' },
     { fieldName: 'department_name', label: 'Đơn vị', textAlign: 'text-left', type: "normal", width: '200px'},
+  ],
+  /**combobox hàng hóa */
+  customerComboboxProps: {
+    tableHeaders: tableCustomerHeaders,
+    api: apiList.accountobjectPagingFilter,
+    functionEmit: "bindAccountObjectCombobox",
+    tableObject: "AccountObjects",
+    valueField: "account_object_name",
+  },
+  tableCommodityComboboxHeaders:[
+    { fieldName: 'commodity_code', label: 'Mã hàng', textAlign: 'text-left', type: "normal", width: '100px'},
+    { fieldName: 'commodity_name', label: 'Tên hàng', textAlign: 'text-left', type: "normal", width: '300px' },
+  ],
+  /**table inward detail */
+  tableInwardDetailContents:[
+    {
+      'commodity_code':'',
+      'commodity_name':'',
+      'warehouse_code':'',
+      'debit_account_code':'',
+      'credit_account_code':'',
+      'unit':'',
+      'quantity':'',
+      'debit_amount':'',
+      'total_price':'',
+      'lot_number':'',
+      'expiry':'',
+    }
+  ],
+  tableInwardDetailContentsDefault:[
+    {
+      'commodity_code':'',
+      'commodity_name':'',
+      'warehouse_code':'',
+      'debit_account_code':'',
+      'credit_account_code':'',
+      'unit':'',
+      'quantity':'',
+      'debit_amount':'',
+      'total_price':'',
+      'lot_number':'',
+      'expiry':'',
+    }
   ],
   
   message: {

@@ -50,8 +50,11 @@
               </div>
             </div>
             <div v-if="tableHeader.type == 'number'">{{ index + 1 }}</div>
-            <div v-if="tableHeader.type == 'delete'">
+            <div v-if="tableHeader.type == 'delete'" @click="deleteRow(index)">
               <div class="mi mi-16 mi-delete"></div>
+            </div>
+            <div v-if="tableHeader.type == 'combobox'">
+              <base-combobox-custom :hasFooter="true" :hideAddIcon="true" />
             </div>
           </td>
         </tr>
@@ -73,6 +76,7 @@
 
 
 <script>
+import BaseComboboxCustom from "./BaseComboboxCustom.vue";
 import BaseCheckbox from "./BaseCheckbox.vue";
 import moment from "moment";
 import MixinListener from "../../mixins/listeners/listeners";
@@ -81,6 +85,7 @@ export default {
   mixins: [MixinListener],
   components: {
     BaseCheckbox,
+    BaseComboboxCustom,
   },
   props: {
     tableHeaders: {
@@ -120,6 +125,8 @@ export default {
       isChooseCheckboxAll: false,
       listSelectedRow: [],
       listSelectedContent: [],
+      /**combobox props */
+     
     };
   },
   methods: {
@@ -223,6 +230,10 @@ export default {
      */
     isSelectedRow(index) {
       return this.listSelectedRow.includes(index);
+    },
+    /**Xóa 1 dòng */
+    deleteRow(index) {
+      this.$emit("deleteRow", index);
     },
   },
 };

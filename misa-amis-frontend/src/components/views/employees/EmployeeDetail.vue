@@ -1,5 +1,5 @@
 <template>
-  <div class="employee-popup-wrap">
+  <div class="employee-popup-wrap" :class="{'employee-popup--show':isShowEmployeeDetail}">
     <div class="employee-popup">
       <div class="employee-popup__header">
         <div class="employee-popup-title">
@@ -11,7 +11,7 @@
           <div class="mi mi-24 mi-help popup-help-icon"></div>
           <div
             class="mi mi-24 mi-close popup-close-icon"
-            @click="closePopupAndCheck"
+            @click="closePopup"
           ></div>
         </div>
       </div>
@@ -245,9 +245,18 @@ export default {
       inputCheck: false,
       inputReset: false,
       inputErrorCustom: "",
+      /**show form */
+      isShowEmployeeDetail: false
     };
   },
-
+  created() {
+    this.$eventBus.$on("showEmployeeDetail", () => {
+      this.isShowEmployeeDetail = true;
+    });
+  },
+  destroyed() {
+    this.$eventBus.$off("showEmployeeDetail");
+  },
   methods: {
     /**
      * Đóng message box
@@ -302,14 +311,15 @@ export default {
      */
     closePopup() {
       //Reset dữ liệu popup nhân viên
-      this.isResetData = true;
-      this.employeeData = Object.assign({}, {});
-      //Reset các input
-      this.inputReset = true;
-      //Clear danh sách lỗi
-      this.errorList = [];
-      //Đóng popup nhân viên
-      this.$emit("closePopup");
+      // this.isResetData = true;
+      // this.employeeData = Object.assign({}, {});
+      // //Reset các input
+      // this.inputReset = true;
+      // //Clear danh sách lỗi
+      // this.errorList = [];
+      // //Đóng popup nhân viên
+      // this.$emit("closePopup");
+      this.isShowEmployeeDetail = false;
     },
     /**
      * Đóng đồng thời message box và popup

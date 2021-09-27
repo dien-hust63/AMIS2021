@@ -6,6 +6,7 @@
         <router-view></router-view>
     </div>
     <customer-detail />
+    <employee-detail />
   </div>
 </template>
 
@@ -13,12 +14,14 @@
 import TheNavbar from '../layout/TheNavbar.vue';
 import BaseTooltip from "../base/BaseTooltip.vue";
 import CustomerDetail from "../../components/views/customer/CustomerDetail.vue";
+import EmployeeDetail from "../../components/views/employees/EmployeeDetail.vue";
 export default {
     name: "TheContent",
     components:{
         TheNavbar,
         BaseTooltip,
-        CustomerDetail
+        CustomerDetail,
+        EmployeeDetail
     }
 }
 </script>

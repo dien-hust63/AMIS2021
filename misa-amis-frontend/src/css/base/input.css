@@ -10,6 +10,7 @@
     font-size: 12px;
     font-weight: 700;
     margin-bottom: 4px;
+    white-space: nowrap;
 }
 .ms-input__input{
     width: 100%;

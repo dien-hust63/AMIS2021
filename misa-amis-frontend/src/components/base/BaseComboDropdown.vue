@@ -21,12 +21,13 @@
     </div>
     <div class="combo-dropdown-body">
       <table>
-        <tbody>
+        <tbody v-if="tableContents.length != 0">
           <tr
             class="combo-dropdown-row"
             v-for="(tableContent, index) in tableContents"
             :key="index"
-            @click="bindValue(tableContent)"
+            @click="bindValue(tableContent, index)"
+            :class="{'combo-dropdown-row--active': currentIndex == index}"
           >
             <td
               class="combo-dropdown-row-td"
@@ -34,13 +35,22 @@
               :key="headerIndex"
               :style="{ width: tableHeader.width }"
             >
-              {{tableContent[tableHeader.fieldName]}}
+              {{ tableContent[tableHeader.fieldName] }}
+            </td>
+          </tr>
+        </tbody>
+        <tbody v-if="tableContents.length == 0">
+          <tr
+            class="combo-dropdown-row null-data"
+          >
+            <td>
+             Không có dữ liệu hiển thị
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div class="combo-dropdown-loading" v-if="isLoading">
+    <div class="combo-dropdown-loading" v-show="isLoading">
       <div class="combo-dropdown-loading-icon"></div>
     </div>
     <div class="combo-dropdown-footer" v-if="hasFooter">
@@ -53,8 +63,10 @@
 </template>
 
 <script>
+import MethodMixin from "../../mixins/methods";
 export default {
   name: "BaseComboDropdown",
+  mixins: [MethodMixin],
   created() {
     /**
      * Tạo event hiển thị context menu
@@ -63,22 +75,25 @@ export default {
     this.$eventBus.$on("showComboDropdown", (data) => {
       this.isShowPanel = true;
       /**loading */
-      this.isLoading = data["position"]["isLoading"];
+      this.isLoading = data["isLoading"];
       /**table */
-      this.tableHeaders = data["tableHeaders"];
-      if(!this.isLoading){
-        this.tableContents = data["tableContents"];
+      // console.log( data["tableHeaders"]);
+      if (data["tableHeaders"] != null) {
+        this.tableHeaders = data["tableHeaders"];
       }
+      this.tableContents = data["tableContents"];
       /**footer */
       this.hasFooter = data["hasFooter"];
       /**position */
-      this.top = data["position"]["top"];
-      this.left = data["position"]["left"];
-      this.topChange = data["position"]["topChange"];
-      this.leftChange = data["position"]["leftChange"];
+      
+      if (data["position"] != null) {
+        this.top = data["position"]["top"];
+        this.left = data["position"]["left"];
+        this.topChange = data["position"]["topChange"];
+        this.leftChange = data["position"]["leftChange"];
+      }
       /**element call */
       this.functionEmit = data["functionEmit"];
-      console.log(this.functionEmit);
       // this.$nextTick(() => {
       //   this.setPositionPanel();
       // });
@@ -90,6 +105,12 @@ export default {
     this.$eventBus.$on("hideComboDropdown", () => {
       this.$eventBus.$off(this.functionEmit);
       this.isShowPanel = false;
+    });
+    /**
+     * loading Combo dropdown
+     */
+    this.$eventBus.$on("loadingComboDropdown", (data) => {
+      this.isLoading = data;
     });
   },
   data() {
@@ -110,13 +131,15 @@ export default {
       elementCall: null,
       /**listenFunction */
       listenFunction: "",
+      currentIndex: -1,
     };
   },
-  methods:{
+  methods: {
     /**gán giá trị */
-    bindValue(tableContent){
-      this.$eventBus.$emit(this.functionEmit,tableContent);
-    }
+    bindValue(tableContent, index) {
+      this.currentIndex = index;
+      this.$eventBus.$emit(this.functionEmit, tableContent);
+    },
   },
   computed: {
     positionOfPanel: function () {
@@ -125,16 +148,16 @@ export default {
         left: this.left + this.leftChange + "px",
       };
     },
-    
   },
   destroyed() {
-			/**
-			 * Huỷ các sự kiện
-			 * CreatedBy: nvdien (20/09/2021)
-			 */
-			this.$eventBus.$off("showComboDropdown");
-			this.$eventBus.$off("hideComboDropdown");
-		},
+    /**
+     * Huỷ các sự kiện
+     * CreatedBy: nvdien (20/09/2021)
+     */
+    this.$eventBus.$off("showComboDropdown");
+    this.$eventBus.$off("hideComboDropdown");
+    this.$eventBus.$off("loadingComboDropdown");
+  },
 };
 </script>
 

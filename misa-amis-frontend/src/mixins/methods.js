@@ -147,11 +147,32 @@ export default {
          * @returns string
          * CreatedBy: nvdien(3/9/2021)
          */
-        formatString(targetString, ...strings){
-            for (let i=0; i<strings.length; i++){
+        formatString(targetString, ...strings) {
+            for (let i = 0; i < strings.length; i++) {
                 targetString = targetString.replace("{" + i + "}", strings[i]);
             }
             return targetString;
-        }
+        },
+        /**
+     * Hàm tính ra element cha chứa lớp được truyền vào
+     * @param {Element} childE
+     * @param {String} parentClass
+     */
+        findParentByClass(childE, parentClass) {
+            var parentE = childE;
+            if (parentE) {
+                // Nếu không chứa class thì tiếp tục vòng lặp
+                while (parentE.classList.contains(parentClass) == false) {
+                    // Đi ra một element cha
+                    parentE = parentE.parentElement;
+                    // Khi đã duyệt hết mà không có thì set null và thoát vòng lặp
+                    if (parentE.tagName == "BODY") {
+                        parentE = null;
+                        break;
+                    }
+                }
+            }
+            return parentE;
+        },
     }
 }

@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     handleClickNormal() {
-      console.log(this.value);
+      this.$emit("clickButton");
     },
   },
   computed: {
