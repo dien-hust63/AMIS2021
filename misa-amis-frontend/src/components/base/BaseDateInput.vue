@@ -1,5 +1,5 @@
 <template>
-  <div class="ms-input">
+  <div class="ms-input ms-input-date">
     <label class="ms-input__label">
       {{ label }} <span v-if="required"><b class="text--red">*</b></span>
     </label>

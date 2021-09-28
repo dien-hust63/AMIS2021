@@ -100,6 +100,15 @@
     .main-infomation .voucher-number{
         padding-bottom:0px;
     }
+    .voucher-attach-title{
+        white-space: nowrap;
+        display: flex;
+        align-items: flex-end;
+    }
+    .voucher-attach-title .text{
+        margin-bottom: 6px;
+        margin-left: 4px;
+    }
     .summary-info{
         text-align: right;
     }
@@ -185,18 +194,32 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+    padding: 0 20px;
 }
 .inward-detail-footer .ms-button-secondary{
     color: white;
+}
+.inward-detail-footer .ms-button-secondary:hover{
+    background-color: transparent !important;
 }
 
 .left-group-button{
     display: flex;
     justify-content: flex-start;
+    align-items: center;
 }
 
 .right-group-button{
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+}
+.right-group-button .button-add{
+    margin-right: 4px;
+}
+.right-group-button .button-custom-left{
+    border-radius: 2px 0 0 2px;
+}
+.right-group-button .button-custom-right{
+    border-radius: 0 2px 2px 0;
 }

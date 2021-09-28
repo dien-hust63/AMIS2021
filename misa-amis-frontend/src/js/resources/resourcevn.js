@@ -1,14 +1,20 @@
+var apiList = {
+  baseApi: "https://localhost:44350/api/v1/",
+  departmentApi: "https://localhost:44350/api/v1/Departments/",
+  positionApi: "https://localhost:44350/api/v1/Positions/",
+  employeeApi: "https://localhost:44350/api/v1/Employees/",
+  customerApi: "https://localhost:44350/api/v1/Custoemers/",
+  accountvoucherPagingFilter:"https://localhost:44350/api/v1/AccountVouchers/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}"
+}
+var tableCustomerHeaders = [
+  { fieldName: 'account_object_code', label: 'Mã khách hàng', textAlign: 'text-left', type: "normal", width: '100px'},
+  { fieldName: 'account_object_name', label: 'Tên khách hàng', textAlign: 'text-left', type: "normal", width: '200px' },
+  { fieldName: 'contact_address', label: 'Địa chỉ', textAlign: 'text-left', type: "normal" ,width: '250px'},
+];
 module.exports = {
-  apiList: {
-    baseApi: "https://localhost:44350/api/v1/",
-    departmentApi: "https://localhost:44350/api/v1/Departments/",
-    positionApi: "https://localhost:44350/api/v1/Positions/",
-    employeeApi: "https://localhost:44350/api/v1/Employees/",
-    customerApi: "https://localhost:44350/api/v1/Custoemers/",
-    accountvoucherPagingFilter:"https://localhost:44350/api/v1/AccountVouchers/filter?searchData={0}&pageIndex={1}&pageSize={2}",
-    accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}",
-    employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}"
-  },
+  apiList: apiList,
 
   /**
    * table
@@ -30,7 +36,7 @@ module.exports = {
   tableInwardListHeaders: [
     { type: "checkbox" },
     { fieldName: 'mathematics_date', label: 'NGÀY HẠCH TOÁN', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
-    { fieldName: 'voucher_code', label: 'SỐ CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'voucher_code', label: 'SỐ CHỨNG TỪ', textAlign: 'text-left', type: "normal" , hasClick:"VoucherCode"},
     { fieldName: 'description', label: 'DIỄN GIẢI', textAlign: 'text-left', type: "normal" },
     { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
     { fieldName: 'contact_name', label: 'NGƯỜI GIAO/NGƯỜI NHẬN', textAlign: 'text-left', type: "normal" },
@@ -56,11 +62,7 @@ module.exports = {
 
   ],
   /**mảng chứa thông tin tiêu đề của combo dropdown khách hàng */
-  tableCustomerHeaders:[
-    { fieldName: 'account_object_code', label: 'Mã khách hàng', textAlign: 'text-left', type: "normal", width: '100px'},
-    { fieldName: 'account_object_name', label: 'Tên khách hàng', textAlign: 'text-left', type: "normal", width: '200px' },
-    { fieldName: 'contact_address', label: 'Địa chỉ', textAlign: 'text-left', type: "normal" ,width: '250px'},
-  ],
+  tableCustomerHeaders:tableCustomerHeaders,
   /**mảng chứa thông tin tiêu đề của combo dropdown nhân viên */
   tableEmployeeComboboxHeaders:[
     { fieldName: 'employee_code', label: 'Mã nhân viên', textAlign: 'text-left', type: "normal", width: '100px'},
@@ -73,8 +75,8 @@ module.exports = {
   ],
   /**combobox hàng hóa*/
   customerComboboxProps: {
-    tableHeaders: this.tableCustomerHeaders,
-    api: this.apiList.accountobjectPagingFilter,
+    tableHeaders: tableCustomerHeaders,
+    api: apiList['accountobjectPagingFilter'],
     functionEmit: "bindAccountObjectCombobox",
     tableObject: "AccountObjects",
     valueField: "account_object_name",
@@ -127,7 +129,7 @@ module.exports = {
   },
   mode: {
     ADD: 0,
-    INSERT: 1,
+    EDIT: 1,
     BUTTONCALLBACK: 2,
     BUTTONNORMAL: 3,
   },

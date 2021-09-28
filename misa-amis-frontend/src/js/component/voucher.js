@@ -16,5 +16,15 @@ class VoucherAPI extends BaseAPI {
         url += `&voucherType=${voucherType}&startDate=${startDate}&endDate=${endDate}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
         return axios.get(url);
     }
+
+    /**
+     * Lấy chi tiết chứng từ
+     * @param {} voucherId 
+     * @returns 
+     */
+    getVoucherDetail(voucherId){
+        let url = this.baseApiUrl + this.controller + `/Detail/${voucherId}`;
+        return axios.get(url);
+    }
 }
 export default new VoucherAPI();

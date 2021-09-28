@@ -18,10 +18,12 @@
           v-for="(tableContent, index) in tableContents"
           :key="index"
           :class="{ 'ms-table-row--selected': isSelectedRow(index) }"
+          @dblclick="handleDoubleClickRow(tableContent)"
         >
           <td
             v-for="(tableHeader, headerIndex) in tableHeaders"
             :key="headerIndex"
+            @click="handleClickCell(tableHeader, tableContent)"
           >
             <base-checkbox
               v-if="tableHeader.type == 'checkbox'"
@@ -137,8 +139,8 @@ export default {
      * CreatedBy: nvdien(24/9/2021)
      */
     formatTableContent(tableContent, tableHeader) {
-      // if(tableContent['is_mention'] == 1) this.customStyle = 'text--green ';
-      // if(tableContent['is_mention'] == 0) this.customStyle = 'text--red ';
+      if(tableContent['is_mention'] == 1) this.customStyle = 'text--green ';
+      if(tableContent['is_mention'] == 0) this.customStyle = 'text--red ';
 
       let cellData;
       cellData = tableContent[tableHeader.fieldName];
@@ -234,6 +236,20 @@ export default {
     deleteRow(index) {
       this.$emit("deleteRow", index);
     },
+    /**click vào 1 ô  
+     * @param tableHeader : header của cột đó
+    */
+    handleClickCell(tableHeader, tableContent){
+      if('hasClick' in tableHeader){
+        this.$emit(`clickCell${tableHeader['hasClick']}`, tableContent);
+      }
+    },
+    /**double click vào 1 dòng 
+     * @param tableContent nội dung dòng đó
+    */
+    handleDoubleClickRow(tableContent){
+      this.$emit("handleDoubleClickRow", tableContent);
+    }
   },
 };
 </script>

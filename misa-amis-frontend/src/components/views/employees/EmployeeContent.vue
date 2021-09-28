@@ -185,7 +185,7 @@ export default {
     editEmployee(employeeId) {
       EmployeesRepository.getById(employeeId)
         .then((response) => {
-          this.mode = mode.INSERT;
+          this.mode = mode.EDIT;
           //lấy giá trị
           this.employeeData = response.data;
           //focus vào ô mã nhân viên

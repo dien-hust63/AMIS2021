@@ -356,7 +356,7 @@ export default {
           }
           await EmployeesRepository.post(this.employeeData);
         }
-        if (this.mode == mode.INSERT) {
+        if (this.mode == mode.EDIT) {
           //Thực hiện sửa thông tin
           await EmployeesRepository.put(
             this.employeeData["EmployeeId"],
@@ -389,7 +389,7 @@ export default {
           //Thực hiện thêm mới
           await EmployeesRepository.post(this.employeeData);
         }
-        if (this.mode == mode.INSERT) {
+        if (this.mode == mode.EDIT) {
           //Thực hiện sửa thông tin
           if (this.isChangeData) {
             await EmployeesRepository.put(
@@ -451,7 +451,7 @@ export default {
         }
         //Kiểm tra trùng mã
         if (
-          this.mode == mode.INSERT &&
+          this.mode == mode.EDIT &&
           this.employeeData["EmployeeCode"] == this.employeeInfo["EmployeeCode"]
         ) {
           return true;
@@ -556,7 +556,7 @@ export default {
           this.isForceDataNotChange ||
           this.checkEmptyObject(oldValue) ||
           (this.isResetData && this.checkEmptyObject(newValue)) ||
-          (this.mode == mode.INSERT &&
+          (this.mode == mode.EDIT &&
             this.deepEqual(newValue, this.employeeInfo) &&
             this.isObject(newValue))
         ) {

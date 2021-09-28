@@ -8,8 +8,8 @@
           <div
             class="base-button-custom"
           >
-            <div class="button-custom-left ms-button-primary">
-              <div class="buttom-custom-text" @click="addInwardForm">Thêm phiếu nhập</div>
+            <div class="button-custom-left ms-button-primary" @click="addInwardForm">
+              <div class="buttom-custom-text" >Thêm phiếu nhập</div>
             </div>
             <div class="button-custom-right ms-button-primary">
               <div class="line"></div>
@@ -52,7 +52,7 @@ export default {
      * CreadtedBy: nvdien(26/9/2021)
      */
     addInwardForm(){
-       this.$emit('showInwardDetail', this.$resourcesVN.mode.ADD);
+       this.$eventBus.$emit('showInwardDetail', this.$resourcesVN.mode.ADD);
     }
   },
 };

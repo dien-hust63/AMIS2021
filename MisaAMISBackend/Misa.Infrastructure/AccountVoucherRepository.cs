@@ -86,7 +86,7 @@ namespace Misa.Infrastructure
                 DynamicParameters dynamicParameters = new DynamicParameters();
                
                 dynamicParameters.Add("@accountvoucher_id", accountVoucherID);
-                var sql = "select * from public.accountvoucher av where av.accountvoucher_id = @accountvoucher_id;";
+                var sql = "select * from public.view_accountvoucher_accountobject av where av.accountvoucher_id = @accountvoucher_id;";
                 sql += "select * from public.view_accountvoucherdetail_commodity ac where ac.accountvoucher_id = @accountvoucher_id;";
                 
                 var response = _dbConnection.QueryMultiple(sql, param: dynamicParameters, commandType: CommandType.Text);

@@ -5,10 +5,12 @@
         <div class="mi mi-24 mi-arrow-check-all"></div>
         <div
           class="batch-execution ms-button ms-button-around ms-button-secondary"
-          :class="{'ms-button--disabled':isDisabled}"
+          :class="{ 'ms-button--disabled': isDisabled }"
         >
           <div class="ms-button-content">
-            <div class="ms-button__text" @click="batchExecution($event)">Thực hiện hàng loạt</div>
+            <div class="ms-button__text" @click="batchExecution($event)">
+              Thực hiện hàng loạt
+            </div>
             <div class="mi mi-16 mi-arrow-up--black"></div>
           </div>
         </div>
@@ -91,7 +93,10 @@
             @keyup="search"
           />
         </div>
-        <div class="mi mi-24 mi-refresh toolbar-refresh" @click="loadData"></div>
+        <div
+          class="mi mi-24 mi-refresh toolbar-refresh"
+          @click="loadData"
+        ></div>
         <div class="mi mi-24 mi-excel toolbar-excel"></div>
       </div>
     </div>
@@ -103,6 +108,8 @@
         :contextMenuData="contextMenuData"
         @getContextTableData="getContextTableData"
         @getSelectedRowList="getSelectedRowList"
+        @handleDoubleClickRow="editVoucher"
+        @clickCellVoucherCode="editVoucher"
       />
       <div class="warehouse-content-pagination">
         <base-pagination
@@ -169,7 +176,7 @@ export default {
       /**loading */
       isLoading: false,
       /**context menu */
-      isShowContextMenu:false,
+      isShowContextMenu: false,
       contextMenuData: {
         topChange: 20,
         leftChange: -80,
@@ -213,10 +220,11 @@ export default {
         .then((response) => {
           this.tableInwardListContents = response.data["Vouchers"];
           //format tiền
-          if(response.data["TotalPrices"] == "0") this.tableInwardListHeaders[4]["footerValue"] = "0,0"
-          else{
+          if (response.data["TotalPrices"] == "0")
+            this.tableInwardListHeaders[4]["footerValue"] = "0,0";
+          else {
             this.tableInwardListHeaders[4]["footerValue"] =
-            response.data["TotalPrices"];
+              response.data["TotalPrices"];
           }
           //total record
           this.totalRecord = response.data["TotalRecord"];
@@ -360,8 +368,8 @@ export default {
      * CreatedBy: nvdien(26/9/2021)
      */
     saveBook(rowContent) {
-      rowContent['is_mention'] = 1;
-       VoucherRepository.put(rowContent['accountvoucher_id'],rowContent)
+      rowContent["is_mention"] = 1;
+      VoucherRepository.put(rowContent["accountvoucher_id"], rowContent)
         .then(() => {
           this.loadData();
         })
@@ -371,9 +379,9 @@ export default {
      * @param {object} rowContent
      * CreatedBy: nvdien(26/9/2021)
      */
-    unSaveBook(rowContent){
-       rowContent['is_mention'] = 0;
-       VoucherRepository.put(rowContent['accountvoucher_id'], rowContent)
+    unSaveBook(rowContent) {
+      rowContent["is_mention"] = 0;
+      VoucherRepository.put(rowContent["accountvoucher_id"], rowContent)
         .then(() => {
           this.loadData();
         })
@@ -382,11 +390,10 @@ export default {
     /**Thực hiện hàng loạt
      * CreatedBy: nvdien(26/9/2021)
      */
-    batchExecution(event){
-      if(!this.isDisabled){
+    batchExecution(event) {
+      if (!this.isDisabled) {
         this.toogleContextMenu(event);
       }
-      
     },
     /**
      * hiển thị context menu
@@ -395,27 +402,26 @@ export default {
     toogleContextMenu(event) {
       let contextMenuData = [
         {
-            name: "Ghi sổ",
-            function: () => {
-               this.functionTest("hello");
-            },
+          name: "Ghi sổ",
+          function: () => {
+            this.functionTest("hello");
           },
-          {
-            name: "Bỏ ghi",
-            function: () => {
-              this.functionTest("hello");
-            },
+        },
+        {
+          name: "Bỏ ghi",
+          function: () => {
+            this.functionTest("hello");
           },
-          {
-            name: "Xóa",
-            function: () => {
-              this.functionTest("hello");
-            },
+        },
+        {
+          name: "Xóa",
+          function: () => {
+            this.functionTest("hello");
           },
+        },
       ];
       this.isShowContextMenu = !this.isShowContextMenu;
       if (this.isShowContextMenu) {
-        
         let element = event.target;
         let elementRect = element.getBoundingClientRect();
         let elementPos = {
@@ -433,14 +439,23 @@ export default {
       }
     },
     /**Lấy danh sách các selected row */
-    getSelectedRowList(selectedRowList){
-      if(selectedRowList.length > 1){
+    getSelectedRowList(selectedRowList) {
+      if (selectedRowList.length > 1) {
         this.isDisabled = false;
-      }
-      else{
+      } else {
         this.isDisabled = true;
       }
-    }
+    },
+    /**Mở form phiếu nhập kho */
+    editVoucher(content) {
+      let voucherId = content["accountvoucher_id"];
+      VoucherRepository.getVoucherDetail(voucherId)
+        .then((response) => {
+          let mode = this.$resourcesVN.mode.EDIT;
+          this.$eventBus.$emit("showInwardDetail", mode, response.data.Data);
+        })
+        .catch((response) => console.log(response));
+    },
   },
   watch: {
     timeReportDropdownData(newValue) {

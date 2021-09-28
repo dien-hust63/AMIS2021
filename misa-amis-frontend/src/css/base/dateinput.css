@@ -65,11 +65,14 @@
      display: block;
  }
 
+ .ms-input-date{
+    min-width: 150px;
+ }
  .ms-input__input .input-date{
     position: absolute;
     top:1px;
     left: 1px;
-    width: 85%;
+    width: calc(100% - 24px);
     height: 30px;
     border: none;
     outline: none;

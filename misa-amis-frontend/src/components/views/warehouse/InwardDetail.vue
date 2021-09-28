@@ -1,5 +1,5 @@
 <template>
-  <div class="inward-detail-wrap">
+  <div class="inward-detail-wrap" v-show="isShowInwardDetail">
     <div class="inward-detail">
       <div class="inward-detail-header">
         <div class="recent-log-btn">
@@ -23,8 +23,8 @@
           <div class="button-help button-group">
             <div class="mi mi-24 mi-help"></div>
           </div>
-          <div class="button-close button-group">
-            <div class="mi mi-24 mi-close" @click="closeInwardDetail()"></div>
+          <div class="button-close button-group" @click="closeInwardDetail" >
+            <div class="mi mi-24 mi-close"></div>
           </div>
         </div>
       </div>
@@ -37,44 +37,44 @@
                   <div class="w-3/7">
                     <base-combobox-custom
                       label="Khách hàng"
-                      v-model="customerComboboxValue"
+                      v-model="masterContent['account_object_name']"
                       :comboboxProps="customerComboboxProps"
                       :hasFooter="false"
                       @showAddForm="showCustomerDetail"
-                      @getDataEventBus="
-                        (data) =>
-                          (customerComboboxValue = data['account_object_name'], employeeComboboxValue=data['employee_name'],customerAddress=data['contact_address'])
-                      "
+                      @getDataEventBus="bindingCustomerCombobox"
                     />
                   </div>
                   <div class="w-4/7 px-13 border-box">
-                    <base-input label="Địa chỉ" v-model="customerAddress"/>
+                    <base-input label="Địa chỉ" v-model="masterContent['contact_address']"/>
                   </div>
                 </div>
                 <div class="row-input">
                   <div class="w-3/7">
-                    <base-input label="Người giao hàng" />
+                    <base-input label="Người giao hàng" v-model="masterContent['contact_name']"/>
                   </div>
                   <div class="w-4/7 px-13 border-box">
-                    <base-input label="Diễn giải" />
+                    <base-input label="Diễn giải" v-model="masterContent['description']"/>
                   </div>
                 </div>
                 <div class="row-input">
                   <div class="w-3/7">
                     <base-combobox-custom
                       label="Nhân viên bán hàng"
-                      v-model="employeeComboboxValue"
+                      v-model="masterContent['employee_name']"
                       :comboboxProps="employeeComboboxProps"
                       :hasFooter="false"
                       @showAddForm="showEmployeeDetail"
-                      @getDataEventBus="
-                        (data) =>
-                          (employeeComboboxValue = data['employee_name'])
-                      "
+                      @getDataEventBus="bindingEmployeeCombobox"
                     />
                   </div>
                   <div class="w-4/7 px-13 border-box">
-                    <base-input label="Kèm theo" />
+                    <div class="w-2/3 flex">
+                      <base-input label="Kèm theo" class="voucher-attach" placeholder="Số lượng" v-model="masterContent['voucher_attach']"/>
+                      <div class="voucher-attach-title">
+                        <div class="text">chứng từ gốc</div>    
+                      </div>
+                    </div>
+                    
                   </div>
                 </div>
                 <div class="row-input flex">
@@ -84,13 +84,13 @@
               </div>
               <div class="w-1/5">
                 <div class="row-input-right">
-                  <base-input label="Ngày hạch toán" />
+                  <base-date-input label="Ngày hạch toán" />
                 </div>
                 <div class="row-input-right">
-                  <base-input label="Ngày chứng từ" />
+                  <base-date-input label="Ngày chứng từ" />
                 </div>
                 <div class="row-input-right voucher-number">
-                  <base-input label="Số chứng từ" />
+                  <base-input label="Số chứng từ" v-model="masterContent['voucher_code']"/>
                 </div>
               </div>
             </div>
@@ -145,8 +145,18 @@
           <base-button value="Hủy" class="ms-button-secondary" />
         </div>
         <div class="right-group-button">
-          <base-button value=" Cất" class="ms-button-secondary" />
-          <base-button value="Cất và in" class="ms-button-primary" />
+          <base-button value=" Cất" class="ms-button-secondary button-add" />
+           <div
+            class="base-button-custom"
+          >
+            <div class="button-custom-left ms-button-primary">
+              <div class="buttom-custom-text">Cất và in</div>
+            </div>
+            <div class="button-custom-right ms-button-primary">
+              <div class="line"></div>
+              <div class="mi mi-16 mi-arrow-up--white"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -160,6 +170,7 @@ import BaseTable from "../../base/BaseTable.vue";
 import BasePagination from "../../base/BasePagination.vue";
 import BaseDropdown from "../../base/BaseDropdown.vue";
 import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue";
+import BaseDateInput from '../../base/BaseDateInput.vue';
 export default {
   name: "InwardDetail",
   components: {
@@ -169,6 +180,7 @@ export default {
     BasePagination,
     BaseDropdown,
     BaseComboboxCustom,
+    BaseDateInput,
   },
   data() {
     return {
@@ -179,7 +191,6 @@ export default {
 
       dropdownInwardMethodDefault: this.$resourcesVN.inwardMethodList[0],
       inwardMethodList: this.$resourcesVN.inwardMethodList,
-      isShowInwardDetail: false,
       /**table */
       tableInwardDetailContents: this.$resourcesVN.tableInwardDetailContents,
       /**combobox customer*/
@@ -202,6 +213,13 @@ export default {
       },
       /**field in master */
       customerAddress:"",
+      /**mode của phiếu */
+      mode: this.$resourcesVN.mode.ADD,
+      /**ẩn hiện form */
+      isShowInwardDetail: false,
+      /**Nội dung form */
+      masterContent: {},
+      detailContent: {},
     };
   },
   methods: {
@@ -209,7 +227,7 @@ export default {
      * CreaedBy: nvdien(17/9/2021)
      */
     closeInwardDetail() {
-      this.$emit("closeInwardDetail");
+      this.isShowInwardDetail = false;
     },
 
     /**Mở form Thêm mới khách hàng*/
@@ -241,8 +259,34 @@ export default {
     /**Xóa 1 dòng */
     deleteRow(index){
       this.tableInwardDetailContents.splice(index, 1);
+    },
+    /**bind lên combobox khách hàng */
+    bindingCustomerCombobox(content){
+      this.$set(this.masterContent, "account_object_name", content["account_object_name"]);
+      this.$set(this.masterContent, "employee_name", content["employee_name"]);
+    },
+    /**bind lên combobox nhân viên */
+    bindingEmployeeCombobox(content){
+      this.$set(this.masterContent, "employee_name", content["employee_name"]);
     }
   },
+  created(){
+    this.$eventBus.$on("showInwardDetail", (mode, content)=>{
+      this.mode = mode;
+      if(mode == this.$resourcesVN.mode.ADD){
+        console.log("thêm mới hoặc nhân bản");
+      }
+      if(mode == this.$resourcesVN.mode.EDIT){
+        console.log(content["in_inward"]);
+        this.masterContent = content["in_inward"][0];
+        this.detailContent = content["in_inward_detail"];
+      }
+      this.isShowInwardDetail = true;
+    })
+  },
+  destroyed(){
+    this.$eventBus.$off("showInwardDetail");
+  }
 };
 </script>
 
