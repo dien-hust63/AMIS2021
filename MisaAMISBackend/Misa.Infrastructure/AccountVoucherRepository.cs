@@ -19,6 +19,8 @@ namespace Misa.Infrastructure
         {
 
         }
+
+       
         #endregion
 
         /// <summary>
@@ -70,7 +72,58 @@ namespace Misa.Infrastructure
                 return result;
             }
         }
-        
+
+        /// <summary>
+        /// Lấy chi tiết chứng từ theo Id
+        /// </summary>
+        /// <param name="accountVoucherID">ID chứng từ</param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(24/9/2021)
+        public object getAccountVoucherDetail(Guid accountVoucherID)
+        {
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            {
+                DynamicParameters dynamicParameters = new DynamicParameters();
+               
+                dynamicParameters.Add("@accountvoucher_id", accountVoucherID);
+                var sql = "select * from public.accountvoucher av where av.accountvoucher_id = @accountvoucher_id;";
+                sql += "select * from public.view_accountvoucherdetail_commodity ac where ac.accountvoucher_id = @accountvoucher_id;";
+                
+                var response = _dbConnection.QueryMultiple(sql, param: dynamicParameters, commandType: CommandType.Text);
+
+                var vouchers = response.Read<AccountVoucher>();
+                var voucherDetails = response.Read<AccountVoucherDetail>();
+                var inwardDetail = new List<object>();
+
+                if (voucherDetails.Count() > 0)
+                {
+                    foreach (var item in voucherDetails)
+                    {
+                        var commodityId = item.commodity_id;
+                        DynamicParameters dynamicParameters1 = new DynamicParameters();
+
+                        dynamicParameters1.Add("@commodity_id", commodityId);
+                        var sql2 = "select * from view_commodity_unit vcu2 where vcu2.commodity_id = @commodity_id";
+                        var units = _dbConnection.Query<CommodityUnit>(sql2, param: dynamicParameters1, commandType: CommandType.Text);
+                        inwardDetail.Add(new { 
+                            voucher_detail = item,
+                            units = units,
+                        });
+                    }
+                }
+                
+                var result = new
+                {
+                    Data = new { 
+                        in_inward = vouchers,
+                        in_inward_detail = inwardDetail,
+                    }
+
+                };
+                return result;
+            }
+        }
+
 
     }
 }

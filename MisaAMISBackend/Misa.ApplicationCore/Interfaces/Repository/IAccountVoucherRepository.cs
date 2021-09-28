@@ -23,5 +23,13 @@ namespace Misa.ApplicationCore.Interfaces.Repository
         /// <returns></returns>
         /// CreatedBy: nvdien(24/9/2021)
         object getAccountVoucherPagingFilter(string searchData, int? mentionState, string voucherType, DateTime? startDate, DateTime? endDate, int pageIndex, int pageSize);
+
+        /// <summary>
+        /// Lấy chi tiết chứng từ theo Id
+        /// </summary>
+        /// <param name="accountVoucherID">ID chứng từ</param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(24/9/2021)
+        object getAccountVoucherDetail(Guid accountVoucherID);
     }
 }

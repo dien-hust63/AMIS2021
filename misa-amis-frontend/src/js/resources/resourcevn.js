@@ -71,10 +71,10 @@ module.exports = {
     { fieldName: 'employee_name', label: 'Tên nhân viên', textAlign: 'text-left', type: "normal", width: '200px' },
     { fieldName: 'department_name', label: 'Đơn vị', textAlign: 'text-left', type: "normal", width: '200px'},
   ],
-  /**combobox hàng hóa */
+  /**combobox hàng hóa*/
   customerComboboxProps: {
-    tableHeaders: tableCustomerHeaders,
-    api: apiList.accountobjectPagingFilter,
+    tableHeaders: this.tableCustomerHeaders,
+    api: this.apiList.accountobjectPagingFilter,
     functionEmit: "bindAccountObjectCombobox",
     tableObject: "AccountObjects",
     valueField: "account_object_name",

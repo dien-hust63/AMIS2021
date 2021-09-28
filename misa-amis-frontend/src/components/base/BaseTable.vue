@@ -41,7 +41,7 @@
                   class="row-context-menu__icon"
                   @click="toogleContextMenu($event, tableContent, index)"
                   :class="{
-                    'context-menu--selected': currentSelectedRow == index,
+                    'context-menu--selected': currentSelectedRow == index
                   }"
                   :tabindex="0"
                 >
@@ -126,7 +126,6 @@ export default {
       listSelectedRow: [],
       listSelectedContent: [],
       /**combobox props */
-     
     };
   },
   methods: {
