@@ -89,6 +89,12 @@ namespace Misa.ApplicationCore.Entities
         public string account_object_name { get; set; }
 
         /// <summary>
+        /// Tên đối tượng
+        /// </summary>
+        [MisaNotMap]
+        public string contact_address { get; set; }
+
+        /// <summary>
         /// Id nhân viên
         /// </summary>
         [MisaNotMap]
