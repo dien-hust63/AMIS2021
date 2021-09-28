@@ -93,7 +93,6 @@ export default {
         this.leftChange = data["position"]["leftChange"];
       }
       /**element call */
-      this.functionEmit = data["functionEmit"];
       // this.$nextTick(() => {
       //   this.setPositionPanel();
       // });
@@ -103,7 +102,7 @@ export default {
      * CreatedBy: nvdien (20/09/2021)
      */
     this.$eventBus.$on("hideComboDropdown", () => {
-      this.$eventBus.$off(this.functionEmit);
+      this.$eventBus.$off("comboboxListener");
       this.isShowPanel = false;
     });
     /**
@@ -130,7 +129,6 @@ export default {
       /*element call*/
       elementCall: null,
       /**listenFunction */
-      listenFunction: "",
       currentIndex: -1,
     };
   },
@@ -138,7 +136,7 @@ export default {
     /**gán giá trị */
     bindValue(tableContent, index) {
       this.currentIndex = index;
-      this.$eventBus.$emit(this.functionEmit, tableContent);
+      this.$eventBus.$emit("comboboxListener", tableContent);
     },
   },
   computed: {

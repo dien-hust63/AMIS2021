@@ -95,3 +95,6 @@
 .v2-toggle-icon__prev-year:hover::before, .v2-toggle-icon__next-year:hover::before, .v2-toggle-icon__prev-year:hover::after, .v2-toggle-icon__next-year:hover::after {
     border-color: #2ca01c !important;
 }
+.v2-picker-panel-wrap{
+    z-index: 10000 !important;
+}

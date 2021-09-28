@@ -43,7 +43,7 @@
                   class="row-context-menu__icon"
                   @click="toogleContextMenu($event, tableContent, index)"
                   :class="{
-                    'context-menu--selected': currentSelectedRow == index
+                    'context-menu--selected': currentSelectedRow == index,
                   }"
                   :tabindex="0"
                 >
@@ -56,7 +56,23 @@
               <div class="mi mi-16 mi-delete"></div>
             </div>
             <div v-if="tableHeader.type == 'combobox'">
-              <base-combobox-custom :hasFooter="true" :hideAddIcon="true" />
+              <base-combobox-custom
+                :hasFooter="true"
+                :hideAddIcon="true"
+                :value="tableContents[index][tableHeader.fieldName]"
+              />
+            </div>
+            <div v-if="tableHeader.type == 'input'">
+              <base-input
+                :value="tableContents[index][tableHeader.fieldName]"
+              />
+            </div>
+            <div v-if="tableHeader.type == 'date'">
+              <base-date-input
+                :value="tableContents[index][tableHeader.fieldName]"
+                @input="changeDate(index, tableHeader.fieldName,  ...arguments)"
+                type="date"
+              />
             </div>
           </td>
         </tr>
@@ -78,6 +94,8 @@
 
 
 <script>
+import BaseInput from "./BaseInput.vue";
+import BaseDateInput from "./BaseDateInput.vue";
 import BaseComboboxCustom from "./BaseComboboxCustom.vue";
 import BaseCheckbox from "./BaseCheckbox.vue";
 import moment from "moment";
@@ -88,6 +106,8 @@ export default {
   components: {
     BaseCheckbox,
     BaseComboboxCustom,
+    BaseDateInput,
+    BaseInput,
   },
   props: {
     tableHeaders: {
@@ -127,10 +147,12 @@ export default {
       isChooseCheckboxAll: false,
       listSelectedRow: [],
       listSelectedContent: [],
-      /**combobox props */
     };
   },
   methods: {
+    changeDate(index, header, date){
+      this.$emit("changeTableContent", index, header, date );
+    },
     /**
      * Định dạng lại giá trị trong ô bảng
      * @param {Object} tableContent : chứa thông tin api trả về
@@ -139,8 +161,8 @@ export default {
      * CreatedBy: nvdien(24/9/2021)
      */
     formatTableContent(tableContent, tableHeader) {
-      if(tableContent['is_mention'] == 1) this.customStyle = 'text--green ';
-      if(tableContent['is_mention'] == 0) this.customStyle = 'text--red ';
+      if (tableContent["is_mention"] == 1) this.customStyle = "text--green ";
+      if (tableContent["is_mention"] == 0) this.customStyle = "text--red ";
 
       let cellData;
       cellData = tableContent[tableHeader.fieldName];
@@ -236,20 +258,29 @@ export default {
     deleteRow(index) {
       this.$emit("deleteRow", index);
     },
-    /**click vào 1 ô  
+    /**click vào 1 ô
      * @param tableHeader : header của cột đó
-    */
-    handleClickCell(tableHeader, tableContent){
-      if('hasClick' in tableHeader){
-        this.$emit(`clickCell${tableHeader['hasClick']}`, tableContent);
+     */
+    handleClickCell(tableHeader, tableContent) {
+      if ("hasClick" in tableHeader) {
+        this.$emit(`clickCell${tableHeader["hasClick"]}`, tableContent);
       }
     },
-    /**double click vào 1 dòng 
+    /**double click vào 1 dòng
      * @param tableContent nội dung dòng đó
-    */
-    handleDoubleClickRow(tableContent){
+     */
+    handleDoubleClickRow(tableContent) {
       this.$emit("handleDoubleClickRow", tableContent);
-    }
+    },
+    /**render combobox props */
+    // renderComboboxProps(index, header){
+    //   return {
+    //     tableHeaders: header.combobox.comboboxHeader,
+    //     api: header.combobox.api,
+    //     tableObject: "AccountObjects",
+    //     valueField: "account_object_name",
+    //   },
+    // }
   },
 };
 </script>

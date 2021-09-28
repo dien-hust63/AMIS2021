@@ -94,7 +94,7 @@ namespace Misa.Infrastructure
                 var vouchers = response.Read<AccountVoucher>();
                 var voucherDetails = response.Read<AccountVoucherDetail>();
                 var inwardDetail = new List<object>();
-
+                var unitList = new List<object>();
                 if (voucherDetails.Count() > 0)
                 {
                     foreach (var item in voucherDetails)
@@ -105,10 +105,8 @@ namespace Misa.Infrastructure
                         dynamicParameters1.Add("@commodity_id", commodityId);
                         var sql2 = "select * from view_commodity_unit vcu2 where vcu2.commodity_id = @commodity_id";
                         var units = _dbConnection.Query<CommodityUnit>(sql2, param: dynamicParameters1, commandType: CommandType.Text);
-                        inwardDetail.Add(new { 
-                            voucher_detail = item,
-                            units = units,
-                        });
+                        inwardDetail.Add(item);
+                        unitList.Add(units);
                     }
                 }
                 
@@ -117,6 +115,7 @@ namespace Misa.Infrastructure
                     Data = new { 
                         in_inward = vouchers,
                         in_inward_detail = inwardDetail,
+                        units = unitList
                     }
 
                 };

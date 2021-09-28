@@ -13,6 +13,11 @@ var tableCustomerHeaders = [
   { fieldName: 'account_object_name', label: 'Tên khách hàng', textAlign: 'text-left', type: "normal", width: '200px' },
   { fieldName: 'contact_address', label: 'Địa chỉ', textAlign: 'text-left', type: "normal" ,width: '250px'},
 ];
+var comboboxWarehouseProps = {
+  tableHeaders: tableCustomerHeaders,
+  api: apiList['accountobjectPagingFilter'],
+  tableObject: "Warehouses",
+}
 module.exports = {
   apiList: apiList,
 
@@ -48,16 +53,16 @@ module.exports = {
   tableInwardDetailHeaders: [
     { label: '#',type: "number" },
     { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "combobox"},
-    { fieldName: 'commodity_name', label: 'TÊN HÀNG', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "combobox" },
-    { fieldName: 'debit_account_code', label: 'TK NỢ', textAlign: 'text-right', type: "normal"},
-    { fieldName: 'credit_account_code', label: 'TK CÓ', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'unit', label: 'DVT', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "normal"},
-    { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-right', type: "normal"},
-    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-left', type: "date" },
+    { fieldName: 'commodity_name', label: 'TÊN HÀNG', textAlign: 'text-left', type: "input" },
+    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "combobox" , combobox:comboboxWarehouseProps},
+    { fieldName: 'debit_account_number', label: 'TK NỢ', textAlign: 'text-right', type: "combobox"},
+    { fieldName: 'credit_account_number', label: 'TK CÓ', textAlign: 'text-left', type: "combobox" },
+    { fieldName: 'unit', label: 'DVT', textAlign: 'text-left', type: "combobox" },
+    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "input"},
+    { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "input" },
+    { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-left', type: "input" },
+    { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-right', type: "input"},
+    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-center', type: "date" },
     { type:'delete' }
 
   ],
@@ -77,7 +82,6 @@ module.exports = {
   customerComboboxProps: {
     tableHeaders: tableCustomerHeaders,
     api: apiList['accountobjectPagingFilter'],
-    functionEmit: "bindAccountObjectCombobox",
     tableObject: "AccountObjects",
     valueField: "account_object_name",
   },
@@ -173,9 +177,9 @@ module.exports = {
   ],
   //Inward Type List
   inwardTypeList: [
-    { data: "Nhập kho thành phẩm sản xuất", value: "1. Thành phẩm sản xuất" },
-    { data: "Nhập kho từ hàng bán trả lại", value: "2. Hàng bán bị trả lại" },
-    { data: "Nhập kho khác", value: "3. Khác (NVL thừa, HH thuê gia công, ...)" },
+    { data: "NK001", value: "1. Thành phẩm sản xuất" },
+    { data: "NK002", value: "2. Hàng bán bị trả lại" },
+    { data: "NK003", value: "3. Khác (NVL thừa, HH thuê gia công, ...)" },
   ],
   inwardMethodList: [
     { data: "Nhập đơn giá bằng tay", value: "Nhập đơn giá bằng tay" },

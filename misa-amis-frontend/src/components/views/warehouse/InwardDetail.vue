@@ -23,7 +23,7 @@
           <div class="button-help button-group">
             <div class="mi mi-24 mi-help"></div>
           </div>
-          <div class="button-close button-group" @click="closeInwardDetail" >
+          <div class="button-close button-group" @click="closeInwardDetail">
             <div class="mi mi-24 mi-close"></div>
           </div>
         </div>
@@ -45,15 +45,24 @@
                     />
                   </div>
                   <div class="w-4/7 px-13 border-box">
-                    <base-input label="Địa chỉ" v-model="masterContent['contact_address']"/>
+                    <base-input
+                      label="Địa chỉ"
+                      v-model="masterContent['contact_address']"
+                    />
                   </div>
                 </div>
                 <div class="row-input">
                   <div class="w-3/7">
-                    <base-input label="Người giao hàng" v-model="masterContent['contact_name']"/>
+                    <base-input
+                      label="Người giao hàng"
+                      v-model="masterContent['contact_name']"
+                    />
                   </div>
                   <div class="w-4/7 px-13 border-box">
-                    <base-input label="Diễn giải" v-model="masterContent['description']"/>
+                    <base-input
+                      label="Diễn giải"
+                      v-model="descriptionVoucher"
+                    />
                   </div>
                 </div>
                 <div class="row-input">
@@ -69,12 +78,16 @@
                   </div>
                   <div class="w-4/7 px-13 border-box">
                     <div class="w-2/3 flex">
-                      <base-input label="Kèm theo" class="voucher-attach" placeholder="Số lượng" v-model="masterContent['voucher_attach']"/>
+                      <base-input
+                        label="Kèm theo"
+                        class="voucher-attach"
+                        placeholder="Số lượng"
+                        v-model="masterContent['voucher_attach']"
+                      />
                       <div class="voucher-attach-title">
-                        <div class="text">chứng từ gốc</div>    
+                        <div class="text">chứng từ gốc</div>
                       </div>
                     </div>
-                    
                   </div>
                 </div>
                 <div class="row-input flex">
@@ -84,13 +97,24 @@
               </div>
               <div class="w-1/5">
                 <div class="row-input-right">
-                  <base-date-input label="Ngày hạch toán" />
+                  <base-date-input
+                    label="Ngày hạch toán"
+                    type="date"
+                    v-model="masterContent['mathematics_date']"
+                  />
                 </div>
                 <div class="row-input-right">
-                  <base-date-input label="Ngày chứng từ" />
+                  <base-date-input
+                    label="Ngày chứng từ"
+                    type="date"
+                    v-model="masterContent['voucher_date']"
+                  />
                 </div>
                 <div class="row-input-right voucher-number">
-                  <base-input label="Số chứng từ" v-model="masterContent['voucher_code']"/>
+                  <base-input
+                    label="Số chứng từ"
+                    v-model="masterContent['voucher_code']"
+                  />
                 </div>
               </div>
             </div>
@@ -116,6 +140,7 @@
               :tableHeaders="tableInwardDetailHeaders"
               :tableContents="tableInwardDetailContents"
               @deleteRow="deleteRow"
+              @changeTableContent='changeVoucherDetail'
             />
             <div class="inward-detail-pagination">
               <base-pagination />
@@ -124,9 +149,9 @@
         </div>
         <div class="grid-control-item">
           <div class="btn-grid-control">
-            <base-button value="Thêm dòng" @clickButton="addNewRow"/>
+            <base-button value="Thêm dòng" @clickButton="addNewRow" />
             <base-button value="Thêm ghi chú" />
-            <base-button value="Xóa hết dòng" @clickButton="deleteAllRow"/>
+            <base-button value="Xóa hết dòng" @clickButton="deleteAllRow" />
           </div>
           <div class="input-grid-control">
             <div class="flex">
@@ -146,9 +171,7 @@
         </div>
         <div class="right-group-button">
           <base-button value=" Cất" class="ms-button-secondary button-add" />
-           <div
-            class="base-button-custom"
-          >
+          <div class="base-button-custom">
             <div class="button-custom-left ms-button-primary">
               <div class="buttom-custom-text">Cất và in</div>
             </div>
@@ -170,7 +193,7 @@ import BaseTable from "../../base/BaseTable.vue";
 import BasePagination from "../../base/BasePagination.vue";
 import BaseDropdown from "../../base/BaseDropdown.vue";
 import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue";
-import BaseDateInput from '../../base/BaseDateInput.vue';
+import BaseDateInput from "../../base/BaseDateInput.vue";
 export default {
   name: "InwardDetail",
   components: {
@@ -198,7 +221,6 @@ export default {
       customerComboboxProps: {
         tableHeaders: this.$resourcesVN.tableCustomerHeaders,
         api: this.$resourcesVN.apiList.accountobjectPagingFilter,
-        functionEmit: "bindAccountObjectCombobox",
         tableObject: "AccountObjects",
         valueField: "account_object_name",
       },
@@ -207,19 +229,17 @@ export default {
       employeeComboboxProps: {
         tableHeaders: this.$resourcesVN.InwardEmployeeComboboxHeaders,
         api: this.$resourcesVN.apiList.employeePagingFilter,
-        functionEmit: "bindEmployeeCombobox",
         tableObject: "Employees",
         valueField: "employee_name",
       },
       /**field in master */
-      customerAddress:"",
+      customerAddress: "",
       /**mode của phiếu */
       mode: this.$resourcesVN.mode.ADD,
       /**ẩn hiện form */
       isShowInwardDetail: false,
       /**Nội dung form */
       masterContent: {},
-      detailContent: {},
     };
   },
   methods: {
@@ -234,59 +254,78 @@ export default {
     showCustomerDetail() {
       this.$eventBus.$emit("showCustomerDetail");
     },
-     /**Mở form Thêm mới nhân viên*/
+    /**Mở form Thêm mới nhân viên*/
     showEmployeeDetail() {
       this.$eventBus.$emit("showEmployeeDetail");
     },
     /**Thêm dòng table */
-    addNewRow(){
+    addNewRow() {
       let totalRow = this.tableInwardDetailContents.length;
-      if(totalRow > 0){
-        let newRowContent = this.tableInwardDetailContents[totalRow - 1]
+      if (totalRow > 0) {
+        let newRowContent = this.tableInwardDetailContents[totalRow - 1];
         this.tableInwardDetailContents.push(newRowContent);
-        console.log(this.$resourcesVN.tableInwardDetailContentsDefault);
+      } else {
+        let tableContent =
+          this.$resourcesVN.tableInwardDetailContentsDefault[0];
+        this.$set(this.tableInwardDetailContents, 0, tableContent);
       }
-      else{
-        let tableContent = this.$resourcesVN.tableInwardDetailContentsDefault[0];
-        this.$set(this.tableInwardDetailContents, 0 , tableContent) ;
-      }
-     
     },
     /**xóa hết dòng */
-    deleteAllRow(){
+    deleteAllRow() {
       this.tableInwardDetailContents = [];
     },
     /**Xóa 1 dòng */
-    deleteRow(index){
+    deleteRow(index) {
       this.tableInwardDetailContents.splice(index, 1);
     },
     /**bind lên combobox khách hàng */
-    bindingCustomerCombobox(content){
-      this.$set(this.masterContent, "account_object_name", content["account_object_name"]);
+    bindingCustomerCombobox(content) {
+      this.$set(
+        this.masterContent,
+        "account_object_name",
+        content["account_object_name"]
+      );
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
+      this.$set(this.masterContent, "contact_address", content["contact_address"]);
     },
     /**bind lên combobox nhân viên */
-    bindingEmployeeCombobox(content){
+    bindingEmployeeCombobox(content) {
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
+    },
+    /**gán lại nội dung table */
+    changeVoucherDetail(index, fieldName, data){
+      this.$set(this.tableInwardDetailContents[index], fieldName, data);
     }
   },
-  created(){
-    this.$eventBus.$on("showInwardDetail", (mode, content)=>{
-      this.mode = mode;
-      if(mode == this.$resourcesVN.mode.ADD){
-        console.log("thêm mới hoặc nhân bản");
+  computed:{
+    descriptionVoucher: function(){
+      let inwardType = this.$resourcesVN.inwardTypeDropdownList.find(o => o.data === this.dropdownInwardTypeData).value;
+      if(this.masterContent["account_object_name"]){
+        return `${inwardType} của ${this.masterContent["account_object_name"]}`;
+      }else{
+        return inwardType;
       }
-      if(mode == this.$resourcesVN.mode.EDIT){
-        console.log(content["in_inward"]);
+     
+    }
+  },
+  created() {
+    this.$eventBus.$on("showInwardDetail", (mode, content) => {
+      this.mode = mode;
+      if (mode == this.$resourcesVN.mode.ADD) {
+        this.masterContent = {};
+      }
+      if (mode == this.$resourcesVN.mode.EDIT) {
         this.masterContent = content["in_inward"][0];
-        this.detailContent = content["in_inward_detail"];
+        this.tableInwardDetailContents = content["in_inward_detail"];
+        console.log("test");
+        console.log(this.tableInwardDetailContents);
       }
       this.isShowInwardDetail = true;
-    })
+    });
   },
-  destroyed(){
+  destroyed() {
     this.$eventBus.$off("showInwardDetail");
-  }
+  },
 };
 </script>
 

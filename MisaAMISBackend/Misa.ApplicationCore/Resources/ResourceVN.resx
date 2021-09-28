@@ -136,6 +136,15 @@
     <value>Trường {0} không được để trống</value>
     <comment>Các trường không được phép để trống</comment>
   </data>
+  <data name="Inward_Type_Commodity" xml:space="preserve">
+    <value>Nhập kho từ hàng bán trả lại</value>
+  </data>
+  <data name="Inward_Type_Other" xml:space="preserve">
+    <value>Nhập kho khác</value>
+  </data>
+  <data name="Inward_Type_Product" xml:space="preserve">
+    <value>Nhập kho thành phẩm sản xuất</value>
+  </data>
   <data name="Success_Delete" xml:space="preserve">
     <value>Xóa thành công</value>
   </data>

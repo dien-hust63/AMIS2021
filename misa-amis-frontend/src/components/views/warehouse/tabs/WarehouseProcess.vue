@@ -69,7 +69,7 @@
 		mixins: [WarehouseProcessFunction],
 		methods:{
 			showInwardDetail(){
-				this.$emit("showInwardDetail");
+				this.$eventBus.$emit("showInwardDetail", this.$resourcesVN.mode.ADD);
 			}
 		}
 	};

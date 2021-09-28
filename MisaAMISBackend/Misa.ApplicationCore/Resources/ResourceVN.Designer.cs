@@ -115,6 +115,33 @@ namespace Misa.ApplicationCore.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nhập kho từ hàng bán trả lại.
+        /// </summary>
+        public static string Inward_Type_Commodity {
+            get {
+                return ResourceManager.GetString("Inward_Type_Commodity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nhập kho khác.
+        /// </summary>
+        public static string Inward_Type_Other {
+            get {
+                return ResourceManager.GetString("Inward_Type_Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nhập kho thành phẩm sản xuất.
+        /// </summary>
+        public static string Inward_Type_Product {
+            get {
+                return ResourceManager.GetString("Inward_Type_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Xóa thành công.
         /// </summary>
         public static string Success_Delete {

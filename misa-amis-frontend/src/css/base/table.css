@@ -48,6 +48,7 @@
     background-color: #fff;
     max-width: var(--max-width-column);
     overflow-x: hidden;
+    overflow-y: hidden;
     text-overflow: ellipsis;
 }
 /**footer*/

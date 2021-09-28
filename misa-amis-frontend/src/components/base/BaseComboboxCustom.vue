@@ -67,7 +67,6 @@ export default {
       default() {
         return {
           api: "",
-          functionEmit: "",
           tableObject: "",
           valueField: "",
         };
@@ -109,16 +108,14 @@ export default {
         axios
           .get(this.formatString(this.comboboxProps.api, "", 1, 20))
           .then((response) => {
-            let functionEmit = this.comboboxProps.functionEmit;
             let comboDropdownData = {
               tableHeaders: this.comboboxProps.tableHeaders,
               tableContents: response.data[this.comboboxProps.tableObject],
               hasFooter: this.hasFooter,
               position: elementPos,
-              functionEmit: functionEmit,
             };
             this.$eventBus.$emit("showComboDropdown", comboDropdownData);
-            this.$eventBus.$on(functionEmit, (data) => {
+            this.$eventBus.$on("comboboxListener", (data) => {
               this.$emit("getDataEventBus", data);
               this.$eventBus.$emit("hideComboDropdown");
             });
@@ -153,18 +150,16 @@ export default {
           axios
             .get(this.formatString(this.comboboxProps.api, searchValue, 1, 20))
             .then((response) => {
-              let functionEmit = this.comboboxProps.functionEmit;
               let comboDropdownData = {
                 tableHeaders: this.comboboxProps.tableHeaders,
                 tableContents: response.data[this.comboboxProps.tableObject],
                 hasFooter: this.hasFooter,
                 position: elementPos,
-                functionEmit: functionEmit,
               };
               this.$eventBus.$emit("showComboDropdown", comboDropdownData);
 
               //bắt sự kiện khi click vào dòng trên combo dropdown panel
-              this.$eventBus.$on(functionEmit, (data) => {
+              this.$eventBus.$on('comboboxListener', (data) => {
                 this.$emit("getDataEventBus", data);
                 this.$eventBus.$emit("hideComboDropdown");
                 this.isShowComboDropdown = false;
@@ -188,17 +183,15 @@ export default {
             .get(this.formatString(this.comboboxProps.api, searchValue, 1, 20))
             .then((response) => {
               this.$eventBus.$emit("loadingComboDropdown", false);
-              let functionEmit = this.comboboxProps.functionEmit;
               let comboDropdownData = {
                 tableContents: response.data[this.comboboxProps.tableObject],
                 hasFooter: this.hasFooter,
-                functionEmit: functionEmit,
               };
               console.log(comboDropdownData);
               this.$eventBus.$emit("showComboDropdown", comboDropdownData);
 
               //bắt sự kiện khi click vào dòng trên combo dropdown panel
-              this.$eventBus.$on(functionEmit, (data) => {
+              this.$eventBus.$on('comboboxListener', (data) => {
                 
                 this.$emit("getDataEventBus", data);
                 this.$eventBus.$emit("hideComboDropdown");
