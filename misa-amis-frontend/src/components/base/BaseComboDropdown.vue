@@ -4,7 +4,7 @@
     :style="positionOfPanel"
     :class="{ 'combo-dropdown-panel--show': isShowPanel }"
   >
-    <div class="combo-dropdown-header">
+    <div class="combo-dropdown-header" v-if="hasHeader">
       <table>
         <thead>
           <tr>
@@ -84,6 +84,10 @@ export default {
       this.tableContents = data["tableContents"];
       /**footer */
       this.hasFooter = data["hasFooter"];
+      /**header */
+      if ('hasHeader' in data){
+        this.hasHeader = data["hasHeader"];
+      }
       /**position */
       
       if (data["position"] != null) {
@@ -121,6 +125,8 @@ export default {
       tableHeaders: [],
       /**footer */
       hasFooter: null,
+      /**header */
+      hasHeader: true,
       /**position */
       top: 0,
       left: 0,

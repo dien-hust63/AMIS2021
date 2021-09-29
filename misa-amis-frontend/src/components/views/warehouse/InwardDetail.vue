@@ -222,7 +222,7 @@ export default {
         tableHeaders: this.$resourcesVN.tableCustomerHeaders,
         api: this.$resourcesVN.apiList.accountobjectPagingFilter,
         tableObject: "AccountObjects",
-        valueField: "account_object_name",
+        mode:"api",
       },
       /**combobox employee */
       employeeComboboxValue: "",
@@ -230,7 +230,7 @@ export default {
         tableHeaders: this.$resourcesVN.InwardEmployeeComboboxHeaders,
         api: this.$resourcesVN.apiList.employeePagingFilter,
         tableObject: "Employees",
-        valueField: "employee_name",
+        mode: "api"
       },
       /**field in master */
       customerAddress: "",
@@ -240,6 +240,8 @@ export default {
       isShowInwardDetail: false,
       /**Nội dung form */
       masterContent: {},
+      /**đơn vị tính */
+      units:[],
     };
   },
   methods: {
@@ -295,7 +297,7 @@ export default {
     /**gán lại nội dung table */
   changeVoucherDetail(index, header, content){
     let newContent = content;
-    if(header.type == "combobox") newContent = content[header.fieldName];
+    if(header.type == "comboboxapi") newContent = content[header.fieldName];
     this.$set(this.tableInwardDetailContents[index], header.fieldName, newContent);
     }
   },
@@ -319,8 +321,8 @@ export default {
       if (mode == this.$resourcesVN.mode.EDIT) {
         this.masterContent = content["in_inward"][0];
         this.tableInwardDetailContents = content["in_inward_detail"];
-        console.log("test");
-        console.log(this.tableInwardDetailContents);
+        this.units = content["units"];
+        this.tableInwardDetailHeaders[6].combobox.tableContents = content["units"];
       }
       this.isShowInwardDetail = true;
     });

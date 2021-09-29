@@ -46,7 +46,7 @@
     background-color: #e0e0e0;
 }
 
-.selected-options__list{
+.ms-pagination-options .selected-options__list{
     width: 200px;
     padding:2px 0;
     box-sizing: border-box;

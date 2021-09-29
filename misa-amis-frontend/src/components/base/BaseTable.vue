@@ -55,17 +55,25 @@
             <div v-if="tableHeader.type == 'delete'" @click="deleteRow(index)">
               <div class="mi mi-16 mi-delete"></div>
             </div>
-            <div v-if="tableHeader.type == 'combobox'">
+            <div v-if="tableHeader.type == 'comboboxapi'">
               <base-combobox-custom
                 :hasFooter="true"
                 :hideAddIcon="true"
                 :value="tableContents[index][tableHeader.fieldName]"
-                :comboboxProps="renderComboboxProps(tableHeader)"
-                @getDataEventBus="bindingCombobox(index, tableHeader,  ...arguments)"
+                :comboboxProps="renderComboboxProps(tableHeader, index)"
+                @getDataEventBus="
+                  bindingCombobox(index, tableHeader, ...arguments)
+                "
               />
-            <div>
-              
             </div>
+           <div v-if="tableHeader.type == 'comboboxmanual'">
+              <base-combobox-custom
+                :value="renderComboboxManualValue(tableHeader, index)"
+                :comboboxProps="renderComboboxProps(tableHeader, index)"
+                @getDataEventBus="
+                  bindingCombobox(index, tableHeader, ...arguments)
+                "
+              />
             </div>
             <div v-if="tableHeader.type == 'input'">
               <base-input
@@ -75,7 +83,7 @@
             <div v-if="tableHeader.type == 'date'">
               <base-date-input
                 :value="tableContents[index][tableHeader.fieldName]"
-                @input="changeDate(index, tableHeader,  ...arguments)"
+                @input="changeDate(index, tableHeader, ...arguments)"
                 type="date"
               />
             </div>
@@ -146,17 +154,28 @@ export default {
   },
   data() {
     return {
+      /**data test */
+      comboboxUnitProps:{
+        tableObject: "Units",
+        mode:"manual",
+      },
+   
+      /** */
       isShowContextMenu: false,
       currentSelectedRow: -1,
       customStyle: "",
       isChooseCheckboxAll: false,
       listSelectedRow: [],
       listSelectedContent: [],
+      testDropdownData: [
+        {data: "test1", value: "test1"}
+      ],
+      testDropdownDataDefault: {data: "test1", value: "test1"},
     };
   },
   methods: {
-    changeDate(index, header, date){
-      this.$emit("changeTableContent", index, header, date );
+    changeDate(index, header, date) {
+      this.$emit("changeTableContent", index, header, date);
     },
     /**
      * Định dạng lại giá trị trong ô bảng
@@ -278,12 +297,33 @@ export default {
       this.$emit("handleDoubleClickRow", tableContent);
     },
     /**render combobox props */
-    renderComboboxProps(header){
-      return header.combobox;
+    renderComboboxProps(header, index) {
+      if(header.type == "comboboxapi"){
+        return header.combobox;
+      }
+      if(header.type == "comboboxmanual"){
+        let obj = {};
+        
+        Object.assign(obj, header.combobox);
+        let tempContent = header.combobox.tableContents[index];
+        obj.tableContents = tempContent;
+        console.log(header.combobox.tableContents);
+        console.log(obj.tableContents);
+        return obj;
+      }
+      
     },
     /**bind dữ liệu lên combobox */
-    bindingCombobox(index, header, content){
-      this.$emit("changeTableContent", index, header, content );
+    bindingCombobox(index, header, content) {
+      this.$emit("changeTableContent", index, header, content);
+    },
+    /**combobox manual value */
+    renderComboboxManualValue(tableHeader, index){
+      let comboboxFieldName = tableHeader.fieldName;
+      if(tableHeader.combobox.tableContents.length != 0){
+        return tableHeader.combobox.tableContents[index][0][comboboxFieldName];
+      } 
+      return "";
     }
   },
 };

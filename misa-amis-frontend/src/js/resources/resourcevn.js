@@ -8,7 +8,9 @@ var apiList = {
   accountvoucherPagingFilter:"https://localhost:44350/api/v1/AccountVouchers/filter?searchData={0}&pageIndex={1}&pageSize={2}",
   accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}",
   employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}",
-  warehousePagingFilter:"https://localhost:44350/api/v1/Warehouses/filter?searchData={0}&pageIndex={1}&pageSize={2}"
+  warehousePagingFilter:"https://localhost:44350/api/v1/Warehouses/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  commodityPagingFilter:"https://localhost:44350/api/v1/Commoditys/filter?searchData={0}&pageIndex={1}&pageSize={2}"
+
 }
 var tableCustomerHeaders = [
   { fieldName: 'account_object_code', label: 'Mã khách hàng', textAlign: 'text-left', type: "normal", width: '100px'},
@@ -19,10 +21,26 @@ var warehouseComboboxHeaders = [
   { fieldName: 'warehouse_code', label: 'Mã kho', textAlign: 'text-left', type: "normal", width: '100px'},
   { fieldName: 'warehouse_name', label: 'Tên kho', textAlign: 'text-left', type: "normal", width: '200px' },
 ]
+var commodityComboboxHeaders = [
+  { fieldName: 'commodity_code', label: 'Mã hàng', textAlign: 'text-left', type: "normal", width: '100px'},
+  { fieldName: 'commodity_name', label: 'Tên hàng', textAlign: 'text-left', type: "normal", width: '200px' },
+]
 var comboboxWarehouseProps = {
   tableHeaders: warehouseComboboxHeaders,
   api: apiList['warehousePagingFilter'],
   tableObject: "Warehouses",
+  mode:"api"
+}
+var comboboxCommodityProps = {
+  tableHeaders: commodityComboboxHeaders,
+  api: apiList['commodityPagingFilter'],
+  tableObject: "Commoditys",
+  mode:"api"
+}
+var comboboxUnitProps = {
+  tableHeaders: [{ fieldName: 'unit_name', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '100px'}],
+  tableContents: [],
+  mode:"manual"
 }
 module.exports = {
   apiList: apiList,
@@ -58,12 +76,12 @@ module.exports = {
   /**mảng chứa thông tin tiêu đề bảng hàng tiền trong phiếu nhập kho */
   tableInwardDetailHeaders: [
     { label: '#',type: "number" },
-    { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "combobox"},
+    { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "comboboxapi", combobox:comboboxCommodityProps},
     { fieldName: 'commodity_name', label: 'TÊN HÀNG', textAlign: 'text-left', type: "input" },
-    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "combobox" , combobox:comboboxWarehouseProps},
-    { fieldName: 'debit_account_number', label: 'TK NỢ', textAlign: 'text-right', type: "combobox"},
-    { fieldName: 'credit_account_number', label: 'TK CÓ', textAlign: 'text-left', type: "combobox" },
-    { fieldName: 'unit', label: 'DVT', textAlign: 'text-left', type: "dropdown" },
+    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "comboboxapi" , combobox:comboboxWarehouseProps},
+    { fieldName: 'debit_account_number', label: 'TK NỢ', textAlign: 'text-right', type: "comboboxapi"},
+    { fieldName: 'credit_account_number', label: 'TK CÓ', textAlign: 'text-left', type: "comboboxapi" },
+    { fieldName: 'unit_name', label: 'DVT', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxUnitProps},
     { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "input"},
     { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "input" },
     { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-left', type: "input" },

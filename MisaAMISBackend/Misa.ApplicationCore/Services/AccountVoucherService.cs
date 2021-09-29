@@ -35,6 +35,7 @@ namespace Misa.ApplicationCore.Services
             {
                 var serviceResult = new ServiceResult();
                 serviceResult.Data = _accounVoucherRepository.getAccountVoucherDetail(accountVoucherID);
+                
                 return serviceResult;
             }
             catch (Exception)

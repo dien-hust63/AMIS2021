@@ -105,6 +105,7 @@ namespace Misa.Infrastructure
                         dynamicParameters1.Add("@commodity_id", commodityId);
                         var sql2 = "select * from view_commodity_unit vcu2 where vcu2.commodity_id = @commodity_id";
                         var units = _dbConnection.Query<CommodityUnit>(sql2, param: dynamicParameters1, commandType: CommandType.Text);
+
                         inwardDetail.Add(item);
                         unitList.Add(units);
                     }

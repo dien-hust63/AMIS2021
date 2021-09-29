@@ -69,6 +69,7 @@ export default {
           api: "",
           tableObject: "",
           valueField: "",
+          mode:"",
         };
       },
     },
@@ -105,7 +106,8 @@ export default {
           leftChange: leftChange,
         };
         this.position = elementPos;
-        axios
+        if(this.comboboxProps.mode == "api"){
+           axios
           .get(this.formatString(this.comboboxProps.api, "", 1, 20))
           .then((response) => {
             let comboDropdownData = {
@@ -121,9 +123,25 @@ export default {
             });
           })
           .catch((response) => console.log(response));
+        }
+        if(this.comboboxProps.mode == "manual"){
+          let comboDropdownData = {
+              tableHeaders: this.comboboxProps.tableHeaders,
+              tableContents:this.comboboxProps.tableContents,
+              hasHeader: false,
+              hasFooter: false,
+              position: elementPos,
+            };
+            this.$eventBus.$emit("showComboDropdown", comboDropdownData);
+            this.$eventBus.$on("comboboxListener", (data) => {
+              this.$emit("getDataEventBus", data);
+              this.$eventBus.$emit("hideComboDropdown");
+            });
+        }
       } else {
         this.$eventBus.$emit("hideComboDropdown");
       }
+       
     },
     /**Hiển thị form thêm */
     showAddForm() {

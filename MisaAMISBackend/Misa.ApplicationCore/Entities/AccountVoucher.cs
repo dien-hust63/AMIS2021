@@ -1,4 +1,5 @@
 ﻿using Misa.ApplicationCore.Attributes;
+using Misa.ApplicationCore.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,9 +58,33 @@ namespace Misa.ApplicationCore.Entities
         public Guid? accountobject_id { get; set; }
 
         /// <summary>
-        /// Loại chứng từ
+        /// Mã loại chứng từ
         /// </summary>
         public string voucher_type { get; set; }
+
+        /// <summary>
+        /// Tên loại chứng từ
+        /// </summary>
+        [MisaNotMap]
+        public string voucher_type_name
+        {
+            get
+            {
+                switch (voucher_type)
+                {
+                    case "":
+                        return "";
+                    case "NK001":
+                        return ResourceVN.Inward_Type_Product;
+                    case "NK002":
+                        return ResourceVN.Inward_Type_Commodity;
+                    case "NK003":
+                        return ResourceVN.Inward_Type_Other;
+                    default:
+                        return "";
+                }
+            }
+        }
 
         /// <summary>
         /// Trạng thái ghi sổ
