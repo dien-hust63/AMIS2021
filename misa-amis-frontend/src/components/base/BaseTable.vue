@@ -60,7 +60,12 @@
                 :hasFooter="true"
                 :hideAddIcon="true"
                 :value="tableContents[index][tableHeader.fieldName]"
+                :comboboxProps="renderComboboxProps(tableHeader)"
+                @getDataEventBus="bindingCombobox(index, tableHeader,  ...arguments)"
               />
+            <div>
+              
+            </div>
             </div>
             <div v-if="tableHeader.type == 'input'">
               <base-input
@@ -70,7 +75,7 @@
             <div v-if="tableHeader.type == 'date'">
               <base-date-input
                 :value="tableContents[index][tableHeader.fieldName]"
-                @input="changeDate(index, tableHeader.fieldName,  ...arguments)"
+                @input="changeDate(index, tableHeader,  ...arguments)"
                 type="date"
               />
             </div>
@@ -273,14 +278,13 @@ export default {
       this.$emit("handleDoubleClickRow", tableContent);
     },
     /**render combobox props */
-    // renderComboboxProps(index, header){
-    //   return {
-    //     tableHeaders: header.combobox.comboboxHeader,
-    //     api: header.combobox.api,
-    //     tableObject: "AccountObjects",
-    //     valueField: "account_object_name",
-    //   },
-    // }
+    renderComboboxProps(header){
+      return header.combobox;
+    },
+    /**bind dữ liệu lên combobox */
+    bindingCombobox(index, header, content){
+      this.$emit("changeTableContent", index, header, content );
+    }
   },
 };
 </script>

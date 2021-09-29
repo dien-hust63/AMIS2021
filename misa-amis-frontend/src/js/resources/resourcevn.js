@@ -4,18 +4,24 @@ var apiList = {
   positionApi: "https://localhost:44350/api/v1/Positions/",
   employeeApi: "https://localhost:44350/api/v1/Employees/",
   customerApi: "https://localhost:44350/api/v1/Custoemers/",
+  warehouseGetAll: "https://localhost:44350/api/v1/Warehouses",
   accountvoucherPagingFilter:"https://localhost:44350/api/v1/AccountVouchers/filter?searchData={0}&pageIndex={1}&pageSize={2}",
   accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}",
-  employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}"
+  employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  warehousePagingFilter:"https://localhost:44350/api/v1/Warehouses/filter?searchData={0}&pageIndex={1}&pageSize={2}"
 }
 var tableCustomerHeaders = [
   { fieldName: 'account_object_code', label: 'Mã khách hàng', textAlign: 'text-left', type: "normal", width: '100px'},
   { fieldName: 'account_object_name', label: 'Tên khách hàng', textAlign: 'text-left', type: "normal", width: '200px' },
   { fieldName: 'contact_address', label: 'Địa chỉ', textAlign: 'text-left', type: "normal" ,width: '250px'},
 ];
+var warehouseComboboxHeaders = [
+  { fieldName: 'warehouse_code', label: 'Mã kho', textAlign: 'text-left', type: "normal", width: '100px'},
+  { fieldName: 'warehouse_name', label: 'Tên kho', textAlign: 'text-left', type: "normal", width: '200px' },
+]
 var comboboxWarehouseProps = {
-  tableHeaders: tableCustomerHeaders,
-  api: apiList['accountobjectPagingFilter'],
+  tableHeaders: warehouseComboboxHeaders,
+  api: apiList['warehousePagingFilter'],
   tableObject: "Warehouses",
 }
 module.exports = {
@@ -57,7 +63,7 @@ module.exports = {
     { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "combobox" , combobox:comboboxWarehouseProps},
     { fieldName: 'debit_account_number', label: 'TK NỢ', textAlign: 'text-right', type: "combobox"},
     { fieldName: 'credit_account_number', label: 'TK CÓ', textAlign: 'text-left', type: "combobox" },
-    { fieldName: 'unit', label: 'DVT', textAlign: 'text-left', type: "combobox" },
+    { fieldName: 'unit', label: 'DVT', textAlign: 'text-left', type: "dropdown" },
     { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "input"},
     { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "input" },
     { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-left', type: "input" },

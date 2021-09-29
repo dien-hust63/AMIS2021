@@ -5,7 +5,7 @@
         <div class="recent-log-btn">
           <div class="mi mi-24 mi-recent-log"></div>
         </div>
-        <div class="title">Phiếu nhập kho BK025</div>
+        <div class="title">Phiếu nhập kho {{masterContent['voucher_code']}}</div>
         <div class="header-detail-input">
           <base-dropdown
             v-model="dropdownInwardTypeData"
@@ -293,8 +293,10 @@ export default {
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
     },
     /**gán lại nội dung table */
-    changeVoucherDetail(index, fieldName, data){
-      this.$set(this.tableInwardDetailContents[index], fieldName, data);
+  changeVoucherDetail(index, header, content){
+    let newContent = content;
+    if(header.type == "combobox") newContent = content[header.fieldName];
+    this.$set(this.tableInwardDetailContents[index], header.fieldName, newContent);
     }
   },
   computed:{
