@@ -31,5 +31,22 @@ namespace Misa.ApplicationCore.Interfaces.Services
         /// <returns></returns>
         /// CreatedBy: nvdien(24/9/2021)
         ServiceResult getAccountVoucherDetail(Guid accountVoucherID);
+
+        /// <summary>
+        /// Ghi sổ nhiều
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(28/09/2021)
+        ServiceResult mentionMany(List<Guid> entityIds);
+
+        /// <summary>
+        /// Bỏ ghi nhiều
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(28/09/2021)
+        ServiceResult unMentionMany(List<Guid> entityIds);
+
     }
 }

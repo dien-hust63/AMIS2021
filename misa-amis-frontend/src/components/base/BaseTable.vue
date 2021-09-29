@@ -18,7 +18,6 @@
           v-for="(tableContent, index) in tableContents"
           :key="index"
           :class="{ 'ms-table-row--selected': isSelectedRow(index) }"
-          @dblclick="handleDoubleClickRow(tableContent)"
         >
           <td
             v-for="(tableHeader, headerIndex) in tableHeaders"
@@ -32,7 +31,7 @@
             />
             <div
               v-if="tableHeader.type == 'normal'"
-              :class="getClass(tableContent, tableHeader)"
+              :class="[{'text--green':!tableContent['is_mention']}, tableHeader['textAlign']]"
             >
               {{ formatTableContent(tableContent, tableHeader) }}
             </div>
@@ -163,7 +162,6 @@ export default {
       /** */
       isShowContextMenu: false,
       currentSelectedRow: -1,
-      customStyle: "",
       isChooseCheckboxAll: false,
       listSelectedRow: [],
       listSelectedContent: [],
@@ -185,9 +183,6 @@ export default {
      * CreatedBy: nvdien(24/9/2021)
      */
     formatTableContent(tableContent, tableHeader) {
-      if (tableContent["is_mention"] == 1) this.customStyle = "text--green ";
-      if (tableContent["is_mention"] == 0) this.customStyle = "text--red ";
-
       let cellData;
       cellData = tableContent[tableHeader.fieldName];
       if (tableHeader.format == "date") {
@@ -311,6 +306,7 @@ export default {
         console.log(obj.tableContents);
         return obj;
       }
+      
       
     },
     /**bind dữ liệu lên combobox */

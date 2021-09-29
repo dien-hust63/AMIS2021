@@ -216,9 +216,9 @@ namespace Misa.Web.Controllers
         /// <param name="entityIds">chuỗi chứa các Id</param>
         /// <returns></returns>
         /// CreatedBy: nvdien(17/8/2021)
-        /// ModifiedBy: ndien(17/8/2021)
+        /// ModifiedBy: nvdien(17/8/2021)
         [HttpDelete]
-        public IActionResult DeleteMultiple([FromQuery]string entityIds)
+        public IActionResult DeleteMultiple([FromBody] List<Guid> entityIds)
         {
             try
             {

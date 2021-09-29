@@ -71,6 +71,58 @@ namespace Misa.ApplicationCore.Services
                 throw;
             }
         }
-        
+
+        /// <summary>
+        /// Ghi sổ nhiều
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(28/09/2021)
+        public ServiceResult mentionMany(List<Guid> entityIds)
+        {
+            try
+            {
+                var serviceResult = new ServiceResult();
+                var rowEffects = _accounVoucherRepository.mentionMany(entityIds);
+                serviceResult.Data = new
+                {
+                    rowEffects = rowEffects,
+                    messages = Resources.ResourceVN.Success_Update,
+                };
+                return serviceResult;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Bỏ ghi nhiều
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(28/09/2021)
+        public ServiceResult unMentionMany(List<Guid> entityIds)
+        {
+            try
+            {
+                var serviceResult = new ServiceResult();
+                var rowEffects = _accounVoucherRepository.unMentionMany(entityIds);
+                serviceResult.Data = new
+                {
+                    rowEffects = rowEffects,
+                    messages = Resources.ResourceVN.Success_Update,
+                };
+                return serviceResult;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }

@@ -53,12 +53,11 @@ export default class BaseAPI {
      * Xóa nhiều theo Id
      * @param {Array} listData mảng chứa các id
      * @returns promise get từ call axios api
-     * author: nvdien(25/8/2021)
+     * CreatedBy: NTDUNG (01/09/2021)
      */
-    async deleteMultiple(idList) {
-       
-        let api = this.baseApiUrl + this.controller + "?entityIds=" + idList;
-        return await axios.delete(api);
+    deleteMultiple(body) { 
+        let api = this.baseApiUrl + this.controller;
+        return axios.delete(api, {data: body});
     }
     /**
      * Xóa theo id

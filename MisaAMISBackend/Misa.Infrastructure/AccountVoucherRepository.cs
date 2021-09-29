@@ -124,6 +124,62 @@ namespace Misa.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Ghi sổ nhiều
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        /// CreatedBy: NTDUNG(28/09/2021)
+        public int mentionMany(List<Guid> entityIds)
+        {
+            var parameters = new DynamicParameters();
+            var paramName = new List<string>();
+
+            for (int i = 0; i < entityIds.Count; i++)
+            {
+                var id = entityIds[i];
+                // Đặt tên cho param
+                paramName.Add($"@m_Id{i}");
+                // Đặt giá trị cho param bằng id 
+                parameters.Add($"@m_Id{i}", id);
+            }
+            // Join mảng để tạo ra câu truy vấn ghi sổ nhiều
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            {
+                var sqlCommand = $"UPDATE accountvoucher SET is_mention = 1 WHERE accountvoucher_id IN ({String.Join(", ", paramName.ToArray())})";
+                var rowEffects = _dbConnection.Execute(sqlCommand, param: parameters);
+                return rowEffects;
+            }
+        }
+
+        /// <summary>
+        /// Bỏ ghi nhiều
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        /// CreatedBy: NTDUNG(28/09/2021)
+        public int unMentionMany(List<Guid> entityIds)
+        {
+            var parameters = new DynamicParameters();
+            var paramName = new List<string>();
+
+            for (int i = 0; i < entityIds.Count; i++)
+            {
+                var id = entityIds[i];
+                // Đặt tên cho param
+                paramName.Add($"@m_Id{i}");
+                // Đặt giá trị cho param bằng id 
+                parameters.Add($"@m_Id{i}", id);
+            }
+            // Join mảng để tạo ra câu truy vấn ghi sổ nhiều
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            {
+                var sqlCommand = $"UPDATE accountvoucher SET is_mention = 0 WHERE accountvoucher_id IN ({String.Join(", ", paramName.ToArray())})";
+                var rowEffects = _dbConnection.Execute(sqlCommand, param: parameters);
+                return rowEffects;
+            }
+        }
+
 
     }
 }

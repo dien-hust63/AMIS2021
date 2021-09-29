@@ -6,9 +6,10 @@
         <div
           class="batch-execution ms-button ms-button-around ms-button-secondary"
           :class="{ 'ms-button--disabled': isDisabled }"
+          @click="batchExecution($event)"
         >
-          <div class="ms-button-content">
-            <div class="ms-button__text" @click="batchExecution($event)">
+          <div class="ms-button-content" >
+            <div class="ms-button__text" >
               Thực hiện hàng loạt
             </div>
             <div class="mi mi-16 mi-arrow-up--black"></div>
@@ -193,6 +194,7 @@ export default {
       currentRowData: {},
       /**Button thực hiện hàng loạt */
       isDisabled: true,
+      listSelectedId: [],
     };
   },
   methods: {
@@ -404,19 +406,19 @@ export default {
         {
           name: "Ghi sổ",
           function: () => {
-            this.functionTest("hello");
+            this.mentionMany(this.listSelectedId);
           },
         },
         {
           name: "Bỏ ghi",
           function: () => {
-            this.functionTest("hello");
+            this.unMentionMany(this.listSelectedId);
           },
         },
         {
           name: "Xóa",
           function: () => {
-            this.functionTest("hello");
+            this.warningDeleteMany();
           },
         },
       ];
@@ -442,6 +444,9 @@ export default {
     getSelectedRowList(selectedRowList) {
       if (selectedRowList.length > 1) {
         this.isDisabled = false;
+        for (let i = 0; i < selectedRowList.length; ++i) {
+          this.listSelectedId.push(selectedRowList[i]["accountvoucher_id"]);
+        }
       } else {
         this.isDisabled = true;
       }
@@ -456,6 +461,61 @@ export default {
         })
         .catch((response) => console.log(response));
     },
+    /**Ghi sổ hàng loạt */
+    mentionMany(listId) {
+      VoucherRepository.mentionMany(listId)
+        .then(() => {this.loadData()})
+        .catch((response) => console.log(response));
+    },
+    /**Bỏ ghi hàng loạt */
+    unMentionMany(listId){
+      VoucherRepository.unMentionMany(listId)
+        .then(() => {this.loadData()})
+        .catch((response) => console.log(response));
+    },
+    /**cảnh báo xóa hàng loạt */
+    warningDeleteMany(){
+      let messageText = this.formatString(
+        this.$resourcesVN.message.messageDeleteWarning,
+        "những chứng từ này"
+      );
+      this.$eventBus.$emit("showMessageBox", {
+        icon: "mi-exclamation-warning-48",
+        messageText: messageText,
+        buttons: [
+          {
+            feature: "left ms-button-secondary",
+            callback: () => {
+              this.closeMessageBox();
+            },
+            value: "Không",
+          },
+          {
+            feature: "right-first ms-button-primary",
+            callback: () => {
+              this.deleteMultiple(this.listSelectedId);
+            },
+            value: "Có",
+          },
+        ],
+      });
+    },
+    /**Xóa hàng loạt */
+    deleteMultiple(listId){
+      VoucherRepository.deleteMultiple(listId).then(
+        ()=>{//thông báo xóa thành công
+          let toastMessageText = this.formatString(
+            this.$resourcesVN.message.messageDeleteSuccess,
+            `chứng từ`
+          );
+          this.$eventBus.$emit("showToastMessage", {
+            icon: "mi-notifications–success",
+            text: toastMessageText,
+          });
+          this.closeMessageBox();
+          this.loadData()}
+      ).catch(response => console.log(response))
+    }
   },
   watch: {
     timeReportDropdownData(newValue) {

@@ -153,7 +153,7 @@ module.exports = {
     messageDateSyntax: `Ngày chưa đúng định dạng`,
     messageDateFuture: "{0} vượt quá ngày hiện tại",
     messageDeleteWarning: "Bạn có chắc muốn xóa {0} không?",
-    messageDeleteSuccess: "xóa {0} thành công"
+    messageDeleteSuccess: "xóa {0} thành công",
   },
   mode: {
     ADD: 0,

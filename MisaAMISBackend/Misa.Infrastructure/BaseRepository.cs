@@ -57,27 +57,32 @@ namespace Misa.Infrastructure
         /// <summary>
         /// Xóa nhiều 
         /// </summary>
-        /// <param name="entityIds">chuỗi chứa các Id</param>
+        /// <param name="entityIds"> mảng chứa các Id</param>
         /// <returns></returns>
         /// CreatedBy: nvdien(19/8/2021)
         /// ModifiedBy: nvdien(19/8/2021)
-        public int DeleteMultiple(string entityIds)
+        public int DeleteMultiple(List<Guid> entityIds)
         {
-            var entityIdList = entityIds.Split('$');
-            string tmp = "(";
-            foreach(var entityId in entityIdList)
+            var parameters = new DynamicParameters();
+            var paramName = new List<string>();
+
+            for (int i = 0; i < entityIds.Count; i++)
             {
-                tmp += $"'{entityId}',";
+                var id = entityIds[i];
+                // Đặt tên cho param
+                paramName.Add($"@m_Id{i}");
+                // Đặt giá trị cho param bằng id 
+                parameters.Add($"@m_Id{i}", id);
             }
-            tmp = tmp.Remove(tmp.Length - 1);
-            tmp += ")";
+            // Join mảng để tạo ra câu truy vấn xoá nhiều
             using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
-                var sqlCommand = $"DELETE FROM {_className} WHERE {_className}Id IN {tmp}";
-                var rowEffects = _dbConnection.Execute(sqlCommand);
+                var sqlCommand = $"DELETE FROM {_className} WHERE {_className}_id IN ({String.Join(", ", paramName.ToArray())})";
+                var rowEffects = _dbConnection.Execute(sqlCommand, param: parameters);
                 return rowEffects;
             }
         }
+
 
         /// <summary>
         /// Lấy toàn bộ dữ liệu

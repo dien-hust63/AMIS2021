@@ -57,14 +57,14 @@ namespace Misa.ApplicationCore.Services
             
         }
 
-        /// <summary>
+        //// <summary>
         /// Xóa nhiều
         /// </summary>
-        /// <param name="entityIds">chuỗi chứa các Id</param>
+        /// <param name="entityIds"> mảng chứa các Id</param>
         /// <returns></returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        public ServiceResult DeleteMultiple(string entityIds)
+        public ServiceResult DeleteMultiple(List<Guid> entityIds)
         {
             try
             {
@@ -82,7 +82,7 @@ namespace Misa.ApplicationCore.Services
 
                 throw;
             }
-            
+
         }
 
         /// <summary>

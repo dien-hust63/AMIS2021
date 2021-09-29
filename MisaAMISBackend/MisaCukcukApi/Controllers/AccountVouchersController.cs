@@ -69,6 +69,67 @@ namespace Misa.Web.Controllers
                 return StatusCode(500, errorObj);
             }
         }
+        [HttpPut("mention")]
+        public IActionResult MentionMany([FromBody] List<Guid> entityIds)
+        {
+            try
+            {
+                var serviceResult = _accountVoucherService.mentionMany(entityIds);
+                //4.Trả về kết quả cho client
+                if (serviceResult.Data != null)
+                {
+                    return StatusCode(200, serviceResult.Data);
+                }
+                else
+                {
+                    return StatusCode(204);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errorObj = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = Resources.Exception_ErrorMsg,
+                    errorCode = "misa-001",
+                    moreInfo = "https://openapi.misa.com.vn/errorcode/misa-001",
+                    traceId = "ba9587fd-1a79-4ac5-a0ca-2c9f74dfd3fb"
+                };
+
+                return StatusCode(500, errorObj);
+            }
+        }
+
+        [HttpPut("unmention")]
+        public IActionResult UnMentionMany([FromBody] List<Guid> entityIds)
+        {
+            try
+            {
+                var serviceResult = _accountVoucherService.unMentionMany(entityIds);
+                //4.Trả về kết quả cho client
+                if (serviceResult.Data != null)
+                {
+                    return StatusCode(200, serviceResult.Data);
+                }
+                else
+                {
+                    return StatusCode(204);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errorObj = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = Resources.Exception_ErrorMsg,
+                    errorCode = "misa-001",
+                    moreInfo = "https://openapi.misa.com.vn/errorcode/misa-001",
+                    traceId = "ba9587fd-1a79-4ac5-a0ca-2c9f74dfd3fb"
+                };
+
+                return StatusCode(500, errorObj);
+            }
+        }
 
 
 
