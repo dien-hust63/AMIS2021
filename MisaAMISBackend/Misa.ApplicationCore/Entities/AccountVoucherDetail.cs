@@ -115,5 +115,11 @@ namespace Misa.ApplicationCore.Entities
         /// </summary>
         [MisaNotMap]
         public string credit_account_name { get; set; }
+
+        /// <summary>
+        /// Danh sách các đơn vị tính
+        /// </summary>
+        [MisaNotMap]
+        public string units { get; set; }
     }
 }

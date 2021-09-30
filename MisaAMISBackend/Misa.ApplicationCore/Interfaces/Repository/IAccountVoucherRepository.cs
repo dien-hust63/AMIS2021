@@ -47,5 +47,11 @@ namespace Misa.ApplicationCore.Interfaces.Repository
         /// <returns></returns>
         /// CreatedBy: nvdien(28/09/2021)
         int unMentionMany(List<Guid> entityIds);
+
+        /// <summary>
+        /// Lấy mã chứng từ mới
+        /// </summary>
+        /// <returns></returns>
+        AccountVoucher getNewVoucherCode();
     }
 }

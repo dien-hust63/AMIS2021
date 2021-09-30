@@ -87,6 +87,8 @@ export default {
       /**header */
       if ('hasHeader' in data){
         this.hasHeader = data["hasHeader"];
+      }else{
+        this.hasHeader = true;
       }
       /**position */
       

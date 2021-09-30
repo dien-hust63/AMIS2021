@@ -136,6 +136,7 @@ namespace Misa.ApplicationCore.Entities
         /// </summary>
         [MisaNotMap]
         public string employee_name { get; set; }
+
         #endregion
     }
 }

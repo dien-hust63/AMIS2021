@@ -48,5 +48,11 @@ namespace Misa.ApplicationCore.Interfaces.Services
         /// CreatedBy: nvdien(28/09/2021)
         ServiceResult unMentionMany(List<Guid> entityIds);
 
+        /// <summary>
+        /// Lấy mã chứng từ mới
+        /// </summary>
+        /// <returns></returns>
+        ServiceResult getNewVoucherCode();
+
     }
 }

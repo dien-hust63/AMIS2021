@@ -31,7 +31,10 @@
             />
             <div
               v-if="tableHeader.type == 'normal'"
-              :class="[{'text--green':!tableContent['is_mention']}, tableHeader['textAlign']]"
+              :class="[
+                { 'text--green': !tableContent['is_mention'] },
+                tableHeader['textAlign'],
+              ]"
             >
               {{ formatTableContent(tableContent, tableHeader) }}
             </div>
@@ -65,18 +68,21 @@
                 "
               />
             </div>
-           <div v-if="tableHeader.type == 'comboboxmanual'">
+            <div v-if="tableHeader.type == 'comboboxmanual'">
               <base-combobox-custom
+                :hideAddIcon="true"
                 :value="renderComboboxManualValue(tableHeader, index)"
                 :comboboxProps="renderComboboxProps(tableHeader, index)"
                 @getDataEventBus="
-                  bindingCombobox(index, tableHeader, ...arguments)
+                  renderComboboxManualValue(tableHeader, index, ...arguments)
                 "
               />
             </div>
             <div v-if="tableHeader.type == 'input'">
               <base-input
                 :value="tableContents[index][tableHeader.fieldName]"
+                @input="changeInputValue(index, tableHeader, ...arguments)"
+                @blur="blurInput(index, tableHeader,tableContent)"
               />
             </div>
             <div v-if="tableHeader.type == 'date'">
@@ -154,26 +160,30 @@ export default {
   data() {
     return {
       /**data test */
-      comboboxUnitProps:{
+      comboboxUnitProps: {
         tableObject: "Units",
-        mode:"manual",
+        mode: "manual",
       },
-   
+
       /** */
       isShowContextMenu: false,
       currentSelectedRow: -1,
       isChooseCheckboxAll: false,
       listSelectedRow: [],
       listSelectedContent: [],
-      testDropdownData: [
-        {data: "test1", value: "test1"}
-      ],
-      testDropdownDataDefault: {data: "test1", value: "test1"},
     };
   },
   methods: {
+    /**thay đổi nội dung input */
+    changeInputValue(index, header, content) {
+      let mode="input";
+      this.$emit("changeTableContent", index, header, mode, content);
+    },
+
+    /**thay đổi nội dung của input date */
     changeDate(index, header, date) {
-      this.$emit("changeTableContent", index, header, date);
+      let mode ="date";
+      this.$emit("changeTableContent", index, header, mode, date);
     },
     /**
      * Định dạng lại giá trị trong ô bảng
@@ -293,34 +303,43 @@ export default {
     },
     /**render combobox props */
     renderComboboxProps(header, index) {
-      if(header.type == "comboboxapi"){
+      if (header.type == "comboboxapi") {
         return header.combobox;
       }
-      if(header.type == "comboboxmanual"){
-        let obj = {};
-        
-        Object.assign(obj, header.combobox);
-        let tempContent = header.combobox.tableContents[index];
-        obj.tableContents = tempContent;
-        console.log(header.combobox.tableContents);
-        console.log(obj.tableContents);
-        return obj;
+      if (header.type == "comboboxmanual") {
+        if (this.tableContents[index]["units"]) {
+          let content = JSON.parse(this.tableContents[index]["units"]);
+          let comboboxProps = {};
+          Object.assign(comboboxProps, header.combobox);
+          comboboxProps.tableContents = content;
+          return comboboxProps;
+        }
       }
-      
-      
     },
     /**bind dữ liệu lên combobox */
     bindingCombobox(index, header, content) {
-      this.$emit("changeTableContent", index, header, content);
+      let mode = "comboboxapi";
+      this.$emit("changeTableContent", index, header, mode , content);
     },
     /**combobox manual value */
-    renderComboboxManualValue(tableHeader, index){
-      let comboboxFieldName = tableHeader.fieldName;
-      if(tableHeader.combobox.tableContents.length != 0){
-        return tableHeader.combobox.tableContents[index][0][comboboxFieldName];
-      } 
-      return "";
-    }
+    renderComboboxManualValue(tableHeader, index, content) {
+      if (content) {
+          let comboboxFieldName = tableHeader.fieldName;
+          console.log(content[comboboxFieldName]);
+          return content[comboboxFieldName];
+      }
+      else{
+        if (this.tableContents[index]["units"]) {
+          let content = JSON.parse(this.tableContents[index]["units"]);
+          return content[0][tableHeader.fieldName];
+        }
+      }
+    },
+    /**blur input */
+   blurInput(index, header, content){
+     let mode = "blur";
+     this.$emit("changeTableContent", index, header, mode , content);
+   }
   },
 };
 </script>

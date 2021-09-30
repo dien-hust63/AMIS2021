@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Misa.ApplicationCore.Entities;
 using Misa.ApplicationCore.Interfaces.Repository;
+using Newtonsoft.Json;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -78,23 +79,23 @@ namespace Misa.Infrastructure
         /// </summary>
         /// <param name="accountVoucherID">ID chứng từ</param>
         /// <returns></returns>
-        /// CreatedBy: nvdien(24/9/2021)
+        /// CreatedBy: NTDUNG(24/9/2021)
         public object getAccountVoucherDetail(Guid accountVoucherID)
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
-               
+
                 dynamicParameters.Add("@accountvoucher_id", accountVoucherID);
                 var sql = "select * from public.view_accountvoucher_accountobject av where av.accountvoucher_id = @accountvoucher_id;";
                 sql += "select * from public.view_accountvoucherdetail_commodity ac where ac.accountvoucher_id = @accountvoucher_id;";
-                
+
                 var response = _dbConnection.QueryMultiple(sql, param: dynamicParameters, commandType: CommandType.Text);
 
                 var vouchers = response.Read<AccountVoucher>();
                 var voucherDetails = response.Read<AccountVoucherDetail>();
                 var inwardDetail = new List<object>();
-                var unitList = new List<object>();
+
                 if (voucherDetails.Count() > 0)
                 {
                     foreach (var item in voucherDetails)
@@ -103,20 +104,20 @@ namespace Misa.Infrastructure
                         DynamicParameters dynamicParameters1 = new DynamicParameters();
 
                         dynamicParameters1.Add("@commodity_id", commodityId);
-                        var sql2 = "select * from view_commodity_unit vcu2 where vcu2.commodity_id = @commodity_id";
+                        var sql2 = "select * from view_commodity_unit vcu2 where vcu2.commodity_id = @commodity_id order by vcu2.is_main_unit desc";
                         var units = _dbConnection.Query<CommodityUnit>(sql2, param: dynamicParameters1, commandType: CommandType.Text);
-
+                        var unitList = JsonConvert.SerializeObject(units);
+                        item.units = String.Join(",", unitList);
                         inwardDetail.Add(item);
-                        unitList.Add(units);
                     }
                 }
-                
+
                 var result = new
                 {
-                    Data = new { 
+                    Data = new
+                    {
                         in_inward = vouchers,
                         in_inward_detail = inwardDetail,
-                        units = unitList
                     }
 
                 };
@@ -179,7 +180,20 @@ namespace Misa.Infrastructure
                 return rowEffects;
             }
         }
+        /// <summary>
+        /// Lấy mã chứng từ mới
+        /// </summary>
+        /// <returns></returns>
+        public AccountVoucher getNewVoucherCode()
+        {
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            {
 
 
+                var sqlCommand = "select * from public.accountvoucher av order by cast( public.func_extract_number(av.voucher_code) as int) DESC LIMIT 1";
+                var voucher = _dbConnection.Query<AccountVoucher>(sqlCommand).Single();
+                return voucher;
+            }
+        }
     }
 }

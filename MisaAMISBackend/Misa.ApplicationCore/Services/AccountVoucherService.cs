@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Misa.ApplicationCore.Services
@@ -63,6 +64,41 @@ namespace Misa.ApplicationCore.Services
             {
                 var serviceResult = new ServiceResult();
                 serviceResult.Data = _accounVoucherRepository.getAccountVoucherPagingFilter(searchData, mentionState, voucherType, startDate, endDate, pageIndex, pageSize);
+                return serviceResult;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Lấy mã chứng từ mới
+        /// </summary>
+        /// <returns></returns>
+        public ServiceResult getNewVoucherCode()
+        {
+            try
+            {
+                var serviceResult = new ServiceResult();
+                var voucher = _accounVoucherRepository.getNewVoucherCode();
+                var currentVoucherCode = voucher.voucher_code;
+                var numberString = Regex.Match(currentVoucherCode, @"\d+").Value;
+                int numberCode = Int32.Parse(numberString);
+                numberCode = numberCode + 1;
+                numberString = numberCode.ToString();
+                var numberStringLength = numberString.Length;
+                var newVoucherCode = "BK";
+                if (numberStringLength < 6)
+                {
+                    for (int i = 0; i < 6 - numberStringLength; ++i)
+                    {
+                        newVoucherCode = newVoucherCode + "0";
+                    }
+                }
+                newVoucherCode = newVoucherCode + numberString;
+                serviceResult.Data = newVoucherCode;
                 return serviceResult;
             }
             catch (Exception)

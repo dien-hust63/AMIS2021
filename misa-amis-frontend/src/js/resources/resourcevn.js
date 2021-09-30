@@ -9,8 +9,8 @@ var apiList = {
   accountobjectPagingFilter:"https://localhost:44350/api/v1/AccountObjects/filter?searchData={0}&pageIndex={1}&pageSize={2}",
   employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}",
   warehousePagingFilter:"https://localhost:44350/api/v1/Warehouses/filter?searchData={0}&pageIndex={1}&pageSize={2}",
-  commodityPagingFilter:"https://localhost:44350/api/v1/Commoditys/filter?searchData={0}&pageIndex={1}&pageSize={2}"
-
+  commodityPagingFilter:"https://localhost:44350/api/v1/Commoditys/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  accountPagingFilter:"https://localhost:44350/api/v1/Accounts/filter?searchData={0}&pageIndex={1}&pageSize={2}"
 }
 var tableCustomerHeaders = [
   { fieldName: 'account_object_code', label: 'Mã khách hàng', textAlign: 'text-left', type: "normal", width: '100px'},
@@ -25,6 +25,16 @@ var commodityComboboxHeaders = [
   { fieldName: 'commodity_code', label: 'Mã hàng', textAlign: 'text-left', type: "normal", width: '100px'},
   { fieldName: 'commodity_name', label: 'Tên hàng', textAlign: 'text-left', type: "normal", width: '200px' },
 ]
+var accountComboboxHeaders = [
+  { fieldName: 'account_number', label: 'Mã tài khoản', textAlign: 'text-left', type: "normal", width: '100px'},
+  { fieldName: 'account_name', label: 'Tên tài khoản', textAlign: 'text-left', type: "normal", width: '200px' },
+]
+var comboboxAccountProps = {
+  tableHeaders: accountComboboxHeaders,
+  api: apiList['accountPagingFilter'],
+  tableObject: "Accounts",
+  mode:"api"
+}
 var comboboxWarehouseProps = {
   tableHeaders: warehouseComboboxHeaders,
   api: apiList['warehousePagingFilter'],
@@ -42,6 +52,7 @@ var comboboxUnitProps = {
   tableContents: [],
   mode:"manual"
 }
+
 module.exports = {
   apiList: apiList,
 
@@ -79,8 +90,8 @@ module.exports = {
     { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "comboboxapi", combobox:comboboxCommodityProps},
     { fieldName: 'commodity_name', label: 'TÊN HÀNG', textAlign: 'text-left', type: "input" },
     { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "comboboxapi" , combobox:comboboxWarehouseProps},
-    { fieldName: 'debit_account_number', label: 'TK NỢ', textAlign: 'text-right', type: "comboboxapi"},
-    { fieldName: 'credit_account_number', label: 'TK CÓ', textAlign: 'text-left', type: "comboboxapi" },
+    { fieldName: 'debit_account_number', label: 'TK NỢ', textAlign: 'text-right', type: "comboboxapi", combobox:comboboxAccountProps},
+    { fieldName: 'credit_account_number', label: 'TK CÓ', textAlign: 'text-left', type: "comboboxapi",combobox:comboboxAccountProps },
     { fieldName: 'unit_name', label: 'DVT', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxUnitProps},
     { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "input"},
     { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "input" },
@@ -121,7 +132,7 @@ module.exports = {
       'warehouse_code':'',
       'debit_account_code':'',
       'credit_account_code':'',
-      'unit':'',
+      'units':'',
       'quantity':'',
       'debit_amount':'',
       'total_price':'',

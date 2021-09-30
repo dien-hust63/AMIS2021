@@ -26,6 +26,8 @@
 </template>
 <script>
 import BaseTab from "../../../base/BaseTab.vue";
+import { RepositoryFactory } from "../../../../js/repository/repository.factory";
+const VoucherRepository = RepositoryFactory.get("vouchers");
 export default {
   name: "WarehouseInwardOutwardList",
   components: {
@@ -52,7 +54,11 @@ export default {
      * CreadtedBy: nvdien(26/9/2021)
      */
     addInwardForm(){
-       this.$eventBus.$emit('showInwardDetail', this.$resourcesVN.mode.ADD);
+      VoucherRepository.getNewVoucherCode().then((response) => {
+        let newVoucherCode = response.data;
+        this.$eventBus.$emit('showInwardDetail', this.$resourcesVN.mode.ADD, newVoucherCode);
+      })
+       
     }
   },
 };

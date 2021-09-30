@@ -5,7 +5,9 @@
         <div class="recent-log-btn">
           <div class="mi mi-24 mi-recent-log"></div>
         </div>
-        <div class="title">Phiếu nhập kho {{masterContent['voucher_code']}}</div>
+        <div class="title">
+          Phiếu nhập kho {{ masterContent["voucher_code"] }}
+        </div>
         <div class="header-detail-input">
           <base-dropdown
             v-model="dropdownInwardTypeData"
@@ -140,7 +142,7 @@
               :tableHeaders="tableInwardDetailHeaders"
               :tableContents="tableInwardDetailContents"
               @deleteRow="deleteRow"
-              @changeTableContent='changeVoucherDetail'
+              @changeTableContent="changeVoucherDetail"
             />
             <div class="inward-detail-pagination">
               <base-pagination />
@@ -194,6 +196,7 @@ import BasePagination from "../../base/BasePagination.vue";
 import BaseDropdown from "../../base/BaseDropdown.vue";
 import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue";
 import BaseDateInput from "../../base/BaseDateInput.vue";
+import moment from "moment";
 export default {
   name: "InwardDetail",
   components: {
@@ -222,7 +225,7 @@ export default {
         tableHeaders: this.$resourcesVN.tableCustomerHeaders,
         api: this.$resourcesVN.apiList.accountobjectPagingFilter,
         tableObject: "AccountObjects",
-        mode:"api",
+        mode: "api",
       },
       /**combobox employee */
       employeeComboboxValue: "",
@@ -230,7 +233,7 @@ export default {
         tableHeaders: this.$resourcesVN.InwardEmployeeComboboxHeaders,
         api: this.$resourcesVN.apiList.employeePagingFilter,
         tableObject: "Employees",
-        mode: "api"
+        mode: "api",
       },
       /**field in master */
       customerAddress: "",
@@ -241,7 +244,7 @@ export default {
       /**Nội dung form */
       masterContent: {},
       /**đơn vị tính */
-      units:[],
+      units: [],
     };
   },
   methods: {
@@ -288,41 +291,142 @@ export default {
         content["account_object_name"]
       );
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
-      this.$set(this.masterContent, "contact_address", content["contact_address"]);
+      this.$set(
+        this.masterContent,
+        "contact_address",
+        content["contact_address"]
+      );
     },
     /**bind lên combobox nhân viên */
     bindingEmployeeCombobox(content) {
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
     },
     /**gán lại nội dung table */
-  changeVoucherDetail(index, header, content){
-    let newContent = content;
-    if(header.type == "comboboxapi") newContent = content[header.fieldName];
-    this.$set(this.tableInwardDetailContents[index], header.fieldName, newContent);
-    }
+    changeVoucherDetail(index, header, mode, content) {
+      switch (mode) {
+        case "input": {
+          //thay đổi giá trị của chính nó
+          this.$set(
+            this.tableInwardDetailContents[index],
+            header.fieldName,
+            content
+          );
+          break;
+        }
+        case "blur": {
+          if (header.fieldName == "quantity" || header.fieldName == "debit_amount") {
+            let quantity = content["quantity"];
+            let debit_amount = content["debit_amount"];
+            //Thay đổi thành tiền
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "total_price",
+              quantity*debit_amount
+            );
+          }
+          if(header.fieldName == "total_price"){
+            let quantity = content["quantity"];
+            let totalPrice = content["total_price"];
+             //Thay đổi thành tiền
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "debit_amount",
+              totalPrice*1.0/quantity
+            );
+          }
+          break;
+        }
+        case "comboboxapi": {
+          let newContent = content[header.fieldName];
+          if (
+            header.fieldName == "debit_account_number" ||
+            header.fieldName == "credit_account_number"
+          ) {
+            newContent = content["account_number"];
+          }
+          if (header.fieldName == "commodity_code") {
+            //nếu chọn mã hàng => bind lên các trường khác
+            //tên hàng
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "commodity_name",
+              content["commodity_name"]
+            );
+            //kho
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "warehouse_code",
+              content["warehouse_code"]
+            );
+            //Tài khoản nợ
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "debit_account_number",
+              content["debit_account_number"]
+            );
+            //Tài khoản có
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "credit_account_number",
+              content["credit_account_number"]
+            );
+            //Đơn giá
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "debit_amount",
+              content["debit_amount"]
+            );
+          }
+          //thay đổi giá trị của chính nó
+          this.$set(
+            this.tableInwardDetailContents[index],
+            header.fieldName,
+            newContent
+          );
+          break;
+        }
+        case "date": {
+          this.$set(
+            this.tableInwardDetailContents[index],
+            header.fieldName,
+            content
+          );
+          break;
+        }
+      }
+    },
   },
-  computed:{
-    descriptionVoucher: function(){
-      let inwardType = this.$resourcesVN.inwardTypeDropdownList.find(o => o.data === this.dropdownInwardTypeData).value;
-      if(this.masterContent["account_object_name"]){
+  computed: {
+    descriptionVoucher: function () {
+      let inwardType = this.$resourcesVN.inwardTypeDropdownList.find(
+        (o) => o.data === this.dropdownInwardTypeData
+      ).value;
+      if (this.masterContent["account_object_name"]) {
         return `${inwardType} của ${this.masterContent["account_object_name"]}`;
-      }else{
+      } else {
         return inwardType;
       }
-     
-    }
+    },
   },
   created() {
     this.$eventBus.$on("showInwardDetail", (mode, content) => {
       this.mode = mode;
       if (mode == this.$resourcesVN.mode.ADD) {
-        this.masterContent = {};
+        let currentDate = moment().format("YYYY-MM-DD");
+        this.masterContent = {
+          voucher_code: content,
+          mathematics_date: currentDate,
+          voucher_date: currentDate,
+        };
+        this.tableInwardDetailContents =
+          this.$resourcesVN.tableInwardDetailContents;
       }
       if (mode == this.$resourcesVN.mode.EDIT) {
         this.masterContent = content["in_inward"][0];
         this.tableInwardDetailContents = content["in_inward_detail"];
-        this.units = content["units"];
-        this.tableInwardDetailHeaders[6].combobox.tableContents = content["units"];
+        // console.log(this.tableInwardDetailContents);
+        // let test = this.tableInwardDetailContents[0]["units"];
+        // console.log(JSON.parse(test));
       }
       this.isShowInwardDetail = true;
     });
