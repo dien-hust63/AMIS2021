@@ -50,5 +50,10 @@ class VoucherAPI extends BaseAPI {
 		let url = this.baseApiUrl + this.controller + '/unmention';
 		return axios.put(url, body);
 	}
+    /**Thêm phiếu nhập */
+    addVoucher(body){
+        let url = this.baseApiUrl + this.controller + '/add';
+        return axios.post(url,body);
+    }
 }
 export default new VoucherAPI();

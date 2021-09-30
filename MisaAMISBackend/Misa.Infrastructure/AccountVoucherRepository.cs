@@ -79,7 +79,7 @@ namespace Misa.Infrastructure
         /// </summary>
         /// <param name="accountVoucherID">ID chứng từ</param>
         /// <returns></returns>
-        /// CreatedBy: NTDUNG(24/9/2021)
+        /// CreatedBy: nvdien(24/9/2021)
         public object getAccountVoucherDetail(Guid accountVoucherID)
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))
@@ -130,7 +130,7 @@ namespace Misa.Infrastructure
         /// </summary>
         /// <param name="entityIds"></param>
         /// <returns></returns>
-        /// CreatedBy: NTDUNG(28/09/2021)
+        /// CreatedBy: nvdien(28/09/2021)
         public int mentionMany(List<Guid> entityIds)
         {
             var parameters = new DynamicParameters();
@@ -158,7 +158,7 @@ namespace Misa.Infrastructure
         /// </summary>
         /// <param name="entityIds"></param>
         /// <returns></returns>
-        /// CreatedBy: NTDUNG(28/09/2021)
+        /// CreatedBy: nvdien(28/09/2021)
         public int unMentionMany(List<Guid> entityIds)
         {
             var parameters = new DynamicParameters();
@@ -194,6 +194,16 @@ namespace Misa.Infrastructure
                 var voucher = _dbConnection.Query<AccountVoucher>(sqlCommand).Single();
                 return voucher;
             }
+        }
+
+        public int addAccountVoucher(AccountVoucherData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data)
+        {
+            throw new NotImplementedException();
         }
     }
 }

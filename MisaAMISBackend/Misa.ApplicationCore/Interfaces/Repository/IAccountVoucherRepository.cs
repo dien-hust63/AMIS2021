@@ -53,5 +53,22 @@ namespace Misa.ApplicationCore.Interfaces.Repository
         /// </summary>
         /// <returns></returns>
         AccountVoucher getNewVoucherCode();
+
+        /// <summary>
+        /// Thêm mới phiếu nhập
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(30/09/2021)
+        int addAccountVoucher(AccountVoucherData data);
+
+        /// <summary>
+        /// Chỉnh sửa phiếu nhập
+        /// </summary>
+        /// <param name="accountVoucherID"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(30/09/2021)
+        int updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data);
     }
 }

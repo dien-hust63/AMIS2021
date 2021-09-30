@@ -120,9 +120,8 @@ namespace Misa.ApplicationCore.Entities
         public string contact_address { get; set; }
 
         /// <summary>
-        /// Id nhân viên
+        /// Id nhân viên bán hàng
         /// </summary>
-        [MisaNotMap]
         public Guid? employee_id { get; set; }
 
         /// <summary>

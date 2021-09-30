@@ -46,7 +46,7 @@
     border-right: 1px dotted #c7c7c7;
     box-sizing: border-box;
     background-color: #fff;
-    max-width: var(--max-width-column);
+    /* max-width: var(--max-width-column); */
     overflow-x: hidden;
     overflow-y: hidden;
     text-overflow: ellipsis;

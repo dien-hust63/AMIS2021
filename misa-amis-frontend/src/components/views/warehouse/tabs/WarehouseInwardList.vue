@@ -147,10 +147,7 @@ export default {
     BaseDropdown,
     BaseDateInput,
   },
-  created() {
-    //lấy danh sách chứng từ
-    this.loadData();
-  },
+ 
   data() {
     return {
       tableInwardListHeaders: this.$resourcesVN.tableInwardListHeaders,
@@ -523,6 +520,17 @@ export default {
       this.endDateFilter = dateRange[1];
       this.startDateFilter = dateRange[0];
     },
+  },
+  created() {
+    //lấy danh sách chứng từ
+    this.loadData();
+    this.$eventBus.$on("loadVoucherTable", () => {
+      console.log("test");
+      this.$nextTick(() => {this.loadData()});
+    });
+  },
+  destroyed() {
+    this.$eventBus.$off("loadVoucherTable");
   },
 };
 </script>

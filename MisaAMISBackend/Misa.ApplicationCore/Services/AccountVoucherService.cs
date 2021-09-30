@@ -1,4 +1,5 @@
 ﻿using Misa.ApplicationCore.Entities;
+using Misa.ApplicationCore.Enum;
 using Misa.ApplicationCore.Interfaces.Base;
 using Misa.ApplicationCore.Interfaces.Repository;
 using Misa.ApplicationCore.Interfaces.Services;
@@ -15,13 +16,16 @@ namespace Misa.ApplicationCore.Services
     {
         #region Declare
         IAccountVoucherRepository _accounVoucherRepository;
+        IAccountVoucherDetailRepository _accountVoucherDetailRepository;
         #endregion
 
         #region Constructor
-        public AccountVoucherService(IBaseRepository<AccountVoucher> baseRepository, IAccountVoucherRepository accounVoucherRepository) : base(baseRepository)
+        public AccountVoucherService(IBaseRepository<AccountVoucher> baseRepository, IAccountVoucherRepository accounVoucherRepository, IAccountVoucherDetailRepository accountVoucherDetailRepository) : base(baseRepository)
         {
             _accounVoucherRepository = accounVoucherRepository;
+            _accountVoucherDetailRepository = accountVoucherDetailRepository;
         }
+
         #endregion
 
         /// <summary>
@@ -151,6 +155,89 @@ namespace Misa.ApplicationCore.Services
                     rowEffects = rowEffects,
                     messages = Resources.ResourceVN.Success_Update,
                 };
+                return serviceResult;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Thêm mới phiếu nhập
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(30/09/2021)
+        public ServiceResult addAccountVoucher(AccountVoucherData data)
+        {
+            try
+            {
+                var serviceResult = new ServiceResult();
+                var accountVoucher = data.in_inward;
+                var accountVoucherId = Guid.NewGuid();
+                accountVoucher.accountvoucher_id = accountVoucherId;
+                // Thêm vào bảng chính
+                var voucherResult = _baseRepository.Insert(accountVoucher);
+                // Thêm vào hàng tiền
+                var accountVoucherDetails = data.in_inward_detail;
+                for (int i = 0; i < accountVoucherDetails.Count(); i++)
+                {
+                    var accountVoucherDetail = accountVoucherDetails[i];
+                    accountVoucherDetail.accountvoucher_id = accountVoucherId;
+                    _accountVoucherDetailRepository.Insert(accountVoucherDetail);
+                }
+                serviceResult.Data = Resources.ResourceVN.Success_Insert;
+
+                return serviceResult;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Chỉnh sửa phiếu nhập
+        /// </summary>
+        /// <param name="accountVoucherID"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(30/09/2021)
+        public ServiceResult updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data)
+        {
+            try
+            {
+                var serviceResult = new ServiceResult();
+                var accountVoucher = data.in_inward;
+                // Thêm vào bảng chính
+                _baseRepository.Update(accountVoucher, accountVoucherID);
+                // Thêm vào hàng tiền
+                var accountVoucherDetails = data.in_inward_detail;
+                for (int i = 0; i < accountVoucherDetails.Count(); i++)
+                {
+                    var accountVoucherDetail = accountVoucherDetails[i];
+                    var accountVoucherDetailId = accountVoucherDetail.accountvoucherdetail_id;
+                    var state = accountVoucherDetail.state;
+
+                    switch (state)
+                    {
+                        case (int)Mode.Add:
+                            _accountVoucherDetailRepository.Insert(accountVoucherDetail);
+                            break;
+                        case (int)Mode.Update:
+                            _accountVoucherDetailRepository.Update(accountVoucherDetail, accountVoucherDetailId);
+                            break;
+                        case (int)Mode.Delete:
+                            _accountVoucherDetailRepository.Delete(accountVoucherDetailId);
+                            break;
+                    }
+                }
+                serviceResult.Data = Resources.ResourceVN.Success_Update;
+                //serviceResult.Data = _accounVoucherRepository.updateAccountVoucher(accountVoucherID,data);
+
                 return serviceResult;
             }
             catch (Exception)

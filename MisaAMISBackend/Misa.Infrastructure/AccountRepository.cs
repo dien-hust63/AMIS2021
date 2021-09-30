@@ -28,7 +28,7 @@ namespace Misa.Infrastructure
         /// <param name="pageSize">số bản ghi trên trang</param>
         /// <param name="type">kiểu</param>
         /// <returns></returns>
-        /// CreatedBy: NTDUNG(24/9/2021)
+        /// CreatedBy: nvdien(24/9/2021)
         public object getAccountPagingFilter(string searchData, int pageIndex, int pageSize, string type)
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))

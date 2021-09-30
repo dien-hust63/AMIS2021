@@ -80,7 +80,7 @@ module.exports = {
     { fieldName: 'description', label: 'DIỄN GIẢI', textAlign: 'text-left', type: "normal" },
     { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
     { fieldName: 'contact_name', label: 'NGƯỜI GIAO/NGƯỜI NHẬN', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'voucher_type', label: 'LOẠI CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
+    { fieldName: 'voucher_type_name', label: 'LOẠI CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
     { label: 'CHỨC NĂNG', type:'contextmenu' }
   ],
  
@@ -169,6 +169,7 @@ module.exports = {
   mode: {
     ADD: 0,
     EDIT: 1,
+    DELETE:2,
     BUTTONCALLBACK: 2,
     BUTTONNORMAL: 3,
   },

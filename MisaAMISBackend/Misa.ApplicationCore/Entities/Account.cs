@@ -16,7 +16,7 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Số tài khoản
         /// </summary>
-        public int account_number { get; set; }
+        public string account_number { get; set; }
 
         /// <summary>
         /// Tên tài khoản

@@ -26,7 +26,7 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Id chứng từ
         /// </summary>
-        public Guid? accountvoucher_id { get; set; }
+        public Guid accountvoucher_id { get; set; }
 
         /// <summary>
         /// Id kho
@@ -71,7 +71,6 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Tên hàng hóa
         /// </summary>
-        [MisaNotMap]
         public string commodity_name { get; set; }
 
         /// <summary>
@@ -121,5 +120,11 @@ namespace Misa.ApplicationCore.Entities
         /// </summary>
         [MisaNotMap]
         public string units { get; set; }
+
+        /// <summary>
+        /// Trạng thái 
+        /// </summary>
+        [MisaNotMap]
+        public int state { get; set; }
     }
 }
