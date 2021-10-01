@@ -196,7 +196,11 @@
     }
 
 
-
+    .inward-detail-body .white-space{
+        height: 100px;
+        width: 100%;
+        visibility: hidden;
+    }
 /*Footer*/
 .inward-detail-footer{
     background-color: #38393d;
@@ -232,4 +236,7 @@
 }
 .right-group-button .button-custom-right{
     border-radius: 0 2px 2px 0;
+}
+.right-group-button .btn-mention{
+    margin-left: 8px;
 }

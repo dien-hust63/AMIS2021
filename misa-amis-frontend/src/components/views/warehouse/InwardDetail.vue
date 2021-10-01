@@ -50,6 +50,7 @@
                     <base-input
                       label="Địa chỉ"
                       v-model="masterContent['contact_address']"
+                      :class="{ 'ms-input--readonly': isReadOnly }"
                     />
                   </div>
                 </div>
@@ -58,12 +59,14 @@
                     <base-input
                       label="Người giao hàng"
                       v-model="masterContent['contact_name']"
+                      :class="{ 'ms-input--readonly': isReadOnly }"
                     />
                   </div>
                   <div class="w-4/7 px-13 border-box">
                     <base-input
                       label="Diễn giải"
                       v-model="descriptionVoucher"
+                      :class="{ 'ms-input--readonly': isReadOnly }"
                     />
                   </div>
                 </div>
@@ -85,6 +88,7 @@
                         class="voucher-attach"
                         placeholder="Số lượng"
                         v-model="masterContent['voucher_attach']"
+                        :class="{ 'ms-input--readonly': isReadOnly }"
                       />
                       <div class="voucher-attach-title">
                         <div class="text">chứng từ gốc</div>
@@ -116,6 +120,7 @@
                   <base-input
                     label="Số chứng từ"
                     v-model="masterContent['voucher_code']"
+                    :class="{ 'ms-input--readonly': isReadOnly }"
                   />
                 </div>
               </div>
@@ -143,6 +148,7 @@
               :tableContents="tableInwardDetailContents"
               @deleteRow="deleteRow"
               @changeTableContent="changeVoucherDetail"
+              :isReadOnly="isReadOnly"
             />
             <div class="inward-detail-pagination">
               <base-pagination />
@@ -153,7 +159,10 @@
           <div class="btn-grid-control">
             <base-button value="Thêm dòng" @clickButton="addNewRow" />
             <base-button value="Thêm ghi chú" />
-            <base-button value="Xóa hết dòng" @clickButton="deleteAllRow" />
+            <base-button
+              value="Xóa hết dòng"
+              @clickButton="warningDeleteAllRow"
+            />
           </div>
           <div class="input-grid-control">
             <div class="flex">
@@ -166,14 +175,17 @@
             </div>
           </div>
         </div>
+        <div class="white-space"></div>
       </div>
       <div class="inward-detail-footer">
         <div class="left-group-button">
           <base-button value="Hủy" class="ms-button-secondary" />
         </div>
-        <div class="right-group-button" @click="saveVoucherDetail">
-          <base-button value=" Cất" class="ms-button-secondary button-add" />
-          <div class="base-button-custom">
+        <div class="right-group-button" >
+          <div class="ms-button ms-button-secondary button-add" @click="saveVoucherDetail" v-show="afterEdit">
+            Cất
+          </div>
+          <div class="base-button-custom" v-show="afterEdit">
             <div class="button-custom-left ms-button-primary">
               <div class="buttom-custom-text">Cất và thêm</div>
             </div>
@@ -184,6 +196,15 @@
               <div class="line"></div>
               <div class="mi mi-16 mi-arrow-up--white"></div>
             </div>
+          </div>
+          <div class="ms-button ms-button-primary" @click="unMention" v-show="afterSave">
+            Bỏ ghi
+          </div>
+          <div class="ms-button ms-button-secondary" @click="changeEditState" v-show="afterUnmention">
+            Sửa
+          </div>
+          <div class="ms-button ms-button-primary btn-mention" @click="mention" v-show="afterUnmention">
+            Ghi sổ
           </div>
         </div>
       </div>
@@ -254,6 +275,13 @@ export default {
       units: [],
       /**dữ liệu chi tiết hàng tiền phiếu nhập  */
       voucherDetailContents: [],
+      isReadOnly: false,
+      /**footer */
+      afterSave: false,
+      afterEdit: true,
+      afterUnmention: false,
+      //add
+      voucherId: "",
     };
   },
   methods: {
@@ -267,9 +295,21 @@ export default {
      * CreaedBy: nvdien(17/9/2021)
      */
     closeInwardDetail() {
+      //set button
+      this.afterSave = false;
+      this.afterEdit = true;
+      this.afterUnmention = false;
+      this.isReadOnly = false;
       this.isShowInwardDetail = false;
+      //reset form
+      this.voucherDetailContents = [];
+      this.tableInwardDetailContents = [];
+      this.masterContent = [];
     },
-
+    /**Đóng message box */
+    closeMessageBox() {
+      this.$eventBus.$emit("hideMessageBox");
+    },
     /**Mở form Thêm mới khách hàng*/
     showCustomerDetail() {
       this.$eventBus.$emit("showCustomerDetail");
@@ -282,14 +322,24 @@ export default {
     addNewRow() {
       let totalRow = this.tableInwardDetailContents.length;
       if (totalRow > 0) {
-        let newRowContent = this.tableInwardDetailContents[totalRow - 1];
-        this.tableInwardDetailContents.push(newRowContent);
+        let newRowContent = Object.assign(
+          {},
+          this.tableInwardDetailContents[totalRow - 1]
+        );
+        //set state dòng đó thành ADD
+        newRowContent["state"] = this.$resourcesVN.mode.ADD;
+        //Cập nhật giao diện
+        this.$set(this.tableInwardDetailContents, totalRow, newRowContent);
       } else {
-        this.$set(this.tableInwardDetailContents, 0, {});
+        this.$set(
+          this.tableInwardDetailContents,
+          0,
+          Object.assign({}, this.$resourcesVN.inwardDetailContentsDefault)
+        );
       }
     },
     /**xóa hết dòng */
-    deleteAllRow() {
+    warningDeleteAllRow() {
       let messageText = this.formatString(
         this.$resourcesVN.message.messageDeleteWarning,
         "tất cả các dòng đã nhập"
@@ -301,23 +351,46 @@ export default {
           {
             feature: "left ms-button-secondary",
             callback: () => {
-              console.log("close message box");
+              //đóng form cảnh báo
+              this.closeMessageBox();
             },
             value: "Không",
           },
           {
             feature: "right-first ms-button-primary",
             callback: () => {
-              console.log("xóa hết dòng");
+              this.deleteAllRow();
             },
             value: "Có",
           },
         ],
       });
-      // this.tableInwardDetailContents = [];
+    },
+    /**Xóa tất cả các dòng */
+    deleteAllRow() {
+      //Xóa trên giao diện, set lại mảng default
+      this.tableInwardDetailContents = [];
+      this.$set(
+        this.tableInwardDetailContents,
+        0,
+        Object.assign({}, this.$resourcesVN.inwardDetailContentsDefault)
+      );
+      //Set trạng thái xóa trên các hàng của nội dung
+      let lengthContent = this.voucherDetailContents.length;
+      for (let i = 0; i < lengthContent; ++i) {
+        this.voucherDetailContents[i]["state"] = this.$resourcesVN.mode.DELETE;
+      }
+      this.closeMessageBox();
     },
     /**Xóa 1 dòng */
     deleteRow(index) {
+      let rowContent = this.tableInwardDetailContents[index];
+      if (rowContent["state"] == this.$resourcesVN.mode.EDIT) {
+        //chuyển state nội dung sang DELETE
+        this.voucherDetailContents[index]["state"] =
+          this.$resourcesVN.mode.DELETE;
+      }
+      //Xóa dòng đó trên giao diện
       this.tableInwardDetailContents.splice(index, 1);
     },
     /**bind lên combobox khách hàng */
@@ -353,11 +426,26 @@ export default {
       switch (mode) {
         case "input": {
           //thay đổi giá trị của chính nó
+          //Giao diện
           this.$set(
             this.tableInwardDetailContents[index],
             header.fieldName,
             content
           );
+          //Nội dung
+          //Nếu state = 1 thì ms cập nhật nội dung
+          if (
+            this.tableInwardDetailContents[index].state ==
+              this.$resourcesVN.mode.EDIT &&
+            this.mode == this.$resourcesVN.mode.EDIT
+          ) {
+            this.$set(
+              this.voucherDetailContents[index],
+              header.fieldName,
+              content
+            );
+          }
+
           break;
         }
         case "blur": {
@@ -367,22 +455,51 @@ export default {
           ) {
             let quantity = content["quantity"];
             let debit_amount = content["debit_amount"];
+            let totalPrice = quantity * debit_amount;
             //Thay đổi thành tiền
             this.$set(
               this.tableInwardDetailContents[index],
               "total_price",
-              quantity * debit_amount
+              totalPrice
             );
+            //Nội dung
+            //Nếu state = 1 thì ms cập nhật nội dung
+            if (
+              this.tableInwardDetailContents[index].state ==
+                this.$resourcesVN.mode.EDIT &&
+              this.mode == this.$resourcesVN.mode.EDIT
+            ) {
+              this.$set(
+                this.voucherDetailContents[index],
+                "total_price",
+                totalPrice
+              );
+            }
           }
           if (header.fieldName == "total_price") {
             let quantity = content["quantity"];
             let totalPrice = content["total_price"];
+            let debitAmount = (totalPrice * 1.0) / quantity;
             //Thay đổi thành tiền
+            //Giao diện
             this.$set(
               this.tableInwardDetailContents[index],
               "debit_amount",
-              (totalPrice * 1.0) / quantity
+              debitAmount
             );
+            //Nội dung
+            //Nếu state = 1 thì ms cập nhật nội dung
+            if (
+              this.tableInwardDetailContents[index].state ==
+                this.$resourcesVN.mode.EDIT &&
+              this.mode == this.$resourcesVN.mode.EDIT
+            ) {
+              this.$set(
+                this.voucherDetailContents[index],
+                "debit_amount",
+                debitAmount
+              );
+            }
           }
           break;
         }
@@ -393,10 +510,38 @@ export default {
             header.fieldName == "credit_account_number"
           ) {
             newContent = content["account_number"];
+            //thay đổi giá trị của chính nó
+            //Giao diện
+            this.$set(
+              this.tableInwardDetailContents[index],
+              header.fieldName,
+              newContent
+            );
+            this.$set(
+              this.tableInwardDetailContents[index],
+              header.dataField,
+              content["account_id"]
+            );
+            //Nội dung
+            //cập nhật ID của chính combobox đó
+            //Nếu state = 1 thì ms cập nhật nội dung
+            if (
+              this.tableInwardDetailContents[index].state ==
+                this.$resourcesVN.mode.EDIT &&
+              this.mode == this.$resourcesVN.mode.EDIT
+            ) {
+              this.$set(
+                this.voucherDetailContents[index],
+                header.dataField,
+                content["account_id"]
+              );
+            }
+            return;
           }
           if (header.fieldName == "commodity_code") {
             //nếu chọn mã hàng => bind lên các trường khác
             //hàng hóa
+            //#region Giao diện
             this.$set(
               this.tableInwardDetailContents[index],
               "commodity_name",
@@ -446,21 +591,68 @@ export default {
               "debit_amount",
               content["debit_amount"]
             );
+            //#endregion
+            /**Nội dung */
+            //#region Nội dung
+            //Nếu state giao diện = EDIT thì ms cập nhật nội dung
+            if (
+              this.tableInwardDetailContents[index].state ==
+                this.$resourcesVN.mode.EDIT &&
+              this.mode == this.$resourcesVN.mode.EDIT
+            ) {
+              let newChangeContent = Object.assign(
+                {},
+                this.tableInwardDetailContents[index]
+              );
+              newChangeContent["state"] = 1;
+              this.$set(this.voucherDetailContents, index, newChangeContent);
+            }
+            //#endregion
           }
           //thay đổi giá trị của chính nó
+          //Giao diện
           this.$set(
             this.tableInwardDetailContents[index],
             header.fieldName,
             newContent
           );
+          //Nội dung
+          //cập nhật ID của chính combobox đó
+          //Nếu state = 1 thì ms cập nhật nội dung
+          if (
+            this.tableInwardDetailContents[index].state ==
+              this.$resourcesVN.mode.EDIT &&
+            this.mode == this.$resourcesVN.mode.EDIT
+          ) {
+            this.$set(
+              this.voucherDetailContents[index],
+              header.dataField,
+              content[header.dataField]
+            );
+          }
+
           break;
         }
         case "date": {
+          //Giao diện
           this.$set(
             this.tableInwardDetailContents[index],
             header.fieldName,
             content
           );
+          //Nội dung
+          //Nếu state = 1 thì ms cập nhật nội dung
+          if (
+            this.tableInwardDetailContents[index].state ==
+              this.$resourcesVN.mode.EDIT &&
+            this.mode == this.$resourcesVN.mode.EDIT
+          ) {
+            this.$set(
+              this.voucherDetailContents[index],
+              header.fieldName,
+              content
+            );
+          }
           break;
         }
       }
@@ -469,6 +661,9 @@ export default {
     saveVoucherDetail() {
       //Thêm mới
       if (this.mode == this.$resourcesVN.mode.ADD) {
+        let newGuid = this.createGuid();
+        this.voucherId = newGuid;
+        this.masterContent["accountvoucher_id"] = newGuid;
         //lấy dữ liệu diễn giải
         this.masterContent["description"] = this.descriptionVoucher;
         //Lấy loại phiếu nhập
@@ -483,16 +678,115 @@ export default {
         //thêm dữ liệu
         VoucherRepository.addVoucher(voucherDetailContent)
           .then((response) => {
+             //chuyển sang btn Bỏ ghi
+            this.hasUnmentionButton();
             this.$eventBus.$emit("loadVoucherTable");
+            this.isReadOnly = true;
             console.log(response);
           })
           .catch((response) => console.log(response));
       }
-      if(this.mode ==
-       this.$resourcesVN.mode.EDIT){
-        console.log("edit form");
+      if (this.mode == this.$resourcesVN.mode.EDIT) {
+        //Gán các giá trị từ giao diện lên nội dung
+        let inwardDetailContentLength = this.tableInwardDetailContents.length;
+        let currentContentLength = this.voucherDetailContents.length;
+        let countAddIndex = 0;
+        for (let i = 0; i < inwardDetailContentLength; ++i) {
+          let content = this.tableInwardDetailContents[i];
+          if (content["state"] == this.$resourcesVN.mode.ADD) {
+            this.$set(
+              this.voucherDetailContents,
+              currentContentLength + countAddIndex,
+              content
+            );
+            countAddIndex++;
+          }
+        }
+        //put dữ liệu
+        let voucherId = this.masterContent["accountvoucher_id"];
+        //data put
+        let voucherDetailPutContent = {
+          in_inward: this.masterContent,
+          in_inward_detail: this.voucherDetailContents,
+        };
+        VoucherRepository.editInwardVoucher(voucherId, voucherDetailPutContent)
+          .then((response) => {
+             //chuyển sang btn Bỏ ghi
+            this.hasUnmentionButton()
+            this.$eventBus.$emit("loadVoucherTable");
+            this.isReadOnly = true;
+            console.log(response);
+          })
+          .catch((response) => console.log(response));
       }
     },
+    /**Bỏ ghi */
+    unMention() {
+      this.$set(this.masterContent, "is_mention", 0);
+      VoucherRepository.put(this.voucherId, this.masterContent)
+        .then(() => {
+          //chuyển sang btn Bỏ ghi
+          this.hasMentionButton();
+          this.$eventBus.$emit("loadVoucherTable");
+        })
+        .catch((response) => console.log(response));
+    },
+    /**Ghi */
+    mention() {
+      this.$set(this.masterContent, "is_mention", 1);
+      VoucherRepository.put(this.voucherId, this.masterContent)
+        .then(() => {
+          this.hasUnmentionButton();
+          this.$eventBus.$emit("loadVoucherTable");
+        })
+        .catch((response) => console.log(response));
+    },
+    /**sửa */
+    changeEditState(){
+      this.mode = this.$resourcesVN.mode.EDIT;
+      this.isReadOnly = false;
+     this.hasSaveButton();
+    },
+    /**Tạo new guid */
+    createGuid() {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+      }
+      return (
+        s4() +
+        s4() +
+        "-" +
+        s4() +
+        "-" +
+        s4() +
+        "-" +
+        s4() +
+        "-" +
+        s4() +
+        s4() +
+        s4()
+      );
+    },
+    /**chuyển footer sửa */
+    hasSaveButton(){
+      this.afterSave = false;
+      this.afterUnmention = false;
+      this.afterEdit= true;
+    },
+    /**chuyển footer bỏ ghi */
+    hasUnmentionButton(){
+      this.afterSave = true;
+      this.afterUnmention = false;
+      this.afterEdit= false;
+    },
+    /*chuyển footer ghi sổ */
+    hasMentionButton(){
+      this.afterSave = false;
+      this.afterUnmention = true;
+      this.afterEdit= false;
+    }
   },
   computed: {
     descriptionVoucher: function () {
@@ -508,7 +802,6 @@ export default {
   },
   created() {
     this.$eventBus.$on("showInwardDetail", (mode, content) => {
-      this.mode = mode;
       if (mode == this.$resourcesVN.mode.ADD) {
         let currentDate = moment().format("YYYY-MM-DD");
         this.masterContent = {
@@ -516,18 +809,63 @@ export default {
           mathematics_date: currentDate,
           voucher_date: currentDate,
         };
-
-        this.tableInwardDetailContents = [{}];
+        //set default
+        this.tableInwardDetailContents = [];
+        this.$set(
+          this.tableInwardDetailContents,
+          0,
+          Object.assign({}, this.$resourcesVN.inwardDetailContentsDefault)
+        );
+        this.mode = mode;
+        this.isShowInwardDetail = true;
       }
       if (mode == this.$resourcesVN.mode.EDIT) {
         this.masterContent = content["in_inward"][0];
-        this.tableInwardDetailContents = content["in_inward_detail"];
-        this.voucherDetailContents = content["in_inward_detail"];
-        // console.log(this.tableInwardDetailContents);
-        // let test = this.tableInwardDetailContents[0]["units"];
-        // console.log(JSON.parse(test));
+        this.voucherId = this.masterContent["accountvoucher_id"];
+        let detailContent = content["in_inward_detail"];
+        //Mảng chứa dữ liệu sẵn sàng để sửa
+        this.tableInwardDetailContents = detailContent;
+        //sửa thì state = 1
+        for (let i = 0; i < detailContent.length; ++i) {
+          detailContent[i].state = this.$resourcesVN.mode.EDIT;
+          //nội
+          this.voucherDetailContents[i] = Object.assign({}, detailContent[i]);
+        }
+        this.mode = mode;
+        //Check trạng thái ghi sổ
+        if (this.masterContent["is_mention"]) {
+          //đã ghi sổ
+          this.afterUnmention = false;
+          this.afterEdit = false;
+          this.afterSave = true;
+        } else {
+          //chưa ghi sổ
+          this.afterUnmention = true;
+          this.afterEdit = false;
+          this.afterSave = false;
+        }
+        this.isReadOnly = true;
+        this.isShowInwardDetail = true;
       }
-      this.isShowInwardDetail = true;
+      if (mode == this.$resourcesVN.mode.DUPLICATE) {
+        //mode set bằng add
+        this.mode = this.$resourcesVN.mode.ADD;
+        //Lấy nội dung
+        this.masterContent = content["in_inward"][0];
+        let detailContent = content["in_inward_detail"];
+        this.tableInwardDetailContents = detailContent;
+        //Lấy mã mới
+        VoucherRepository.getNewVoucherCode()
+          .then((response) => {
+            let newVoucherCode = response.data;
+            this.$set(this.masterContent, "voucher_code", newVoucherCode);
+            this.isShowInwardDetail = true;
+          })
+          .catch((response) => {
+            console.log(response);
+            this.isShowInwardDetail = true;
+          });
+      }
     });
   },
   destroyed() {

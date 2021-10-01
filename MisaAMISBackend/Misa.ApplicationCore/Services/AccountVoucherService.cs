@@ -176,7 +176,7 @@ namespace Misa.ApplicationCore.Services
             {
                 var serviceResult = new ServiceResult();
                 var accountVoucher = data.in_inward;
-                var accountVoucherId = Guid.NewGuid();
+                var accountVoucherId = accountVoucher.accountvoucher_id;
                 accountVoucher.accountvoucher_id = accountVoucherId;
                 // Thêm vào bảng chính
                 var voucherResult = _baseRepository.Insert(accountVoucher);

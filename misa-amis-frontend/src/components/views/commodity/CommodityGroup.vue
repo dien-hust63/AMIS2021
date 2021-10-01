@@ -1,5 +1,5 @@
 <template>
-  <div class="commodity-group-wrap">
+  <div class="commodity-group-wrap" v-show="isShowCommodityGroup">
     <div class="commodity-group" :class="{ 'commodity-group-full': isFullScreen }">
       <div class="ms-popup__header">
         <div class="ms-popup-title">
@@ -9,7 +9,7 @@
           <div class="popup-help-icon">
             <div class="mi mi-24 mi-help"></div>
           </div>
-          <div class="popup-close-icon">
+          <div class="popup-close-icon" @click="closeCommodityGroup">
             <div class="mi mi-24 mi-close"></div>
           </div>
         </div>
@@ -81,14 +81,27 @@ export default {
   data(){
       return{
           isFullScreen: false,
+          isShowCommodityGroup:false,
       }
   },
   methods:{
       /**Chuyển form ra full màn hình và ngược lại*/
       changeFullScreen(){
           this.isFullScreen = !this.isFullScreen;
-      }
-  }
+      },
+      /**đóng form */
+      closeCommodityGroup() {
+        this.isShowCommodityGroup = false;
+      },
+  },
+  created() {
+    this.$eventBus.$on("showCommodityGroup", () => {
+      this.isShowCommodityGroup = true;
+    });
+  },
+  destroyed() {
+    this.$eventBus.$off("showCommodityGroup");
+  },
 };
 </script>
 

@@ -16,7 +16,9 @@
     position: relative;
     align-items: center;
 }
-
+.ms-dropdown--disable {
+    
+}
 .ms-dropdown .selected-options{
     flex:1;
     padding:6px 0 6px 12px;

@@ -115,6 +115,7 @@ export default {
               tableContents: response.data[this.comboboxProps.tableObject],
               hasFooter: this.hasFooter,
               position: elementPos,
+              comboboxProps:this.comboboxProps
             };
             this.$eventBus.$emit("showComboDropdown", comboDropdownData);
             this.$eventBus.$on("comboboxListener", (data) => {

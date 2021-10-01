@@ -1,5 +1,5 @@
 <template>
-  <div class="commodity-detail-wrap">
+  <div class="commodity-detail-wrap" v-show="isShowCommodityDetail">
     <div
       class="commodity-detail"
       :class="{ 'commodity-detail-full': isFullScreen }"
@@ -160,6 +160,7 @@ export default {
     return {
       isFullScreen: false,
       isShowInmplicitSection: false,
+      isShowCommodityDetail: false
     };
   },
   methods: {
@@ -176,6 +177,14 @@ export default {
       this.isShowInmplicitSection = !this.isShowInmplicitSection;
     }
     
+  },
+  created() {
+    this.$eventBus.$on("showCommodityDetail", () => {
+      this.isShowCommodityDetail = true;  
+    });
+  },
+  destroyed() {
+    this.$eventBus.$off("showCommodityDetail");
   },
 };
 </script>

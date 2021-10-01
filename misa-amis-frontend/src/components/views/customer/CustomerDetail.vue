@@ -26,7 +26,7 @@
                 <base-input label="Mã số thuế" />
               </div>
               <div class="w-3/5">
-                <base-input label="Mã khách hàng" :required="true" />
+                <base-input label="Mã khách hàng" :required="true" v-model="customerContent['account_object_code']"/>
               </div>
             </div>
             <div class="row-input--right w-1/2">
@@ -40,7 +40,7 @@
           </div>
           <div class="row-input">
             <div class="row-input--left w-1/2">
-              <base-input label="Tên khách hàng" :required="true" />
+              <base-input label="Tên khách hàng" :required="true" v-model="customerContent['account_object_name']"/>
             </div>
             <div class="row-input--right w-1/2">
               <base-combobox-custom label="Nhóm khách hàng" />
@@ -53,6 +53,7 @@
                 class="input-address"
                 typeInput="textarea"
                 placeholder="VD: Số 82 Duy Tân, Dịch Vọng Hậu, Cầu Giấy, Hà Nội"
+                v-model="customerContent['contact_address']"
               />
             </div>
             <div class="row-input--right w-1/2">
@@ -116,7 +117,7 @@
               <div class="ms-button ms-button-secondary">Hủy</div>
             </div>
             <div class="popup-footer--left">
-              <div class="ms-button ms-button-secondary first-right-button">
+              <div class="ms-button ms-button-secondary first-right-button" @click="saveCustomer">
                 Cất
               </div>
               <div class="ms-button ms-button-primary">Cất và thêm</div>
@@ -135,6 +136,7 @@ import BaseRadio from "../../base/BaseRadio.vue";
 import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue";
 import { RepositoryFactory } from "../../../js/repository/repository.factory";
 const EmployeeRepository = RepositoryFactory.get("employees");
+const AccountObjectRepository = RepositoryFactory.get("accountobjects");
 export default {
   name: "CustomerDetail",
   components: {
@@ -153,9 +155,18 @@ export default {
       /**combo employee */
       timeDelaySearch: null,
       employeeComboboxValue: "",
+      customerContent: {},
     };
   },
   methods: {
+    /**lưu khách hàng */
+    saveCustomer(){
+      console.log("test");
+      AccountObjectRepository.post(this.customerContent).then(response => {
+        console.log(response);
+        this.closeCustomerDetail();
+      }).catch(response => console.log(response));
+    },
     /**đóng form */
     closeCustomerDetail() {
       this.isShowCustomerDetail = false;

@@ -281,7 +281,7 @@ export default {
           {
             name: "Nhân bản",
             function: () => {
-              this.functionTest("hello");
+              this.duplicateItem(rowContent);
             },
           },
         ];
@@ -303,7 +303,7 @@ export default {
           {
             name: "Nhân bản",
             function: () => {
-              this.functionTest("hello");
+              this.duplicateItem(rowContent);
             },
           },
         ];
@@ -512,6 +512,16 @@ export default {
           this.closeMessageBox();
           this.loadData()}
       ).catch(response => console.log(response))
+    },
+    /**Nhân bản */
+    duplicateItem(rowContent){
+      let voucherId = rowContent["accountvoucher_id"];
+       VoucherRepository.getVoucherDetail(voucherId)
+        .then((response) => {
+          let mode = this.$resourcesVN.mode.DUPLICATE;
+          this.$eventBus.$emit("showInwardDetail", mode, response.data.Data);
+        })
+        .catch((response) => console.log(response));
     }
   },
   watch: {

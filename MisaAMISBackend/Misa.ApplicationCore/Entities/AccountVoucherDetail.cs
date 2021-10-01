@@ -61,7 +61,7 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Hạn sử dụng
         /// </summary>
-        public DateTime expiry { get; set; }
+        public DateTime? expiry { get; set; }
 
         /// <summary>
         /// Thành tiền

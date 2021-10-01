@@ -54,7 +54,7 @@
       <div class="combo-dropdown-loading-icon"></div>
     </div>
     <div class="combo-dropdown-footer" v-if="hasFooter">
-      <div class="btn-add-combo-dropdown">
+      <div class="btn-add-combo-dropdown" @click="addNewItem">
         <div class="mi mi-16 mi-plus--success"></div>
         <div class="btn-add-text">Thêm mới</div>
       </div>
@@ -98,6 +98,7 @@ export default {
         this.topChange = data["position"]["topChange"];
         this.leftChange = data["position"]["leftChange"];
       }
+      this.comboboxProps = data["comboboxProps"];
       /**element call */
       // this.$nextTick(() => {
       //   this.setPositionPanel();
@@ -146,6 +147,10 @@ export default {
       this.currentIndex = index;
       this.$eventBus.$emit("comboboxListener", tableContent);
     },
+    /**Thêm mới */
+    addNewItem(){
+
+    }
   },
   computed: {
     positionOfPanel: function () {

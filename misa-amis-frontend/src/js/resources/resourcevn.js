@@ -87,16 +87,16 @@ module.exports = {
   /**mảng chứa thông tin tiêu đề bảng hàng tiền trong phiếu nhập kho */
   tableInwardDetailHeaders: [
     { label: '#',type: "number" },
-    { fieldName: 'commodity_code', label: 'MÃ HÀNG', textAlign: 'text-center', type: "comboboxapi", combobox:comboboxCommodityProps},
+    { fieldName: 'commodity_code', dataField:'commodity_id', label: 'MÃ HÀNG', textAlign: 'text-left', type: "comboboxapi", combobox:comboboxCommodityProps},
     { fieldName: 'commodity_name', label: 'TÊN HÀNG', textAlign: 'text-left', type: "input" },
-    { fieldName: 'warehouse_code', label: 'KHO', textAlign: 'text-left', type: "comboboxapi" , combobox:comboboxWarehouseProps},
-    { fieldName: 'debit_account_number', label: 'TK NỢ', textAlign: 'text-right', type: "comboboxapi", combobox:comboboxAccountProps},
-    { fieldName: 'credit_account_number', label: 'TK CÓ', textAlign: 'text-left', type: "comboboxapi",combobox:comboboxAccountProps },
+    { fieldName: 'warehouse_code',dataField:'warehouse_id' ,label: 'KHO', textAlign: 'text-left', type: "comboboxapi" , combobox:comboboxWarehouseProps},
+    { fieldName: 'debit_account_number',dataField:'debit_account_id', label: 'TK NỢ', textAlign: 'text-left', type: "comboboxapi", combobox:comboboxAccountProps},
+    { fieldName: 'credit_account_number', dataField:'credit_account_id',label: 'TK CÓ', textAlign: 'text-left', type: "comboboxapi",combobox:comboboxAccountProps },
     { fieldName: 'unit_name', label: 'DVT', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxUnitProps},
-    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-center', type: "input"},
-    { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-left', type: "input" },
-    { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-left', type: "input" },
-    { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-right', type: "input"},
+    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-right', type: "input"},
+    { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-right', type: "input" },
+    { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-right', type: "input" },
+    { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-left', type: "input"},
     { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-center', type: "date" },
     { type:'delete' }
 
@@ -133,28 +133,30 @@ module.exports = {
       'debit_account_code':'',
       'credit_account_code':'',
       'units':'',
-      'quantity':'',
-      'debit_amount':'',
-      'total_price':'',
+      'quantity':1,
+      'debit_amount':0,
+      'total_price':0,
       'lot_number':'',
-      'expiry':'',
+      'expiry':null,
+      'state':0
     }
   ],
-  tableInwardDetailContentsDefault:[
+  inwardDetailContentsDefault:
     {
       'commodity_code':'',
       'commodity_name':'',
       'warehouse_code':'',
       'debit_account_code':'',
       'credit_account_code':'',
-      'unit':'',
-      'quantity':'',
-      'debit_amount':'',
-      'total_price':'',
+      'units':'',
+      'quantity':1,
+      'debit_amount':0,
+      'total_price':0,
       'lot_number':'',
-      'expiry':'',
+      'expiry':null,
+      'state':0
     }
-  ],
+  ,
   
   message: {
     messageConfirmChange: "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
@@ -170,6 +172,7 @@ module.exports = {
     ADD: 0,
     EDIT: 1,
     DELETE:2,
+    DUPLICATE: 4,
     BUTTONCALLBACK: 2,
     BUTTONNORMAL: 3,
   },

@@ -61,19 +61,27 @@
 	</div>
 </template>
 <script>
-	// LIBRARY
-	import WarehouseProcessFunction from "../../../../mixins/warehouse/warehouseProcessFunction";
-
-	export default {
-		name: "WarehouseProcess",
-		mixins: [WarehouseProcessFunction],
-		methods:{
-			showInwardDetail(){
-				this.$eventBus.$emit("showInwardDetail", this.$resourcesVN.mode.ADD);
-			}
-		}
-	};
+// LIBRARY
+import WarehouseProcessFunction from "../../../../mixins/warehouse/warehouseProcessFunction";
+import { RepositoryFactory } from "../../../../js/repository/repository.factory";
+const VoucherRepository = RepositoryFactory.get("vouchers");
+export default {
+  name: "WarehouseProcess",
+  mixins: [WarehouseProcessFunction],
+  methods: {
+    showInwardDetail() {
+      VoucherRepository.getNewVoucherCode().then((response) => {
+        let newVoucherCode = response.data;
+        this.$eventBus.$emit(
+          "showInwardDetail",
+          this.$resourcesVN.mode.ADD,
+          newVoucherCode
+        );
+      });
+    },
+  },
+};
 </script>
 <style>
-	@import url("../../../../css/views/warehouse/warehouseprocess.css");
+@import url("../../../../css/views/warehouse/warehouseprocess.css");
 </style>

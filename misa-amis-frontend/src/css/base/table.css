@@ -144,6 +144,17 @@
     align-items: center;
     justify-content: center;
 }
-
-
+/**format baseinput*/
+.text-right .ms-input__input input{
+    text-align: right;
+}
+.ms-table .ms-input--readonly .ms-input__input input{
+    background-color: #f8f8f8 !important;
+    border: none;
+    outline: none;
+    pointer-events:none;
+}
+.ms-table-readonly tbody td{
+    background-color: #f8f8f8 !important;
+}
 

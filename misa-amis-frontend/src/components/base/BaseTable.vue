@@ -1,6 +1,6 @@
 <template>
   <div class="ms-table-wrap">
-    <table class="ms-table">
+    <table class="ms-table" :class="{'ms-table-readonly':isReadOnly}">
       <thead class="ms-thead">
         <tr>
           <th v-for="(item, index) in tableHeaders" :key="index">
@@ -23,6 +23,7 @@
             v-for="(tableHeader, headerIndex) in tableHeaders"
             :key="headerIndex"
             @click="handleClickCell(tableHeader, tableContent)"
+            
           >
             <base-checkbox
               v-if="tableHeader.type == 'checkbox'"
@@ -78,11 +79,12 @@
                 "
               />
             </div>
-            <div v-if="tableHeader.type == 'input'">
+            <div v-if="tableHeader.type == 'input'" :class="[tableHeader.textAlign]">
               <base-input
                 :value="tableContents[index][tableHeader.fieldName]"
                 @input="changeInputValue(index, tableHeader, ...arguments)"
                 @blur="blurInput(index, tableHeader,tableContent)"
+                :class="{'ms-input--readonly':isReadOnly}"
               />
             </div>
             <div v-if="tableHeader.type == 'date'">
@@ -156,6 +158,12 @@ export default {
         };
       },
     },
+    isReadOnly:{
+      type:Boolean,
+      default(){
+        return false;
+      }
+    }
   },
   data() {
     return {

@@ -83,3 +83,8 @@
 .label--hidden .ms-input__label{
     visibility: hidden;
 }
+
+.ms-input--readonly .ms-input__input input{
+    background-color: #eff0f2;
+    pointer-events:none;
+}
