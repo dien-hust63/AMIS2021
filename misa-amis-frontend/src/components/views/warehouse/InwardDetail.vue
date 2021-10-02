@@ -44,6 +44,8 @@
                       :hasFooter="false"
                       @showAddForm="showCustomerDetail"
                       @getDataEventBus="bindingCustomerCombobox"
+                      ref="customerCombobox"
+                      :class="{ 'ms-combobox-custom--readonly': isReadOnly }"
                     />
                   </div>
                   <div class="w-4/7 px-13 border-box">
@@ -79,6 +81,7 @@
                       :hasFooter="false"
                       @showAddForm="showEmployeeDetail"
                       @getDataEventBus="bindingEmployeeCombobox"
+                      :class="{ 'ms-combobox-custom--readonly': isReadOnly }"
                     />
                   </div>
                   <div class="w-4/7 px-13 border-box">
@@ -107,6 +110,7 @@
                     label="Ngày hạch toán"
                     type="date"
                     v-model="masterContent['mathematics_date']"
+                    :class="{ 'ms-input--readonly': isReadOnly }"
                   />
                 </div>
                 <div class="row-input-right">
@@ -114,6 +118,7 @@
                     label="Ngày chứng từ"
                     type="date"
                     v-model="masterContent['voucher_date']"
+                    :class="{ 'ms-input--readonly': isReadOnly }"
                   />
                 </div>
                 <div class="row-input-right voucher-number">
@@ -128,7 +133,7 @@
           </div>
           <div class="w-1/4 summary-info">
             <div class="summary-info-title">Tổng tiền</div>
-            <div class="summary-info-number">0,00</div>
+            <div class="summary-info-number">{{totalPrice}}</div>
           </div>
         </div>
         <div class="tab-inward-detail">
@@ -156,7 +161,7 @@
           </div>
         </div>
         <div class="grid-control-item">
-          <div class="btn-grid-control">
+          <div class="btn-grid-control" :class="{'read-only':isReadOnly}">
             <base-button value="Thêm dòng" @clickButton="addNewRow" />
             <base-button value="Thêm ghi chú" />
             <base-button
@@ -181,8 +186,12 @@
         <div class="left-group-button">
           <base-button value="Hủy" class="ms-button-secondary" />
         </div>
-        <div class="right-group-button" >
-          <div class="ms-button ms-button-secondary button-add" @click="saveVoucherDetail" v-show="afterEdit">
+        <div class="right-group-button">
+          <div
+            class="ms-button ms-button-secondary button-add"
+            @click="saveVoucherDetail"
+            v-show="afterEdit"
+          >
             Cất
           </div>
           <div class="base-button-custom" v-show="afterEdit">
@@ -197,13 +206,25 @@
               <div class="mi mi-16 mi-arrow-up--white"></div>
             </div>
           </div>
-          <div class="ms-button ms-button-primary" @click="unMention" v-show="afterSave">
+          <div
+            class="ms-button ms-button-primary"
+            @click="unMention"
+            v-show="afterSave"
+          >
             Bỏ ghi
           </div>
-          <div class="ms-button ms-button-secondary" @click="changeEditState" v-show="afterUnmention">
+          <div
+            class="ms-button ms-button-secondary"
+            @click="changeEditState"
+            v-show="afterUnmention"
+          >
             Sửa
           </div>
-          <div class="ms-button ms-button-primary btn-mention" @click="mention" v-show="afterUnmention">
+          <div
+            class="ms-button ms-button-primary btn-mention"
+            @click="mention"
+            v-show="afterUnmention"
+          >
             Ghi sổ
           </div>
         </div>
@@ -425,12 +446,16 @@ export default {
     changeVoucherDetail(index, header, mode, content) {
       switch (mode) {
         case "input": {
+          let inputContent = content;
           //thay đổi giá trị của chính nó
+          if (header.format == "number") {
+            inputContent = this.formatSalary(content);
+          }
           //Giao diện
           this.$set(
             this.tableInwardDetailContents[index],
             header.fieldName,
-            content
+            inputContent
           );
           //Nội dung
           //Nếu state = 1 thì ms cập nhật nội dung
@@ -453,14 +478,14 @@ export default {
             header.fieldName == "quantity" ||
             header.fieldName == "debit_amount"
           ) {
-            let quantity = content["quantity"];
-            let debit_amount = content["debit_amount"];
-            let totalPrice = quantity * debit_amount;
+            let quantity = this.covertStringtoNumber(content["quantity"]);
+            let debitMount = this.covertStringtoNumber(content["debit_amount"]);
+            let totalPrice = quantity * debitMount;
             //Thay đổi thành tiền
             this.$set(
               this.tableInwardDetailContents[index],
               "total_price",
-              totalPrice
+              this.formatSalary(totalPrice)
             );
             //Nội dung
             //Nếu state = 1 thì ms cập nhật nội dung
@@ -477,15 +502,15 @@ export default {
             }
           }
           if (header.fieldName == "total_price") {
-            let quantity = content["quantity"];
-            let totalPrice = content["total_price"];
+            let quantity = this.covertStringtoNumber(content["quantity"]);
+            let totalPrice = this.covertStringtoNumber(content["total_price"]);
             let debitAmount = (totalPrice * 1.0) / quantity;
             //Thay đổi thành tiền
             //Giao diện
             this.$set(
               this.tableInwardDetailContents[index],
               "debit_amount",
-              debitAmount
+              this.formatSalary(debitAmount)
             );
             //Nội dung
             //Nếu state = 1 thì ms cập nhật nội dung
@@ -661,9 +686,6 @@ export default {
     saveVoucherDetail() {
       //Thêm mới
       if (this.mode == this.$resourcesVN.mode.ADD) {
-        let newGuid = this.createGuid();
-        this.voucherId = newGuid;
-        this.masterContent["accountvoucher_id"] = newGuid;
         //lấy dữ liệu diễn giải
         this.masterContent["description"] = this.descriptionVoucher;
         //Lấy loại phiếu nhập
@@ -678,7 +700,7 @@ export default {
         //thêm dữ liệu
         VoucherRepository.addVoucher(voucherDetailContent)
           .then((response) => {
-             //chuyển sang btn Bỏ ghi
+            //chuyển sang btn Bỏ ghi
             this.hasUnmentionButton();
             this.$eventBus.$emit("loadVoucherTable");
             this.isReadOnly = true;
@@ -711,8 +733,8 @@ export default {
         };
         VoucherRepository.editInwardVoucher(voucherId, voucherDetailPutContent)
           .then((response) => {
-             //chuyển sang btn Bỏ ghi
-            this.hasUnmentionButton()
+            //chuyển sang btn Bỏ ghi
+            this.hasUnmentionButton();
             this.$eventBus.$emit("loadVoucherTable");
             this.isReadOnly = true;
             console.log(response);
@@ -742,51 +764,29 @@ export default {
         .catch((response) => console.log(response));
     },
     /**sửa */
-    changeEditState(){
+    changeEditState() {
       this.mode = this.$resourcesVN.mode.EDIT;
       this.isReadOnly = false;
-     this.hasSaveButton();
-    },
-    /**Tạo new guid */
-    createGuid() {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
-      }
-      return (
-        s4() +
-        s4() +
-        "-" +
-        s4() +
-        "-" +
-        s4() +
-        "-" +
-        s4() +
-        "-" +
-        s4() +
-        s4() +
-        s4()
-      );
+      this.hasSaveButton();
     },
     /**chuyển footer sửa */
-    hasSaveButton(){
+    hasSaveButton() {
       this.afterSave = false;
       this.afterUnmention = false;
-      this.afterEdit= true;
+      this.afterEdit = true;
     },
     /**chuyển footer bỏ ghi */
-    hasUnmentionButton(){
+    hasUnmentionButton() {
       this.afterSave = true;
       this.afterUnmention = false;
-      this.afterEdit= false;
+      this.afterEdit = false;
     },
     /*chuyển footer ghi sổ */
-    hasMentionButton(){
+    hasMentionButton() {
       this.afterSave = false;
       this.afterUnmention = true;
-      this.afterEdit= false;
-    }
+      this.afterEdit = false;
+    },
   },
   computed: {
     descriptionVoucher: function () {
@@ -799,6 +799,19 @@ export default {
         return inwardType;
       }
     },
+    totalPrice: function(){
+      let total = 0;
+      for(let i=0; i<this.tableInwardDetailContents.length; ++i){
+        let price;
+        if(this.tableInwardDetailContents[i]['total_price'] != null){
+           price = this.covertStringtoNumber(this.tableInwardDetailContents[i]["total_price"]);
+        }
+        else price = 0;
+        total += price;
+      }
+      total = this.formatSalary(total);
+      return total;
+    }
   },
   created() {
     this.$eventBus.$on("showInwardDetail", (mode, content) => {
@@ -817,6 +830,8 @@ export default {
           Object.assign({}, this.$resourcesVN.inwardDetailContentsDefault)
         );
         this.mode = mode;
+        //focus vào ô đầu tiên của form
+        this.$refs.customerCombobox.focusInput();
         this.isShowInwardDetail = true;
       }
       if (mode == this.$resourcesVN.mode.EDIT) {
@@ -845,6 +860,8 @@ export default {
           this.afterSave = false;
         }
         this.isReadOnly = true;
+        //focus vào ô đầu tiên của form
+        this.$refs.customerCombobox.focusInput();
         this.isShowInwardDetail = true;
       }
       if (mode == this.$resourcesVN.mode.DUPLICATE) {
@@ -863,6 +880,8 @@ export default {
           })
           .catch((response) => {
             console.log(response);
+            //focus vào ô đầu tiên của form
+            this.$refs.customerCombobox.focusInput();
             this.isShowInwardDetail = true;
           });
       }

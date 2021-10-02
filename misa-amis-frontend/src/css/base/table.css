@@ -148,13 +148,23 @@
 .text-right .ms-input__input input{
     text-align: right;
 }
-.ms-table .ms-input--readonly .ms-input__input input{
+.ms-table-readonly tbody td{
+    background-color: #f8f8f8 !important;
+}
+/**readonly state*/
+.ms-table .ms-input--readonly .v2-date-wrap, 
+.ms-table .ms-input--readonly .input-date, 
+.ms-table .ms-input--readonly .ms-input__input input,
+.ms-table .ms-combobox-custom--readonly .combobox-custom-content,
+.ms-table .ms-combobox-custom--readonly .combobox-custom-content input
+{
     background-color: #f8f8f8 !important;
     border: none;
     outline: none;
     pointer-events:none;
 }
-.ms-table-readonly tbody td{
-    background-color: #f8f8f8 !important;
+.ms-table .ms-combobox-custom--readonly .combobox-custom-actions{
+    display: none;
 }
+
 

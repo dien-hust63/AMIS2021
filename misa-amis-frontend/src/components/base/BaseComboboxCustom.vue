@@ -86,6 +86,15 @@ export default {
 
   methods: {
     /**
+     * focus vào ô input
+     * CreatedBy: nvdien(2/10/2021)
+     */
+    focusInput() {
+      this.$nextTick(() => {
+        this.$refs.input.focus();
+      });
+    },
+    /**
      * Hiển thị combo dropdown panel
      * CreatedBy: nvdien(26/9/2021)
      */

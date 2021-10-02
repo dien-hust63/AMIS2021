@@ -55,3 +55,11 @@
         .combobox-custom-actions .btn-dropdown{
             border-left: 1px solid #babec5;
         }
+        .ms-combobox-custom--readonly .combobox-custom-content{
+            background-color: #eff0f2;
+            pointer-events:none;
+        }
+        .ms-combobox-custom--readonly .combobox-custom-content input{
+            background-color: #eff0f2;
+            pointer-events:none;
+        }

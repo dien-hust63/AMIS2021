@@ -98,3 +98,9 @@
 .v2-picker-panel-wrap{
     z-index: 10000 !important;
 }
+
+/*readonly*/
+.ms-input--readonly .v2-date-wrap, .ms-input--readonly .input-date{
+    background-color: #eff0f2;
+    pointer-events:none;
+}

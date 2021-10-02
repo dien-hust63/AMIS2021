@@ -111,6 +111,7 @@
         @getSelectedRowList="getSelectedRowList"
         @handleDoubleClickRow="editVoucher"
         @clickCellVoucherCode="editVoucher"
+        @showInContext="editVoucher"
       />
       <div class="warehouse-content-pagination">
         <base-pagination
@@ -220,7 +221,7 @@ export default {
           this.tableInwardListContents = response.data["Vouchers"];
           //format tiền
           if (response.data["TotalPrices"] == "0")
-            this.tableInwardListHeaders[4]["footerValue"] = "0,0";
+            this.tableInwardListHeaders[4]["footerValue"] = "0";
           else {
             this.tableInwardListHeaders[4]["footerValue"] =
               response.data["TotalPrices"];
@@ -535,7 +536,6 @@ export default {
     //lấy danh sách chứng từ
     this.loadData();
     this.$eventBus.$on("loadVoucherTable", () => {
-      console.log("test");
       this.$nextTick(() => {this.loadData()});
     });
   },

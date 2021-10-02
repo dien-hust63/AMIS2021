@@ -41,7 +41,7 @@
             </div>
             <div v-if="tableHeader.type == 'contextmenu'">
               <div class="row-context-menu">
-                <div class="row-context-menu__text">Xem</div>
+                <div class="row-context-menu__text" @click="showInContext(tableContent)">Xem</div>
                 <div
                   class="row-context-menu__icon"
                   @click="toogleContextMenu($event, tableContent, index)"
@@ -67,6 +67,7 @@
                 @getDataEventBus="
                   bindingCombobox(index, tableHeader, ...arguments)
                 "
+                :class="{'ms-combobox-custom--readonly':isReadOnly}"
               />
             </div>
             <div v-if="tableHeader.type == 'comboboxmanual'">
@@ -77,11 +78,12 @@
                 @getDataEventBus="
                   renderComboboxManualValue(tableHeader, index, ...arguments)
                 "
+                :class="{'ms-combobox-custom--readonly':isReadOnly}"
               />
             </div>
             <div v-if="tableHeader.type == 'input'" :class="[tableHeader.textAlign]">
               <base-input
-                :value="tableContents[index][tableHeader.fieldName]"
+                :value="formatTableContent(tableContent, tableHeader)"
                 @input="changeInputValue(index, tableHeader, ...arguments)"
                 @blur="blurInput(index, tableHeader,tableContent)"
                 :class="{'ms-input--readonly':isReadOnly}"
@@ -89,9 +91,10 @@
             </div>
             <div v-if="tableHeader.type == 'date'">
               <base-date-input
-                :value="tableContents[index][tableHeader.fieldName]"
+                :value="formatTableContent(tableContent, tableHeader)"
                 @input="changeDate(index, tableHeader, ...arguments)"
                 type="date"
+                :class="{'ms-input--readonly':isReadOnly}"
               />
             </div>
           </td>
@@ -120,9 +123,10 @@ import BaseComboboxCustom from "./BaseComboboxCustom.vue";
 import BaseCheckbox from "./BaseCheckbox.vue";
 import moment from "moment";
 import MixinListener from "../../mixins/listeners/listeners";
+import MixinMethod from "../../mixins/methods";
 export default {
   name: "BaseTable",
-  mixins: [MixinListener],
+  mixins: [MixinListener,MixinMethod],
   components: {
     BaseCheckbox,
     BaseComboboxCustom,
@@ -210,7 +214,7 @@ export default {
         );
       }
       if (tableHeader.format == "number") {
-        if (cellData == "0") cellData = "0,0";
+        cellData = this.formatSalary(cellData);
       }
       return cellData;
     },
@@ -239,6 +243,12 @@ export default {
         this.currentSelectedRow = -1;
         this.$eventBus.$emit("hideContextMenu");
       }
+    },
+    /**Xem khi ấn vào nút xem trong context menu
+     * CreatedBy: nvdien(2/10/2021)
+     */
+    showInContext(tableContent){
+      this.$emit("showInContext", tableContent);
     },
     /**trả về custom style cho cell */
     getClass(tableContent, tableHeader) {
@@ -299,6 +309,7 @@ export default {
      * @param tableHeader : header của cột đó
      */
     handleClickCell(tableHeader, tableContent) {
+      console.log('Test');
       if ("hasClick" in tableHeader) {
         this.$emit(`clickCell${tableHeader["hasClick"]}`, tableContent);
       }

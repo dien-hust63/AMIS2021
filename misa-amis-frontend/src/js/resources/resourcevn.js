@@ -47,11 +47,11 @@ var comboboxCommodityProps = {
   tableObject: "Commoditys",
   mode:"api"
 }
-var comboboxUnitProps = {
-  tableHeaders: [{ fieldName: 'unit_name', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '100px'}],
-  tableContents: [],
-  mode:"manual"
-}
+// var comboboxUnitProps = {
+//   tableHeaders: [{ fieldName: 'units', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '100px'}],
+//   tableContents: [{'units':""}],
+//   mode:"manual"
+// }
 
 module.exports = {
   apiList: apiList,
@@ -78,7 +78,7 @@ module.exports = {
     { fieldName: 'mathematics_date', label: 'NGÀY HẠCH TOÁN', textAlign: 'text-center', type: "normal", footerValue:"Tổng", format:"date"},
     { fieldName: 'voucher_code', label: 'SỐ CHỨNG TỪ', textAlign: 'text-left', type: "normal" , hasClick:"VoucherCode"},
     { fieldName: 'description', label: 'DIỄN GIẢI', textAlign: 'text-left', type: "normal" },
-    { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'text-right', type: "normal" , footerValue:'0,0' , format: "number"},
+    { fieldName: 'total_price', label: 'TỔNG TIỀN', textAlign: 'text-right', type: "normal" , footerValue:'0' , format: "number"},
     { fieldName: 'contact_name', label: 'NGƯỜI GIAO/NGƯỜI NHẬN', textAlign: 'text-left', type: "normal" },
     { fieldName: 'voucher_type_name', label: 'LOẠI CHỨNG TỪ', textAlign: 'text-left', type: "normal" },
     { label: 'CHỨC NĂNG', type:'contextmenu' }
@@ -92,12 +92,12 @@ module.exports = {
     { fieldName: 'warehouse_code',dataField:'warehouse_id' ,label: 'KHO', textAlign: 'text-left', type: "comboboxapi" , combobox:comboboxWarehouseProps},
     { fieldName: 'debit_account_number',dataField:'debit_account_id', label: 'TK NỢ', textAlign: 'text-left', type: "comboboxapi", combobox:comboboxAccountProps},
     { fieldName: 'credit_account_number', dataField:'credit_account_id',label: 'TK CÓ', textAlign: 'text-left', type: "comboboxapi",combobox:comboboxAccountProps },
-    { fieldName: 'unit_name', label: 'DVT', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxUnitProps},
-    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-right', type: "input"},
-    { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-right', type: "input" },
-    { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-right', type: "input" },
+    // { fieldName: 'units', label: 'DVT', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxUnitProps},
+    { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-right', type: "input",format: "number"},
+    { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-right', type: "input" ,format: "number"},
+    { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-right', type: "input" ,format: "number"},
     { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-left', type: "input"},
-    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-center', type: "date" },
+    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-center', type: "date" ,format:"date"},
     { type:'delete' }
 
   ],

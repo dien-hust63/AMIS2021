@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Misa.ApplicationCore.Attributes;
 using Misa.ApplicationCore.Entities;
 using Misa.ApplicationCore.Interfaces.Repository;
 using Newtonsoft.Json;
@@ -21,7 +22,7 @@ namespace Misa.Infrastructure
 
         }
 
-       
+
         #endregion
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace Misa.Infrastructure
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
                 var voucherFilter = searchData == null ? string.Empty : searchData;
-                
+
                 var typeVoucher = voucherType == null ? string.Empty : voucherType;
                 dynamicParameters.Add("@search_data", voucherFilter);
                 dynamicParameters.Add("@mention_state", mentionState);
@@ -195,10 +196,33 @@ namespace Misa.Infrastructure
                 return voucher;
             }
         }
-
-        public int addAccountVoucher(AccountVoucherData data)
+        public object addAccountVoucher(AccountVoucher data)
         {
-            throw new NotImplementedException();
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            {
+                DynamicParameters dynamicParameters = new DynamicParameters();
+                var properties = data.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    if (property.IsDefined(typeof(MisaNotMap), false)) continue;
+                    var propName = property.Name;
+                    var propValue = property.GetValue(data);
+                    dynamicParameters.Add($"@{propName}_insert", propValue);
+
+                }
+                var proceduce = $"func_insert_test";
+                var reader = _dbConnection.ExecuteReader(proceduce, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+                var voucherId = Guid.Empty;
+                while (reader.Read())
+                {
+                    voucherId = reader.GetGuid(0);
+                }
+                reader.Close();
+                return new
+                {
+                    voucherId = voucherId
+                };
+            }
         }
 
         public int updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data)

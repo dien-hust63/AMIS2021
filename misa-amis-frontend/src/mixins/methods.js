@@ -154,10 +154,11 @@ export default {
             return targetString;
         },
         /**
-     * Hàm tính ra element cha chứa lớp được truyền vào
-     * @param {Element} childE
-     * @param {String} parentClass
-     */
+         * Hàm tính ra element cha chứa lớp được truyền vào
+         * @param {Element} childE
+         * @param {String} parentClass
+         * CreatedBY: nvdien(2/10/2021)
+         */
         findParentByClass(childE, parentClass) {
             var parentE = childE;
             if (parentE) {
@@ -174,5 +175,35 @@ export default {
             }
             return parentE;
         },
+        /**
+         * Định dạng tiền
+         * @param {string} salary  tiền
+         * @returns string tiền được định dạng
+         * CreatedBy: nvdien(2/10/2021)
+         */
+        formatSalary(salary) {
+            let salaryString = String(salary).replaceAll(".","");
+            var result = '';
+            var number 
+            if (salaryString != null) {
+                for (var i = String(salaryString).length; i > 0; i = i - 3) {
+                    if (i > 3) {
+                         number = String(salaryString).slice(i - 3, i);
+                        result += number.split("").reverse().join("") + ".";
+                    } else {
+                         number = String(salaryString).slice(0, i);
+                        result += number.split("").reverse().join("");
+                    }
+                }
+                return result.split("").reverse().join("");
+            } else return '';
+        },
+        /**
+         * convert string định dạng tiền sang số
+         * CreatedBy: nvdien(2/10/2021)
+         */
+        covertStringtoNumber(numberString){
+            return parseInt(String(numberString).replaceAll(".",""));
+        }
     }
 }

@@ -176,10 +176,10 @@ namespace Misa.ApplicationCore.Services
             {
                 var serviceResult = new ServiceResult();
                 var accountVoucher = data.in_inward;
-                var accountVoucherId = accountVoucher.accountvoucher_id;
+                var accountVoucherId = Guid.NewGuid();
                 accountVoucher.accountvoucher_id = accountVoucherId;
                 // Thêm vào bảng chính
-                var voucherResult = _baseRepository.Insert(accountVoucher);
+                var voucherResult = _accounVoucherRepository.addAccountVoucher(accountVoucher);
                 // Thêm vào hàng tiền
                 var accountVoucherDetails = data.in_inward_detail;
                 for (int i = 0; i < accountVoucherDetails.Count(); i++)
@@ -188,7 +188,7 @@ namespace Misa.ApplicationCore.Services
                     accountVoucherDetail.accountvoucher_id = accountVoucherId;
                     _accountVoucherDetailRepository.Insert(accountVoucherDetail);
                 }
-                serviceResult.Data = Resources.ResourceVN.Success_Insert;
+                serviceResult.Data = voucherResult;
 
                 return serviceResult;
             }

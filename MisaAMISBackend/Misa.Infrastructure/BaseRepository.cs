@@ -148,7 +148,7 @@ namespace Misa.Infrastructure
         /// <returns>số bản ghi được thêm</returns>
         /// CreatedBy: nvdien(17/8/2021)
         /// ModifiedBy: nvdien(17/8/2021)
-        public int Insert(TEntity entity)
+        public  int Insert(TEntity entity)
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
