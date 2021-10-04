@@ -223,18 +223,12 @@ namespace Misa.Infrastructure
                     if (property.IsDefined(typeof(MisaNotMap), false)) continue;
                     var propName = property.Name;
                     var propValue = property.GetValue(voucherContent);
-                    dynamicParameters.Add($"@{propName}_insert", propValue);
+                    dynamicParameters.Add($"@{propName}", propValue);
 
                 }
-                var funcInsertMaster = $"func_insert_voucher_master";
-                var reader = connection.ExecuteReader(funcInsertMaster, param: dynamicParameters, commandType: CommandType.StoredProcedure);
-                var voucherId = Guid.Empty;
-                //Trả lại ID của chứng từ vừa thêm
-                while (reader.Read())
-                {
-                    voucherId = reader.GetGuid(0);
-                }
-                reader.Close();
+                var funcInsertMaster = $"func_insert_accountvoucher";
+                var response = connection.Execute(funcInsertMaster, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+               
                 //Thêm mới các hàng tiền (voucher detail)
                 var voucherDetailContent = data.in_inward_detail;
                
@@ -256,10 +250,7 @@ namespace Misa.Infrastructure
                 }
 
                 transaction.Commit();
-                return new
-                {
-                    accountvoucher_id = voucherId
-                };
+                return data;
             }
             catch (Exception)
             {
@@ -303,13 +294,18 @@ namespace Misa.Infrastructure
                 //Thêm mới các hàng tiền (voucher detail)
 
                 var voucherDetailContent = data.in_inward_detail;
-
                 for (int i = 0; i < voucherDetailContent.Count(); ++i)
                 {
 
                     var accountVoucherDetail = voucherDetailContent[i];
                     var accountVoucherDetailId = accountVoucherDetail.accountvoucherdetail_id;
                     var state = accountVoucherDetail.state;
+                    if(state == (int)Mode.Add)
+                    {
+                        var newId = Guid.NewGuid();
+                        accountVoucherDetail.accountvoucherdetail_id = newId;
+                        data.in_inward_detail[i].accountvoucherdetail_id = newId;
+                    }
                     switch (state)
                     {
                         case (int)Mode.Add:
@@ -352,11 +348,15 @@ namespace Misa.Infrastructure
                     }
                    
                 }
-
+                var sqlSlect = $"select * from public.view_accountvoucherdetail_commodity ac where ac.accountvoucher_id = @accountvoucher_id order by ac.created_date asc;";
+                DynamicParameters parametersSelect = new DynamicParameters();
+                parametersSelect.Add($"@accountvoucher_id", voucherContent.accountvoucher_id);
+                var responseDetailContent = connection.Query<AccountVoucherDetail>(sqlSlect, param: parametersSelect);
                 transaction.Commit();
                 return new
                 {
-                    voucher = voucherContent
+                    in_inward = voucherContent,
+                    in_inward_detail = responseDetailContent,
                 };
             }
             catch (Exception)

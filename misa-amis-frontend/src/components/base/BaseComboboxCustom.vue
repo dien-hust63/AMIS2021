@@ -263,6 +263,9 @@ export default {
           this.comboboxProps.fieldName
         );
       }
+      else{
+        this.errrorMessage = "";
+      }
     },
   },
   computed: {
@@ -308,6 +311,7 @@ export default {
     value: function(newvalue){
       if(this.comboboxProps.isRequired &&
         (newvalue != null)){
+        this.errorMessage = "";
         this.isError = false;
         this.$eventBus.$emit("hideTooltip");
       }
@@ -316,7 +320,7 @@ export default {
   created() {
     this.$eventBus.$on("validateCombobox" + this.formName, () => {
       this.validateCombobox();
-      if (this.isError) {
+      if (this.comboboxProps.isRequired) {
         this.$eventBus.$emit("catchError" + this.formName, this.errorMessage);
       }
     });

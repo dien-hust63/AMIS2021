@@ -246,3 +246,6 @@
     color:#bbb;
     pointer-events:none;
 }
+.inward-detail .text--red{
+    display: none;
+}

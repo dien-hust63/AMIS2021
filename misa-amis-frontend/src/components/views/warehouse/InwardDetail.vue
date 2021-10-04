@@ -160,7 +160,7 @@
               @deleteRow="deleteRow"
               @changeTableContent="changeVoucherDetail"
               :isReadOnly="isReadOnly"
-              :formName="formName"
+              formName="InwardDetail"
             />
             <div class="inward-detail-pagination">
               <base-pagination
@@ -764,7 +764,6 @@ export default {
       this.validateForm();
       setTimeout(() => {
         if (this.isValid == false) {
-          console.log("fail");
           return;
         }
         //lấy dữ liệu diễn giải
@@ -789,13 +788,42 @@ export default {
               this.hasUnmentionButton();
               this.$eventBus.$emit("loadVoucherTable");
               this.isReadOnly = true;
-              this.voucherId = response.data.Data["accountvoucher_id"];
+              //bật chế độ chỉnh sửa sau khi thêm
+              let content = response.data.Data;
+              this.masterContent = content["in_inward"];
+              this.voucherId = this.masterContent["accountvoucher_id"];
+              let detailContent = content["in_inward_detail"];
+              //Mảng chứa dữ liệu sẵn sàng để sửa
+              this.tableInwardDetailContents = detailContent;
+              //sửa thì state = 1
+              for (let i = 0; i < detailContent.length; ++i) {
+                detailContent[i].state = this.$resourcesVN.mode.EDIT;
+                //nội
+                this.voucherDetailContents[i] = Object.assign(
+                  {},
+                  detailContent[i]
+                );
+              }
             })
             .catch((error) => {
-              console.log(error.response.data);
-              // if(response.data["code"] == "MS001"){
-              //   console.log("MS001");
-              // }
+              let response = error.response.data;
+              console.log(response);
+              if (response["code"] == "MS001") {
+                //show message trùng mã
+                this.$eventBus.$emit("showMessageBox", {
+                  icon: "mi-exclamation-warning-48",
+                  messageText: response["message"],
+                  buttons: [
+                    {
+                      feature: "center ms-button-primary",
+                      callback: () => {
+                        this.closeMessageBox();
+                      },
+                      value: "Đóng",
+                    },
+                  ],
+                });
+              }
             });
         }
         if (this.mode == this.$resourcesVN.mode.EDIT) {
@@ -807,11 +835,7 @@ export default {
           let countAddIndex = 0;
           for (let i = 0; i < inwardDetailContentLength; ++i) {
             let content = this.tableInwardDetailContents[i];
-            this.$set(
-              this.tableInwardDetailConents[i],
-              "accountvoucher_id",
-              this.voucherId
-            );
+            this.$set(content, "accountvoucher_id", this.voucherId);
             if (content["state"] == this.$resourcesVN.mode.ADD) {
               this.$set(
                 this.voucherDetailContents,
@@ -836,7 +860,21 @@ export default {
               this.hasUnmentionButton();
               this.$eventBus.$emit("loadVoucherTable");
               this.isReadOnly = true;
-              console.log(response);
+              let content = response.data.Data;
+              this.masterContent = content["in_inward"];
+              this.voucherId = this.masterContent["accountvoucher_id"];
+              let detailContent = content["in_inward_detail"];
+              //Mảng chứa dữ liệu sẵn sàng để sửa
+              this.tableInwardDetailContents = detailContent;
+              //sửa thì state = 1
+              for (let i = 0; i < detailContent.length; ++i) {
+                detailContent[i].state = this.$resourcesVN.mode.EDIT;
+                //nội
+                this.voucherDetailContents[i] = Object.assign(
+                  {},
+                  detailContent[i]
+                );
+              }
             })
             .catch((response) => console.log(response));
         }
@@ -846,71 +884,10 @@ export default {
      * CreatedBY: nvdien(3/10/2021)
      */
     saveAndInsert() {
-      //validate
       //Cất
-      //lấy dữ liệu diễn giải
-      this.masterContent["description"] = this.descriptionVoucher;
-      //Lấy loại phiếu nhập
-      this.masterContent["voucher_type"] = this.dropdownInwardTypeData;
-      //Trạng thái ghi sổ
-      this.masterContent["is_mention"] = 1;
-      //Tông tiền
-      this.masterContent["total_price"] = this.totalPrice;
+      this.saveVoucherDetail();
       //Thêm mới
-      if (this.mode == this.$resourcesVN.mode.ADD) {
-        //data post
-        let voucherDetailContent = {
-          in_inward: this.masterContent,
-          in_inward_detail: this.tableInwardDetailContents,
-        };
-        //thêm dữ liệu
-        VoucherRepository.addVoucher(voucherDetailContent)
-          .then((response) => {
-            //chuyển sang btn Bỏ ghi
-            this.hasUnmentionButton();
-            this.$eventBus.$emit("loadVoucherTable");
-            this.voucherId = response.data.Data["accountvoucher_id"];
-          })
-          .catch((error) => {
-            console.log(error.response.data);
-          });
-      }
-      if (this.mode == this.$resourcesVN.mode.EDIT) {
-        //Gán các giá trị từ giao diện lên nội dung
-        let inwardDetailContentLength = this.tableInwardDetailContents.length;
-        let currentContentLength = this.voucherDetailContents.length;
-        let countAddIndex = 0;
-        for (let i = 0; i < inwardDetailContentLength; ++i) {
-          let content = this.tableInwardDetailContents[i];
-          if (content["state"] == this.$resourcesVN.mode.ADD) {
-            this.$set(
-              this.voucherDetailContents,
-              currentContentLength + countAddIndex,
-              content
-            );
-            countAddIndex++;
-          }
-        }
-        //put dữ liệu
-        this.voucherId = this.masterContent["accountvoucher_id"];
-        //data put
-        let voucherDetailPutContent = {
-          in_inward: this.masterContent,
-          in_inward_detail: this.voucherDetailContents,
-        };
-        VoucherRepository.editInwardVoucher(
-          this.voucherId,
-          voucherDetailPutContent
-        )
-          .then((response) => {
-            //chuyển sang btn Bỏ ghi
-            this.hasUnmentionButton();
-            this.$eventBus.$emit("loadVoucherTable");
-            this.isReadOnly = true;
-            console.log(response);
-          })
-          .catch((response) => console.log(response));
-      }
+
     },
     /**Bỏ ghi */
     unMention() {
@@ -933,15 +910,26 @@ export default {
         })
         .catch((response) => console.log(response));
     },
-    /**sửa */
+    /**sửa
+     * CreatedBy nvdien(3/10/2012)
+     */
     changeEditState() {
       //focus vào ô đầu tiên của form
       this.$refs.customerCombobox.focusInput();
       this.mode = this.$resourcesVN.mode.EDIT;
       this.isReadOnly = false;
       this.hasSaveButton();
+      // let inwardDetailContentLength = this.tableInwardDetailContents.length;
+      // this.voucherDetailContents = [];
+      // for (let i = 0; i < inwardDetailContentLength; ++i) {
+      //       let content = this.tableInwardDetailContents[i];
+      //       this.$set(content, "state", 1);
+      //       this.voucherDetailContents.push(content);
+      // }
     },
-    /**chuyển footer sửa */
+    /**chuyển footer sửa
+     * CreatedBY: nvdien(3/10/2021)
+     */
     hasSaveButton() {
       this.afterSave = false;
       this.afterUnmention = false;
@@ -1080,21 +1068,26 @@ export default {
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
     });
     this.$eventBus.$on("catchErrorInwardDetail", (content) => {
-      //show message box
-      this.$eventBus.$emit("showMessageBox", {
-        icon: "mi-exclamation-error-48-2",
-        messageText: content,
-        buttons: [
-          {
-            feature: "center ms-button-primary",
-            callback: () => {
-              this.closeMessageBox();
+      if (content != null && content != "") {
+        //show message box
+        this.$eventBus.$emit("showMessageBox", {
+          icon: "mi-exclamation-error-48-2",
+          messageText: content,
+          buttons: [
+            {
+              feature: "center ms-button-primary",
+              callback: () => {
+                this.closeMessageBox();
+              },
+              value: "Đóng",
             },
-            value: "Đóng",
-          },
-        ],
-      });
-      this.isValid = false;
+          ],
+        });
+
+        this.isValid = false;
+      } else {
+        this.isValid = true;
+      }
     });
   },
   destroyed() {
