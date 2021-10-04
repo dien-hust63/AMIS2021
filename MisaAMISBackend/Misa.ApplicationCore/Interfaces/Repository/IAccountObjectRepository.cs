@@ -19,5 +19,12 @@ namespace Misa.ApplicationCore.Interfaces.Repository
         /// <returns></returns>
         /// CreatedBy: nvdien(24/9/2021)
         object getAccountObjectPagingFilter(string searchData, int pageIndex, int pageSize);
+
+        /// <summary>
+        /// Lấy mã khách hàng mới
+        /// </summary>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(24/9/2021)
+        AccountObject getNewCode();
     }
 }

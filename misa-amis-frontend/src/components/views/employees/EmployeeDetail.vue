@@ -1,5 +1,8 @@
 <template>
-  <div class="employee-popup-wrap" :class="{'employee-popup--show':isShowEmployeeDetail}">
+  <div
+    class="employee-popup-wrap"
+    :class="{ 'employee-popup--show': isShowEmployeeDetail }"
+  >
     <div class="employee-popup">
       <div class="employee-popup__header">
         <div class="employee-popup-title">
@@ -23,22 +26,24 @@
                 <base-input
                   label="Mã"
                   :required="true"
-                  v-model="employeeData['EmployeeCode']"
+                  v-model="employeeData['employee_code']"
                   ref="employeeCodeInput"
                   @getInputError="getInputError"
                   :inputCheck="inputCheck"
                   :inputReset="inputReset"
                   :inputErrorCustom="inputErrorCustom"
+                  formName="EmployeeDetail"
                 />
               </div>
               <div class="w-3/5">
                 <base-input
                   label="Tên"
                   :required="true"
-                  v-model="employeeData['FullName']"
+                  v-model="employeeData['employee_name']"
                   @getInputError="getInputError"
                   :inputCheck="inputCheck"
                   :inputReset="inputReset"
+                   formName="EmployeeDetail"
                 />
               </div>
             </div>
@@ -67,7 +72,6 @@
             <div class="row-input--left w-1/2">
               <base-combobox
                 label="Đơn vị"
-                :required="true"
                 @getComboboxData="getComboboxData"
                 :comboboxDataProp="employeeData['DepartmentId']"
                 :comboboxCheck="inputCheck"
@@ -246,12 +250,22 @@ export default {
       inputReset: false,
       inputErrorCustom: "",
       /**show form */
-      isShowEmployeeDetail: false
+      isShowEmployeeDetail: false,
     };
   },
   created() {
     this.$eventBus.$on("showEmployeeDetail", () => {
-      this.isShowEmployeeDetail = true;
+      EmployeesRepository.getNewEmployeeCode()
+        .then((response) => {
+          console.log(response.data);
+          this.$set(this.employeeData, "employee_code", response.data);
+          this.$refs.employeeCodeInput.focusInput();
+          this.isShowEmployeeDetail = true;
+        })
+        .catch((response) => {
+          console.log(response);
+          this.isShowEmployeeDetail = true;
+        });
     });
   },
   destroyed() {
@@ -341,33 +355,33 @@ export default {
      * Lưu dữ liệu
      * CreatedBy: nvdien(1/9/2021)
      */
-    async saveData() {
-      try {
-        //Validate các trường
-        let isValid = await this.validateBeforeSave();
-        if (isValid == false) {
-          return;
-        }
-        if (this.mode == mode.ADD) {
-          //Thực hiện thêm mới
-          if (this.employeeData["Gender"] == null) {
-            //mặc định ngươi dùng không thay đổi gì thì giới tính sẽ là nam
-            this.$set(this.employeeData, "Gender", 1);
-          }
-          await EmployeesRepository.post(this.employeeData);
-        }
-        if (this.mode == mode.EDIT) {
-          //Thực hiện sửa thông tin
-          await EmployeesRepository.put(
-            this.employeeData["EmployeeId"],
-            this.employeeData
-          );
-        }
-        this.closeMessageAndPopup();
-        this.$emit("loadTable");
-      } catch (error) {
-        console.log(error);
-      }
+    saveData() {
+        // //Validate các trường
+        // let isValid = await this.validateBeforeSave();
+        // if (isValid == false) {
+        //   return;
+        // }
+        // if (this.mode == mode.ADD) {
+        //   //Thực hiện thêm mới
+        //   if (this.employeeData["Gender"] == null) {
+        //     //mặc định ngươi dùng không thay đổi gì thì giới tính sẽ là nam
+        //     this.$set(this.employeeData, "Gender", 1);
+        //   }
+        //   await EmployeesRepository.post(this.employeeData);
+        // }
+        // if (this.mode == mode.EDIT) {
+        //   //Thực hiện sửa thông tin
+        //   await EmployeesRepository.put(
+        //     this.employeeData["EmployeeId"],
+        //     this.employeeData
+        //   );
+        // }
+        // this.closeMessageAndPopup();
+        // this.$emit("loadTable");
+        EmployeesRepository.post(this.employeeData).then(response => {
+          this.$eventBus.$emit("getEmployeeDetail",response.data.Data);
+          this.isShowEmployeeDetail = false;
+        })
     },
     /**
      * Cất và thêm mới

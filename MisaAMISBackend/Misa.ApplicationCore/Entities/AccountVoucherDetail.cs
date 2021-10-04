@@ -31,6 +31,8 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Id kho
         /// </summary>
+        [MisaRequired]
+        [MisaDisplayName("ID kho")]
         public Guid warehouse_id { get; set; }
 
         /// <summary>
@@ -46,11 +48,15 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Tài khoản nợ
         /// </summary>
+        [MisaRequired]
+        [MisaDisplayName("Tài khoản nợ")]
         public Guid debit_account_id { get; set; }
 
         /// <summary>
         /// Tài khoản có
         /// </summary>
+        [MisaRequired]
+        [MisaDisplayName("Tài khoản có")]
         public Guid credit_account_id { get; set; }
 
         /// <summary>

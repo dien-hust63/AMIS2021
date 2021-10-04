@@ -30,6 +30,11 @@ namespace Misa.Infrastructure
             _className = typeof(TEntity).Name.ToLower();
         }
 
+        public BaseRepository()
+        {
+
+        }
+
 
         #endregion
 
@@ -148,12 +153,13 @@ namespace Misa.Infrastructure
         /// <returns>số bản ghi được thêm</returns>
         /// CreatedBy: nvdien(17/8/2021)
         /// ModifiedBy: nvdien(17/8/2021)
-        public  int Insert(TEntity entity)
+        public  TEntity Insert(TEntity entity)
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
                 var properties = entity.GetType().GetProperties();
+                
                 foreach (var property in properties)
                 {
                     if (property.IsDefined(typeof(MisaNotMap), false)) continue;
@@ -164,7 +170,9 @@ namespace Misa.Infrastructure
                 }
                 var proceduce = $"func_insert_{_className}";
                 var rowEffects = _dbConnection.Execute(proceduce, param: dynamicParameters, commandType: CommandType.StoredProcedure);
-                return rowEffects;
+                var sql = $"select * from public.{_className} order by created_date desc limit 1";
+                var insertContent = _dbConnection.Query<TEntity>(sql, CommandType.Text).Single();
+                return insertContent;
             }
         }
 

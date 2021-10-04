@@ -66,15 +66,13 @@ namespace Misa.Infrastructure
         /// <returns>mã nhân viên mới</returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        public string GetNewEmployeeCode()
+        public Employee GetNewEmployeeCode()
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
-                var proceduce = "func_test";
-
-                var newEmployeecCode = _dbConnection.Query<dynamic>(proceduce, commandType: CommandType.StoredProcedure);
-                string test = "adfd";
-                return test;
+                var sqlCommand = "select * from public.employee av order by cast( public.func_extract_number(av.employee_code) as int) DESC LIMIT 1";
+                var content = _dbConnection.Query<Employee>(sqlCommand).Single();
+                return content;
 
             }
         }

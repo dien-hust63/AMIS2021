@@ -115,3 +115,9 @@
     cursor: default !important;
     color: #9e9e9e;
 }
+
+/**readonly*/
+.ms-pagination--readonly .ms-pagination-options{
+    background-color: #eff0f2;
+    pointer-events:none;
+}

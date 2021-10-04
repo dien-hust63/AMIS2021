@@ -68,7 +68,23 @@ namespace Misa.ApplicationCore
             try
             {
                 var serviceResult = new ServiceResult();
-                serviceResult.Data = _employeeRepository.GetNewEmployeeCode();
+                var employee = _employeeRepository.GetNewEmployeeCode();
+                var currentEmployeeCode = employee.employee_code;
+                var numberString = Regex.Match(currentEmployeeCode, @"\d+").Value;
+                int numberCode = Int32.Parse(numberString);
+                numberCode = numberCode + 1;
+                numberString = numberCode.ToString();
+                var numberStringLength = numberString.Length;
+                var newVoucherCode = "NV";
+                if (numberStringLength < 6)
+                {
+                    for (int i = 0; i < 6 - numberStringLength; ++i)
+                    {
+                        newVoucherCode = newVoucherCode + "0";
+                    }
+                }
+                newVoucherCode = newVoucherCode + numberString;
+                serviceResult.Data = newVoucherCode;
                 return serviceResult;
             }
             catch (Exception)
@@ -76,7 +92,7 @@ namespace Misa.ApplicationCore
 
                 throw;
             }
-            
+
         }
         /// <summary>
         /// Kiểm tra trùng mã nhân viên

@@ -12,3 +12,8 @@
     color: #FFF;
     z-index: 9999;
 }
+
+.ms-tooltip--error{
+    background-color: #ff7777 !important;
+    color: #fff !important;
+}

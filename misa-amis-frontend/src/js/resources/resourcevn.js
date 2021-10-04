@@ -33,19 +33,25 @@ var comboboxAccountProps = {
   tableHeaders: accountComboboxHeaders,
   api: apiList['accountPagingFilter'],
   tableObject: "Accounts",
-  mode:"api"
+  isRequired: true,
+  mode:"api",
+  fieldName: "Tài khoản"
 }
 var comboboxWarehouseProps = {
   tableHeaders: warehouseComboboxHeaders,
   api: apiList['warehousePagingFilter'],
   tableObject: "Warehouses",
-  mode:"api"
+  isRequired: true,
+  mode:"api",
+  fieldName: "Kho"
 }
 var comboboxCommodityProps = {
   tableHeaders: commodityComboboxHeaders,
   api: apiList['commodityPagingFilter'],
   tableObject: "Commoditys",
-  mode:"api"
+  isRequired: true,
+  mode:"api",
+  fieldName: "Mã hàng"
 }
 // var comboboxUnitProps = {
 //   tableHeaders: [{ fieldName: 'units', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '100px'}],
@@ -111,7 +117,6 @@ module.exports = {
   InwardEmployeeComboboxHeaders:[
     { fieldName: 'employee_code', label: 'Mã nhân viên', textAlign: 'text-left', type: "normal", width: '100px'},
     { fieldName: 'employee_name', label: 'Tên nhân viên', textAlign: 'text-left', type: "normal", width: '200px' },
-    { fieldName: 'department_name', label: 'Đơn vị', textAlign: 'text-left', type: "normal", width: '200px'},
   ],
   /**combobox hàng hóa*/
   customerComboboxProps: {
@@ -160,13 +165,14 @@ module.exports = {
   
   message: {
     messageConfirmChange: "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
-    messageRequired: "{0} không được để trống",
+    messageRequired: "<{0}> không được để trống",
     messageDuplication: `Mã nhân viên <{0}> đã tồn tại trong hệ thống, vui lòng kiểm tra lại.`,
     messageEmailSyntax: "Email không đúng định dạng",
     messageDateSyntax: `Ngày chưa đúng định dạng`,
     messageDateFuture: "{0} vượt quá ngày hiện tại",
     messageDeleteWarning: "Bạn có chắc muốn xóa {0} không?",
     messageDeleteSuccess: "xóa {0} thành công",
+    messageVoucherDate: "Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ. Xin vui lòng kiểm tra lại."
   },
   mode: {
     ADD: 0,

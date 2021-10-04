@@ -2,6 +2,7 @@
 	<div
 		v-show="tooltipState"
 		class="ms-tooltip tooltip--arrow"
+		:class="{'ms-tooltip--error':type == 'error'}"
 		:style="positionOfTooltip"
 	>
 		{{ tooltipContent }}
@@ -19,7 +20,8 @@
 				tooltipTop: -100,
 				tooltipLeft: -100,
 				tooltipHeight: 23,
-				tooltipWidth: 130
+				tooltipWidth: 130,
+				type: "normal",
 			};
 		},
 		computed: {
@@ -34,9 +36,9 @@
 
 				// Kiểm tra top
 				if (this.tooltipTop + 20 + this.tooltipHeight > window.innerHeight) 
-					top = this.tooltipTop - 20 + 'px';
+					top = this.tooltipTop - 35 + 'px';
 				else {
-					top = this.tooltipTop + 20 + 'px';
+					top = this.tooltipTop + 35 + 'px';
 				}
 
 				// Kiểm tra left
@@ -60,6 +62,7 @@
 				this.tooltipContent = data['message'];
                 this.tooltipTop = data['top'];
                 this.tooltipLeft = data['left'];
+				this.type = data["type"];
 			});
 			/**
 			 * Lắng nghe sự kiện ẩn tooltip

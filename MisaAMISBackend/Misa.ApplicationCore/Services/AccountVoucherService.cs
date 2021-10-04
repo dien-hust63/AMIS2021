@@ -175,21 +175,73 @@ namespace Misa.ApplicationCore.Services
             try
             {
                 var serviceResult = new ServiceResult();
+                /**Validate dữ liệu*/
+                //check các trường bắt buộc nhập
                 var accountVoucher = data.in_inward;
-                var accountVoucherId = Guid.NewGuid();
-                accountVoucher.accountvoucher_id = accountVoucherId;
-                // Thêm vào bảng chính
-                var voucherResult = _accounVoucherRepository.addAccountVoucher(accountVoucher);
-                // Thêm vào hàng tiền
-                var accountVoucherDetails = data.in_inward_detail;
-                for (int i = 0; i < accountVoucherDetails.Count(); i++)
+                var voucherDetailContent = data.in_inward_detail;
+                var lengthDetail = data.in_inward_detail.Count();
+                var validateData = CheckRequiredField(accountVoucher);
+                if(validateData != null)
                 {
-                    var accountVoucherDetail = accountVoucherDetails[i];
-                    accountVoucherDetail.accountvoucher_id = accountVoucherId;
-                    _accountVoucherDetailRepository.Insert(accountVoucherDetail);
+                    serviceResult.IsValid = false;
+                    serviceResult.Data = validateData;
+                    return serviceResult;
                 }
-                serviceResult.Data = voucherResult;
-
+                var voucherDetailService = new AccountVoucherDetailService();
+                for(int i =0; i < lengthDetail; ++i)
+                {
+                    var voucherDetail = voucherDetailContent[i];
+                    var validateDataDetail = voucherDetailService.CheckRequiredField(voucherDetail);
+                    if(validateDataDetail != null)
+                    {
+                        serviceResult.IsValid = false;
+                        serviceResult.Data = validateDataDetail;
+                        return serviceResult;
+                    }
+                }
+                //Check trùng mã
+                int isDuplicateCode = checkAccountVoucherCode((int)Mode.Add, accountVoucher.voucher_code);
+                if(isDuplicateCode == 0)
+                {
+                    serviceResult.IsValid = false;
+                    serviceResult.Data = new
+                    {
+                        code = "MS001",
+                        message = Resources.ResourceVN.Exception_Voucher_Code_Duplication
+                    };
+                    return serviceResult;
+                }
+                //Check ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ
+                if(DateTime.Compare(accountVoucher.mathematics_date, accountVoucher.voucher_date) < 0)
+                {
+                    serviceResult.IsValid = false;
+                    serviceResult.Data = new
+                    {
+                        message = Resources.ResourceVN.Exceoption_Voucher_Date
+                    };
+                    return serviceResult;
+                }
+                /**thêm phiếu nhập*/
+                data.in_inward.accountvoucher_id = Guid.NewGuid();
+                
+                for (int i=0; i< lengthDetail; ++i)
+                {
+                    data.in_inward_detail[i].accountvoucher_id = data.in_inward.accountvoucher_id;
+                }
+                var resultData = _accounVoucherRepository.addAccountVoucher(data);
+                if(resultData != null)
+                {
+                    serviceResult.Data = new
+                    {
+                        Message = Resources.ResourceVN.Success_Insert,
+                        Data = resultData
+                    };
+                }
+                else
+                {
+                    serviceResult.IsValid = false;
+                }
+               
                 return serviceResult;
             }
             catch (Exception)
@@ -211,32 +263,71 @@ namespace Misa.ApplicationCore.Services
             try
             {
                 var serviceResult = new ServiceResult();
-                var accountVoucher = data.in_inward;
-                // Thêm vào bảng chính
-                _baseRepository.Update(accountVoucher, accountVoucherID);
-                // Thêm vào hàng tiền
-                var accountVoucherDetails = data.in_inward_detail;
-                for (int i = 0; i < accountVoucherDetails.Count(); i++)
-                {
-                    var accountVoucherDetail = accountVoucherDetails[i];
-                    var accountVoucherDetailId = accountVoucherDetail.accountvoucherdetail_id;
-                    var state = accountVoucherDetail.state;
+                /**Validate dữ liệu*/
+                #region Validate dữ liệu
 
-                    switch (state)
+                
+                //check các trường bắt buộc nhập
+                var accountVoucher = data.in_inward;
+                var voucherDetailContent = data.in_inward_detail;
+                var lengthDetail = data.in_inward_detail.Count();
+                var validateData = CheckRequiredField(accountVoucher);
+                if (validateData != null)
+                {
+                    serviceResult.IsValid = false;
+                    serviceResult.Data = validateData;
+                    return serviceResult;
+                }
+                var voucherDetailService = new AccountVoucherDetailService();
+                for (int i = 0; i < lengthDetail; ++i)
+                {
+                    var voucherDetail = voucherDetailContent[i];
+                    var validateDataDetail = voucherDetailService.CheckRequiredField(voucherDetail);
+                    if (validateDataDetail != null)
                     {
-                        case (int)Mode.Add:
-                            _accountVoucherDetailRepository.Insert(accountVoucherDetail);
-                            break;
-                        case (int)Mode.Update:
-                            _accountVoucherDetailRepository.Update(accountVoucherDetail, accountVoucherDetailId);
-                            break;
-                        case (int)Mode.Delete:
-                            _accountVoucherDetailRepository.Delete(accountVoucherDetailId);
-                            break;
+                        serviceResult.IsValid = false;
+                        serviceResult.Data = validateDataDetail;
+                        return serviceResult;
                     }
                 }
-                serviceResult.Data = Resources.ResourceVN.Success_Update;
-                //serviceResult.Data = _accounVoucherRepository.updateAccountVoucher(accountVoucherID,data);
+                //Check trùng mã
+                int isDuplicateCode = checkAccountVoucherCode((int)Mode.Update, accountVoucher.voucher_code, accountVoucherID.ToString());
+                if (isDuplicateCode == 0)
+                {
+                    serviceResult.IsValid = false;
+                    serviceResult.Data = new
+                    {
+                        code = "MS001",
+                        message = Resources.ResourceVN.Exception_Voucher_Code_Duplication
+                    };
+                    return serviceResult;
+                }
+                //Check ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ
+                if (DateTime.Compare(accountVoucher.mathematics_date, accountVoucher.voucher_date) < 0)
+                {
+                    serviceResult.IsValid = false;
+                    serviceResult.Data = new
+                    {
+                        message = Resources.ResourceVN.Exceoption_Voucher_Date
+                    };
+                    return serviceResult;
+                }
+                #endregion
+                /**Sửa phiếu nhập*/
+
+                var resultData = _accounVoucherRepository.updateAccountVoucher(accountVoucherID, data);
+                if (resultData != null)
+                {
+                    serviceResult.Data = new
+                    {
+                        Message = Resources.ResourceVN.Success_Update,
+                        Data = resultData
+                    };
+                }
+                else
+                {
+                    serviceResult.IsValid = false;
+                }
 
                 return serviceResult;
             }
@@ -247,5 +338,63 @@ namespace Misa.ApplicationCore.Services
             }
         }
 
+        /// <summary>
+        /// Check trùng mã chứng từ
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="accountVoucher"></param>
+        /// <returns>0: mã bị trùng, 1: mã không bị trùng, -1: sai tham số truyền</returns>
+        /// CreatedBy: nvdien(3/10/2021)
+        public int checkAccountVoucherCode(int mode, string accountVoucherCode, string editId = "")
+        {
+            try
+            {
+                if (mode == (int)Mode.Add)
+                {
+                    var voucherList = _accounVoucherRepository.checkVoucherCodeDuplicate(accountVoucherCode);
+                    if (voucherList.Count() > 0)
+                    {
+                        //Mã bị trùng
+                        return 0;
+                    }
+                    //Mã không trùng
+                    return 1;
+                }
+                if (mode == (int)Mode.Update)
+                {
+                    var voucherList = _accounVoucherRepository.checkVoucherCodeDuplicate(accountVoucherCode);
+                    if (voucherList.Count() == 1)
+                    {
+                        //Kiểm tra xem mã này của chính nó hay của object khác
+                        if (!String.IsNullOrEmpty(editId))
+                        {
+                            var voucherID = Guid.Parse(editId);
+                            var voucher = _accounVoucherRepository.GetEntityById(voucherID);
+                            if (voucher != null && voucher.voucher_code == accountVoucherCode)
+                            {
+                                //Không trùng
+                                return 1;
+                            }
+                            else return 0;
+                        }
+                        return -1;
+                    }
+                    if (voucherList.Count() < 1)
+                    {
+                        //Mã không bị trùng
+                        return 1;
+                    }
+                    //Mã bị trùng
+                    return 0;
+                }
+                return -1;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
     }
 }

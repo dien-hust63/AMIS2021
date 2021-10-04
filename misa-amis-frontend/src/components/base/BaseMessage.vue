@@ -28,7 +28,7 @@
 import BaseButton from "../base/BaseButton.vue";
 import { mode } from "../../js/resources/resourcevn.js";
 export default {
-  name: "BaseMessageTest",
+  name: "BaseMessage",
   components: {
     BaseButton,
   },

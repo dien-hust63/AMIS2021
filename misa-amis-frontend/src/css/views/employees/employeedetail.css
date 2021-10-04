@@ -78,7 +78,8 @@
 .popup-content{
     flex:1;
 }
-.popup-footer{
+.employee-popup .popup-footer{
+    padding: 0;
     width: 100%;
 }
 .popup-footer-divide{

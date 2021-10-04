@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Misa.ApplicationCore.Attributes;
 using Misa.ApplicationCore.Entities;
 using Misa.ApplicationCore.Interfaces.Repository;
 using Npgsql;
@@ -19,6 +20,8 @@ namespace Misa.Infrastructure
         {
 
         }
+
+       
         #endregion
         /// <summary>
         /// lọc và phân trang đối tượng theo mã và tên đối tượng
@@ -55,6 +58,23 @@ namespace Misa.Infrastructure
 
                 };
                 return result;
+            }
+        }
+
+
+        /// <summary>
+        /// Lấy mã mới
+        /// </summary>
+        /// <returns></returns>
+        public AccountObject getNewCode()
+        {
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            {
+
+
+                var sqlCommand = "select * from public.accountobject av order by cast( public.func_extract_number(av.account_object_code) as int) DESC LIMIT 1";
+                var content = _dbConnection.Query<AccountObject>(sqlCommand).Single();
+                return content;
             }
         }
 

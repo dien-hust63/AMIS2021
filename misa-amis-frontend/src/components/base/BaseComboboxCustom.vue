@@ -3,12 +3,24 @@
     <label class="combobox-custom-label">
       {{ label }} <span v-if="required"><b class="text--red">*</b></span>
     </label>
-    <div class="combobox-custom-content" :class="{'combobox-custom--active': isActive}" @blur="isActive=false" :tabindex="0">
+    <div
+      class="combobox-custom-content"
+      :class="{
+        'combobox-custom--active': isActive,
+        'combobox-custom--error': isError,
+      }"
+      @blur="isActive = false"
+      :tabindex="0"
+    >
       <div class="combobox-custom-input">
-        <input type="text" v-on="inputListeners" :value="value" ref="input"/>
+        <input type="text" v-on="inputListeners" :value="value" ref="input" />
       </div>
-      <div class="combobox-custom-actions" >
-        <div class="btn-add btn-actions" @click="showAddForm" v-show="!hideAddIcon">
+      <div class="combobox-custom-actions">
+        <div
+          class="btn-add btn-actions"
+          @click="showAddForm"
+          v-show="!hideAddIcon"
+        >
           <div class="mi mi-16 mi-plus--success"></div>
         </div>
         <div
@@ -40,6 +52,10 @@ export default {
       type: String,
       default: "",
     },
+    formName: {
+      type: String,
+      default: "",
+    },
     value: {
       type: String,
       default: "",
@@ -50,13 +66,13 @@ export default {
         return false;
       },
     },
-    hideDropdownIcon:{
+    hideDropdownIcon: {
       type: Boolean,
       default() {
         return false;
       },
     },
-    hideAddIcon:{
+    hideAddIcon: {
       type: Boolean,
       default() {
         return false;
@@ -69,7 +85,7 @@ export default {
           api: "",
           tableObject: "",
           valueField: "",
-          mode:"",
+          mode: "",
         };
       },
     },
@@ -81,6 +97,8 @@ export default {
       timeDelaySearch: null,
       posistion: {},
       isActive: false,
+      isError: false,
+      errorMessage: "",
     };
   },
 
@@ -99,6 +117,8 @@ export default {
      * CreatedBy: nvdien(26/9/2021)
      */
     showComboDropdown(event) {
+      this.isError = false;
+      this.$eventBus.$emit("hideTooltip");
       this.isShowComboDropdown = !this.isShowComboDropdown;
       if (this.isShowComboDropdown) {
         this.isActive = true;
@@ -115,46 +135,46 @@ export default {
           leftChange: leftChange,
         };
         this.position = elementPos;
-        if(this.comboboxProps.mode == "api"){
-           axios
-          .get(this.formatString(this.comboboxProps.api, "", 1, 20))
-          .then((response) => {
-            let comboDropdownData = {
-              tableHeaders: this.comboboxProps.tableHeaders,
-              tableContents: response.data[this.comboboxProps.tableObject],
-              hasFooter: this.hasFooter,
-              position: elementPos,
-              comboboxProps:this.comboboxProps
-            };
-            this.$eventBus.$emit("showComboDropdown", comboDropdownData);
-            this.$eventBus.$on("comboboxListener", (data) => {
-              this.$emit("getDataEventBus", data);
-              this.$eventBus.$emit("hideComboDropdown");
-            });
-          })
-          .catch((response) => console.log(response));
+        if (this.comboboxProps.mode == "api") {
+          axios
+            .get(this.formatString(this.comboboxProps.api, "", 1, 20))
+            .then((response) => {
+              let comboDropdownData = {
+                tableHeaders: this.comboboxProps.tableHeaders,
+                tableContents: response.data[this.comboboxProps.tableObject],
+                hasFooter: this.hasFooter,
+                position: elementPos,
+                comboboxProps: this.comboboxProps,
+              };
+              this.$eventBus.$emit("showComboDropdown", comboDropdownData);
+              this.$eventBus.$on("comboboxListener", (data) => {
+                this.$emit("getDataEventBus", data);
+                this.$eventBus.$emit("hideComboDropdown");
+              });
+            })
+            .catch((response) => console.log(response));
         }
-        if(this.comboboxProps.mode == "manual"){
+        if (this.comboboxProps.mode == "manual") {
           let comboDropdownData = {
-              tableHeaders: this.comboboxProps.tableHeaders,
-              tableContents:this.comboboxProps.tableContents,
-              hasHeader: false,
-              hasFooter: false,
-              position: elementPos,
-            };
-            this.$eventBus.$emit("showComboDropdown", comboDropdownData);
-            this.$eventBus.$on("comboboxListener", (data) => {
-              this.$emit("getDataEventBus", data);
-              this.$eventBus.$emit("hideComboDropdown");
-            });
+            tableHeaders: this.comboboxProps.tableHeaders,
+            tableContents: this.comboboxProps.tableContents,
+            hasHeader: false,
+            hasFooter: false,
+            position: elementPos,
+          };
+          this.$eventBus.$emit("showComboDropdown", comboDropdownData);
+          this.$eventBus.$on("comboboxListener", (data) => {
+            this.$emit("getDataEventBus", data);
+            this.$eventBus.$emit("hideComboDropdown");
+          });
         }
       } else {
         this.$eventBus.$emit("hideComboDropdown");
       }
-       
     },
     /**Hiển thị form thêm */
     showAddForm() {
+      
       this.$emit("showAddForm");
     },
     /**filter combobox khách hàng */
@@ -187,14 +207,13 @@ export default {
               this.$eventBus.$emit("showComboDropdown", comboDropdownData);
 
               //bắt sự kiện khi click vào dòng trên combo dropdown panel
-              this.$eventBus.$on('comboboxListener', (data) => {
+              this.$eventBus.$on("comboboxListener", (data) => {
                 this.$emit("getDataEventBus", data);
                 this.$eventBus.$emit("hideComboDropdown");
                 this.isShowComboDropdown = false;
               });
             })
             .catch((response) => console.log(response));
-          
         }, 500);
         return;
       }
@@ -202,11 +221,10 @@ export default {
       //không cập nhật header
       //không cần cập nhật lại vị trí
       if (this.isShowComboDropdown) {
-        
-         if (this.timeDelaySearch) {
+        if (this.timeDelaySearch) {
           clearTimeout(this.timeDelaySearch);
         }
-        this.timeDelaySearch = setTimeout(() => {  
+        this.timeDelaySearch = setTimeout(() => {
           axios
             .get(this.formatString(this.comboboxProps.api, searchValue, 1, 20))
             .then((response) => {
@@ -219,8 +237,7 @@ export default {
               this.$eventBus.$emit("showComboDropdown", comboDropdownData);
 
               //bắt sự kiện khi click vào dòng trên combo dropdown panel
-              this.$eventBus.$on('comboboxListener', (data) => {
-                
+              this.$eventBus.$on("comboboxListener", (data) => {
                 this.$emit("getDataEventBus", data);
                 this.$eventBus.$emit("hideComboDropdown");
                 this.isShowComboDropdown = false;
@@ -231,12 +248,30 @@ export default {
         }, 500);
       }
     },
+    /**
+     * Validate Combobox
+     * CreatedBy: nvdien(3/10/2021)
+     */
+    validateCombobox() {
+      if (
+        this.comboboxProps.isRequired &&
+        (this.value === null || this.value === "")
+      ) {
+        this.isError = true;
+        this.errorMessage = this.formatString(
+          this.$resourcesVN.message.messageRequired,
+          this.comboboxProps.fieldName
+        );
+      }
+    },
   },
   computed: {
     inputListeners: function () {
       var self = this;
       return Object.assign({}, this.$listeners, {
         input: function (event) {
+          self.isError = false;
+          self.$eventBus.$emit("hideTooltip");
           self.searchCombobox(event, event.target.value);
           self.$emit("input", event.target.value);
         },
@@ -244,11 +279,50 @@ export default {
           event.target.select();
           self.isActive = true;
         },
-        blur: function(){
+        blur: function () {
           self.isActive = false;
-        }
+        },
+        mouseover: function (event) {
+          if (self.isError) {
+            // hiển thị tooltip báo lỗi
+            let element = event.currentTarget;
+            let elementRect = element.getBoundingClientRect();
+            let top = elementRect.top;
+            let left = elementRect.left;
+            let tooltipData = {
+              message: self.errorMessage,
+              top: top,
+              left: left,
+              type: "error",
+            };
+            self.$eventBus.$emit("showTooltip", tooltipData);
+          }
+        },
+        mouseout: function () {
+          self.$eventBus.$emit("hideTooltip");
+        },
       });
     },
+  },
+  watch:{
+    value: function(newvalue){
+      if(this.comboboxProps.isRequired &&
+        (newvalue != null)){
+        this.isError = false;
+        this.$eventBus.$emit("hideTooltip");
+      }
+    }
+  },
+  created() {
+    this.$eventBus.$on("validateCombobox" + this.formName, () => {
+      this.validateCombobox();
+      if (this.isError) {
+        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage);
+      }
+    });
+  },
+  destroyed() {
+    this.$eventBus.$off("validateCombobox"+this.formName);
   },
 };
 </script>

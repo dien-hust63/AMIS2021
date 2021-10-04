@@ -24,6 +24,7 @@
     outline: none;
     width: 100%;
     padding: 6px 10px;
+    font-family:  MISANotoSans-Regular !important;
 }
 .ms-input__input textarea{
     resize: none;

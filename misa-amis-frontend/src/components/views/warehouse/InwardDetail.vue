@@ -13,6 +13,7 @@
             v-model="dropdownInwardTypeData"
             :dropdownList="inwardTypeList"
             :defaultData="dropdownInwardTypeDefault"
+            :class="{ 'ms-dropdown--readonly': isReadOnly }"
           />
           <!-- <div class="combobox"></div> -->
         </div>
@@ -126,6 +127,11 @@
                     label="Số chứng từ"
                     v-model="masterContent['voucher_code']"
                     :class="{ 'ms-input--readonly': isReadOnly }"
+                    :required="true"
+                    :inputCheck="inputCheck"
+                    @getInputError="getInputError"
+                    fieldName="Số chứng từ"
+                    formName="InwardDetail"
                   />
                 </div>
               </div>
@@ -133,7 +139,7 @@
           </div>
           <div class="w-1/4 summary-info">
             <div class="summary-info-title">Tổng tiền</div>
-            <div class="summary-info-number">{{totalPrice}}</div>
+            <div class="summary-info-number">{{ totalPrice }}</div>
           </div>
         </div>
         <div class="tab-inward-detail">
@@ -154,14 +160,17 @@
               @deleteRow="deleteRow"
               @changeTableContent="changeVoucherDetail"
               :isReadOnly="isReadOnly"
+              :formName="formName"
             />
             <div class="inward-detail-pagination">
-              <base-pagination />
+              <base-pagination
+                :class="{ 'ms-pagination--readonly': isReadOnly }"
+              />
             </div>
           </div>
         </div>
         <div class="grid-control-item">
-          <div class="btn-grid-control" :class="{'read-only':isReadOnly}">
+          <div class="btn-grid-control" :class="{ 'read-only': isReadOnly }">
             <base-button value="Thêm dòng" @clickButton="addNewRow" />
             <base-button value="Thêm ghi chú" />
             <base-button
@@ -195,7 +204,10 @@
             Cất
           </div>
           <div class="base-button-custom" v-show="afterEdit">
-            <div class="button-custom-left ms-button-primary">
+            <div
+              class="button-custom-left ms-button-primary"
+              @click="saveAndInsert"
+            >
               <div class="buttom-custom-text">Cất và thêm</div>
             </div>
             <div
@@ -303,6 +315,11 @@ export default {
       afterUnmention: false,
       //add
       voucherId: "",
+      /**validate */
+      inputCheck: false,
+      errorList: [],
+      isValid: true,
+      formName: "InwardDetail",
     };
   },
   methods: {
@@ -359,7 +376,9 @@ export default {
         );
       }
     },
-    /**xóa hết dòng */
+    /**xóa hết dòng
+     * CreatedBy: nvdien(3/10/2021)
+     */
     warningDeleteAllRow() {
       let messageText = this.formatString(
         this.$resourcesVN.message.messageDeleteWarning,
@@ -387,7 +406,9 @@ export default {
         ],
       });
     },
-    /**Xóa tất cả các dòng */
+    /**Xóa tất cả các dòng
+     * CreatedBy: nvdien(3/10/2021)
+     */
     deleteAllRow() {
       //Xóa trên giao diện, set lại mảng default
       this.tableInwardDetailContents = [];
@@ -682,16 +703,161 @@ export default {
         }
       }
     },
-    /**Cất dữ liệu */
+    /**lấy lỗi emit lên từ các base
+     * @param {string} error
+     * CreatedBy: nvdien(3/10/2021)
+     */
+    getInputError(error) {
+      // this.errorList.push(error);
+      //show Message box
+      this.$eventBus.$emit("showMessageBox", {
+        icon: "mi-exclamation-error-48-2",
+        messageText: error,
+        buttons: [
+          {
+            feature: "center ms-button-primary",
+            callback: () => {
+              this.closeMessageBox();
+            },
+            value: "Đóng",
+          },
+        ],
+      });
+      this.isValid = false;
+    },
+    /**
+     * Kiểm tra ngày hạch toán lớn hơn hoặc bằng ngày chứng từ
+     * CreatedBy: nvdien(3/10/2021)
+     */
+    checkVoucherDate() {
+      let mathematicDate = new Date(this.masterContent["mathematics_date"]);
+      let voucherDate = new Date(this.masterContent["voucher_date"]);
+      if (mathematicDate < voucherDate) {
+        this.$eventBus.$emit("showMessageBox", {
+          icon: "mi-exclamation-warning-48",
+          messageText: this.$resourcesVN.message.messageVoucherDate,
+          buttons: [
+            {
+              feature: "center ms-button-primary",
+              callback: () => {
+                this.closeMessageBox();
+              },
+              value: "Đóng",
+            },
+          ],
+        });
+      }
+    },
+    /**validate form
+     * CreatedBy: nvdien(3/10/2021)
+     */
+    validateForm() {
+      this.$eventBus.$emit("validateInputInwardDetail");
+      this.$eventBus.$emit("validateComboboxInwardDetail");
+      //Check ngày hạch toán lớn hơn hoặc bằng ngày chứng từ
+      this.checkVoucherDate();
+    },
+    /**Cất dữ liệu
+     * CreatedBy: nvdien(3/10/2021)
+     */
     saveVoucherDetail() {
-      //Thêm mới
-      if (this.mode == this.$resourcesVN.mode.ADD) {
+      this.validateForm();
+      setTimeout(() => {
+        if (this.isValid == false) {
+          console.log("fail");
+          return;
+        }
         //lấy dữ liệu diễn giải
         this.masterContent["description"] = this.descriptionVoucher;
         //Lấy loại phiếu nhập
         this.masterContent["voucher_type"] = this.dropdownInwardTypeData;
         //Trạng thái ghi sổ
         this.masterContent["is_mention"] = 1;
+        //Tông tiền
+        this.masterContent["total_price"] = this.totalPrice;
+        //Thêm mới
+        if (this.mode == this.$resourcesVN.mode.ADD) {
+          //data post
+          let voucherDetailContent = {
+            in_inward: this.masterContent,
+            in_inward_detail: this.tableInwardDetailContents,
+          };
+          //thêm dữ liệu
+          VoucherRepository.addVoucher(voucherDetailContent)
+            .then((response) => {
+              //chuyển sang btn Bỏ ghi
+              this.hasUnmentionButton();
+              this.$eventBus.$emit("loadVoucherTable");
+              this.isReadOnly = true;
+              this.voucherId = response.data.Data["accountvoucher_id"];
+            })
+            .catch((error) => {
+              console.log(error.response.data);
+              // if(response.data["code"] == "MS001"){
+              //   console.log("MS001");
+              // }
+            });
+        }
+        if (this.mode == this.$resourcesVN.mode.EDIT) {
+          //Gán các giá trị từ giao diện lên nội dung
+          //put dữ liệu
+          this.voucherId = this.masterContent["accountvoucher_id"];
+          let inwardDetailContentLength = this.tableInwardDetailContents.length;
+          let currentContentLength = this.voucherDetailContents.length;
+          let countAddIndex = 0;
+          for (let i = 0; i < inwardDetailContentLength; ++i) {
+            let content = this.tableInwardDetailContents[i];
+            this.$set(
+              this.tableInwardDetailConents[i],
+              "accountvoucher_id",
+              this.voucherId
+            );
+            if (content["state"] == this.$resourcesVN.mode.ADD) {
+              this.$set(
+                this.voucherDetailContents,
+                currentContentLength + countAddIndex,
+                content
+              );
+              countAddIndex++;
+            }
+          }
+
+          //data put
+          let voucherDetailPutContent = {
+            in_inward: this.masterContent,
+            in_inward_detail: this.voucherDetailContents,
+          };
+          VoucherRepository.editInwardVoucher(
+            this.voucherId,
+            voucherDetailPutContent
+          )
+            .then((response) => {
+              //chuyển sang btn Bỏ ghi
+              this.hasUnmentionButton();
+              this.$eventBus.$emit("loadVoucherTable");
+              this.isReadOnly = true;
+              console.log(response);
+            })
+            .catch((response) => console.log(response));
+        }
+      });
+    },
+    /**Cất và thêm
+     * CreatedBY: nvdien(3/10/2021)
+     */
+    saveAndInsert() {
+      //validate
+      //Cất
+      //lấy dữ liệu diễn giải
+      this.masterContent["description"] = this.descriptionVoucher;
+      //Lấy loại phiếu nhập
+      this.masterContent["voucher_type"] = this.dropdownInwardTypeData;
+      //Trạng thái ghi sổ
+      this.masterContent["is_mention"] = 1;
+      //Tông tiền
+      this.masterContent["total_price"] = this.totalPrice;
+      //Thêm mới
+      if (this.mode == this.$resourcesVN.mode.ADD) {
         //data post
         let voucherDetailContent = {
           in_inward: this.masterContent,
@@ -703,10 +869,11 @@ export default {
             //chuyển sang btn Bỏ ghi
             this.hasUnmentionButton();
             this.$eventBus.$emit("loadVoucherTable");
-            this.isReadOnly = true;
-            console.log(response);
+            this.voucherId = response.data.Data["accountvoucher_id"];
           })
-          .catch((response) => console.log(response));
+          .catch((error) => {
+            console.log(error.response.data);
+          });
       }
       if (this.mode == this.$resourcesVN.mode.EDIT) {
         //Gán các giá trị từ giao diện lên nội dung
@@ -725,13 +892,16 @@ export default {
           }
         }
         //put dữ liệu
-        let voucherId = this.masterContent["accountvoucher_id"];
+        this.voucherId = this.masterContent["accountvoucher_id"];
         //data put
         let voucherDetailPutContent = {
           in_inward: this.masterContent,
           in_inward_detail: this.voucherDetailContents,
         };
-        VoucherRepository.editInwardVoucher(voucherId, voucherDetailPutContent)
+        VoucherRepository.editInwardVoucher(
+          this.voucherId,
+          voucherDetailPutContent
+        )
           .then((response) => {
             //chuyển sang btn Bỏ ghi
             this.hasUnmentionButton();
@@ -765,6 +935,8 @@ export default {
     },
     /**sửa */
     changeEditState() {
+      //focus vào ô đầu tiên của form
+      this.$refs.customerCombobox.focusInput();
       this.mode = this.$resourcesVN.mode.EDIT;
       this.isReadOnly = false;
       this.hasSaveButton();
@@ -799,19 +971,20 @@ export default {
         return inwardType;
       }
     },
-    totalPrice: function(){
+    totalPrice: function () {
       let total = 0;
-      for(let i=0; i<this.tableInwardDetailContents.length; ++i){
+      for (let i = 0; i < this.tableInwardDetailContents.length; ++i) {
         let price;
-        if(this.tableInwardDetailContents[i]['total_price'] != null){
-           price = this.covertStringtoNumber(this.tableInwardDetailContents[i]["total_price"]);
-        }
-        else price = 0;
+        if (this.tableInwardDetailContents[i]["total_price"] != null) {
+          price = this.covertStringtoNumber(
+            this.tableInwardDetailContents[i]["total_price"]
+          );
+        } else price = 0;
         total += price;
       }
       total = this.formatSalary(total);
       return total;
-    }
+    },
   },
   created() {
     this.$eventBus.$on("showInwardDetail", (mode, content) => {
@@ -886,9 +1059,49 @@ export default {
           });
       }
     });
+    this.$eventBus.$on("getCustomerDetail", (content) => {
+      this.$set(
+        this.masterContent,
+        "accountobject_id",
+        content["accountobject_id"]
+      );
+      this.$set(
+        this.masterContent,
+        "account_object_name",
+        content["account_object_name"]
+      );
+      this.$set(
+        this.masterContent,
+        "contact_address",
+        content["contact_address"]
+      );
+    });
+    this.$eventBus.$on("getEmployeeDetail", (content) => {
+      this.$set(this.masterContent, "employee_name", content["employee_name"]);
+    });
+    this.$eventBus.$on("catchErrorInwardDetail", (content) => {
+      //show message box
+      this.$eventBus.$emit("showMessageBox", {
+        icon: "mi-exclamation-error-48-2",
+        messageText: content,
+        buttons: [
+          {
+            feature: "center ms-button-primary",
+            callback: () => {
+              this.closeMessageBox();
+            },
+            value: "Đóng",
+          },
+        ],
+      });
+      this.isValid = false;
+    });
   },
   destroyed() {
     this.$eventBus.$off("showInwardDetail");
+    this.$eventBus.$off("getEmployeeDetail");
+    this.$eventBus.$off("getCustomerDetail");
+    this.$eventBus.$off("catchErrorInwardDetail");
   },
 };
 </script>

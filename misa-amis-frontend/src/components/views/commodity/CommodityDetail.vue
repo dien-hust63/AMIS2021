@@ -38,11 +38,11 @@
         <div class="divide-line"></div>
         <div class="w-2/3">
           <div class="row-input">
-            <base-input label="Tên" :required="true" />
+            <base-input label="Tên" :required="true" formName="Commodity"/>
           </div>
           <div class="row-input">
             <div class="w-1/4 p-r-6">
-              <base-input label="Mã" :required="true" />
+              <base-input label="Mã" :required="true" formName="Commodity"/>
             </div>
             <div class="w-3/4">
               <base-input label="Nhóm VTHH" />

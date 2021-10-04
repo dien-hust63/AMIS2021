@@ -27,7 +27,7 @@ namespace Misa.ApplicationCore.Interfaces
         /// <returns>mã nhân viên mới</returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        string GetNewEmployeeCode();
+        Employee GetNewEmployeeCode();
 
         /// <summary>
         /// Export thông tin nhân viên ra file excel

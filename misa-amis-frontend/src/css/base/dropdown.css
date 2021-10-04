@@ -16,9 +16,7 @@
     position: relative;
     align-items: center;
 }
-.ms-dropdown--disable {
-    
-}
+
 .ms-dropdown .selected-options{
     flex:1;
     padding:6px 0 6px 12px;
@@ -77,4 +75,10 @@
 .selected-options__item.selected-options__item--active{
     background-color: #2ca01c;
     color: #fff;
+}
+
+/**readonly*/
+.ms-dropdown--readonly .ms-dropdown{
+    background-color: #eff0f2;
+    pointer-events:none;
 }

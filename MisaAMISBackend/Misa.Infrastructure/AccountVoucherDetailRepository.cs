@@ -15,6 +15,11 @@ namespace Misa.Infrastructure
         public AccountVoucherDetailRepository(IConfiguration configuration) : base(configuration)
         {
         }
+
+        public AccountVoucherDetailRepository()
+        {
+
+        }
         #endregion
     }
 }

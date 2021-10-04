@@ -25,6 +25,11 @@ namespace Misa.ApplicationCore.Services
             _className = typeof(TEntity).Name;
         }
 
+        public BaseService()
+        {
+
+        }
+
         #endregion
 
         #region Method
@@ -160,10 +165,10 @@ namespace Misa.ApplicationCore.Services
                     return serviceResult;
                 }
                 //Thêm dữ liệu
-                var rowEffects = _baseRepository.Insert(entity);
+                var contentInsert = _baseRepository.Insert(entity);
                 serviceResult.Data = new
                 {
-                    rowEffects = rowEffects,
+                    Data = contentInsert,
                     messages = Resources.ResourceVN.Success_Insert,
                 };
                 return serviceResult;
@@ -210,7 +215,7 @@ namespace Misa.ApplicationCore.Services
                 var rowEffects = _baseRepository.Update(entity, entityId);
                 serviceResult.Data = new
                 {
-                    rowEffects = rowEffects,
+                    Data = rowEffects,
                     messages = Resources.ResourceVN.Success_Update,
                 };
                 return serviceResult;
@@ -264,7 +269,7 @@ namespace Misa.ApplicationCore.Services
         /// <returns>object error nếu có trường để trống, null nếu thỏa mã</returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        private object CheckRequiredField(TEntity entity)
+        public object CheckRequiredField(TEntity entity)
         {
             foreach (var property in entity.GetType().GetProperties())
             {

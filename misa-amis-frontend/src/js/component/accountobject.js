@@ -15,5 +15,14 @@ class AccountObjectAPI extends BaseAPI {
         let url = this.baseApiUrl + this.controller + `/filter?searchData=${searchData}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
         return axios.get(url);
     }
+    /**
+     * Tạo mã mới
+     * @returns promis
+     * CreatedByL nvdien(3/10/2021)
+     */
+    getNewCode(){
+        let url = this.baseApiUrl + this.controller + "/NewCode";
+        return axios.get(url);
+    }
 }
 export default new AccountObjectAPI();

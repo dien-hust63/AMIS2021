@@ -35,7 +35,7 @@ namespace Misa.ApplicationCore.Interfaces.Base
         /// <returns>số bản ghi được thêm</returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        int Insert(TEntity entity);
+        TEntity Insert(TEntity entity);
 
         /// <summary>
         /// Sửa thông tin

@@ -98,11 +98,11 @@ export default {
       comboboxError: "",
     };
   },
-  mounted() {
-     DepartmentApi.getAll()
-        .then((response) => (this.comboboxListData = response.data))
-        .catch((response) => console.log(response));
-  },
+  // mounted() {
+  //    DepartmentApi.getAll()
+  //       .then((response) => (this.comboboxListData = response.data))
+  //       .catch((response) => console.log(response));
+  // },
   methods: {
     /**
      * Ẩn hiện combobox list

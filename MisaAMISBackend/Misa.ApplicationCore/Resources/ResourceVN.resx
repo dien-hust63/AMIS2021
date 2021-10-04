@@ -120,6 +120,9 @@
   <data name="Employee_Export_Title" xml:space="preserve">
     <value>DANH SÁCH NHÂN VIÊN</value>
   </data>
+  <data name="Exceoption_Voucher_Date" xml:space="preserve">
+    <value>Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ</value>
+  </data>
   <data name="Exception_Duplication" xml:space="preserve">
     <value>Trường {0} bị trùng</value>
   </data>
@@ -135,6 +138,9 @@
   <data name="Exception_Required" xml:space="preserve">
     <value>Trường {0} không được để trống</value>
     <comment>Các trường không được phép để trống</comment>
+  </data>
+  <data name="Exception_Voucher_Code_Duplication" xml:space="preserve">
+    <value>Số chứng từ bị trùng</value>
   </data>
   <data name="Inward_Type_Commodity" xml:space="preserve">
     <value>Nhập kho từ hàng bán trả lại</value>

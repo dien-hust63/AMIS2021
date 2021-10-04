@@ -23,10 +23,15 @@
           <div class="row-input">
             <div class="row-input--left w-1/2">
               <div class="w-2/5 p-r-6 border-box">
-                <base-input label="Mã số thuế" />
+                <base-input label="Mã số thuế" ref="taxcode" />
               </div>
               <div class="w-3/5">
-                <base-input label="Mã khách hàng" :required="true" v-model="customerContent['account_object_code']"/>
+                <base-input
+                  label="Mã khách hàng"
+                  :required="true"
+                  v-model="customerContent['account_object_code']"
+                  formName="CustomerDetail"
+                />
               </div>
             </div>
             <div class="row-input--right w-1/2">
@@ -40,7 +45,12 @@
           </div>
           <div class="row-input">
             <div class="row-input--left w-1/2">
-              <base-input label="Tên khách hàng" :required="true" v-model="customerContent['account_object_name']"/>
+              <base-input
+                label="Tên khách hàng"
+                :required="true"
+                v-model="customerContent['account_object_name']"
+                formName="CustomerDetail"
+              />
             </div>
             <div class="row-input--right w-1/2">
               <base-combobox-custom label="Nhóm khách hàng" />
@@ -117,7 +127,10 @@
               <div class="ms-button ms-button-secondary">Hủy</div>
             </div>
             <div class="popup-footer--left">
-              <div class="ms-button ms-button-secondary first-right-button" @click="saveCustomer">
+              <div
+                class="ms-button ms-button-secondary first-right-button"
+                @click="saveCustomer"
+              >
                 Cất
               </div>
               <div class="ms-button ms-button-primary">Cất và thêm</div>
@@ -160,19 +173,19 @@ export default {
   },
   methods: {
     /**lưu khách hàng */
-    saveCustomer(){
-      console.log("test");
-      AccountObjectRepository.post(this.customerContent).then(response => {
-        console.log(response);
-        this.closeCustomerDetail();
-      }).catch(response => console.log(response));
+    saveCustomer() {
+      AccountObjectRepository.post(this.customerContent)
+        .then((response) => {
+          this.$eventBus.$emit("getCustomerDetail",response.data.Data);
+          this.closeCustomerDetail();
+        })
+        .catch((response) => console.log(response));
     },
     /**đóng form */
     closeCustomerDetail() {
       this.isShowCustomerDetail = false;
     },
     //#region Combobox employee
-
     /**hiển thị combo dropdown panel của khách hàng */
     showEmployeeDropdownPanel(event) {
       let element = event.target;
@@ -265,7 +278,11 @@ export default {
   },
   created() {
     this.$eventBus.$on("showCustomerDetail", () => {
-      this.isShowCustomerDetail = true;
+      AccountObjectRepository.getNewCode().then((response) => {
+        this.$set(this.customerContent, "account_object_code", response.data);
+        this.$refs.taxcode.focusInput();
+        this.isShowCustomerDetail = true;
+      });
     });
     /**
      * Tạo event hiển thị context menu

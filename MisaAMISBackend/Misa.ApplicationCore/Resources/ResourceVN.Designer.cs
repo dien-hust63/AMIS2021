@@ -70,6 +70,15 @@ namespace Misa.ApplicationCore.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ.
+        /// </summary>
+        public static string Exceoption_Voucher_Date {
+            get {
+                return ResourceManager.GetString("Exceoption_Voucher_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Trường {0} bị trùng.
         /// </summary>
         public static string Exception_Duplication {
@@ -111,6 +120,15 @@ namespace Misa.ApplicationCore.Resources {
         public static string Exception_Required {
             get {
                 return ResourceManager.GetString("Exception_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Số chứng từ bị trùng.
+        /// </summary>
+        public static string Exception_Voucher_Code_Duplication {
+            get {
+                return ResourceManager.GetString("Exception_Voucher_Code_Duplication", resourceCulture);
             }
         }
         

@@ -71,5 +71,12 @@ namespace Misa.ApplicationCore.Interfaces.Services
         /// CreatedBy: nvdien(30/09/2021)
         ServiceResult updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data);
 
+        /// <summary>
+        /// check trùng mã chứng từ
+        /// </summary>
+        /// <param name="accountVoucher"></param>
+        /// <returns></returns>
+        int checkAccountVoucherCode(int mode,string accountVoucher, string editId = "");
+
     }
 }

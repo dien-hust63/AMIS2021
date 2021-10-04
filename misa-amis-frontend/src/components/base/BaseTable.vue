@@ -68,6 +68,7 @@
                   bindingCombobox(index, tableHeader, ...arguments)
                 "
                 :class="{'ms-combobox-custom--readonly':isReadOnly}"
+                :formName="formName"
               />
             </div>
             <div v-if="tableHeader.type == 'comboboxmanual'">
@@ -134,6 +135,12 @@ export default {
     BaseInput,
   },
   props: {
+    formName:{
+      type:String,
+      default(){
+        return "";
+      }
+    },
     tableHeaders: {
       type: Array,
       default() {

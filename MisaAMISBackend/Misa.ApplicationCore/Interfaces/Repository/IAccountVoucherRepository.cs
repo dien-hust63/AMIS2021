@@ -60,7 +60,7 @@ namespace Misa.ApplicationCore.Interfaces.Repository
         /// <param name="data"></param>
         /// <returns></returns>
         /// CreatedBy: nvdien(30/09/2021)
-        int addAccountVoucher(AccountVoucherData data);
+        object addAccountVoucher(AccountVoucherData data);
 
         /// <summary>
         /// Chỉnh sửa phiếu nhập
@@ -69,6 +69,13 @@ namespace Misa.ApplicationCore.Interfaces.Repository
         /// <param name="data"></param>
         /// <returns></returns>
         /// CreatedBy: nvdien(30/09/2021)
-        int updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data);
+        object updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data);
+
+        /// <summary>
+        /// Check trùng mã
+        /// </summary>
+        /// <param name="voucherCode"></param>
+        /// <returns></returns>
+        IEnumerable<AccountVoucher> checkVoucherCodeDuplicate(string voucherCode);
     }
 }

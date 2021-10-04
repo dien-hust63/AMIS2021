@@ -70,8 +70,7 @@ namespace Misa.ApplicationCore.Entities
         /// <summary>
         /// Id phòng ban
         /// </summary>
-        [MisaRequired]
-        [MisaDisplayName("Đơn vị")]
+
         public Guid department_id { get; set; }
 
         /// <summary>

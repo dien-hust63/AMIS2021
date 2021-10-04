@@ -63,3 +63,6 @@
             background-color: #eff0f2;
             pointer-events:none;
         }
+        .combobox-custom--error{
+            border: 1px solid red !important;
+        }

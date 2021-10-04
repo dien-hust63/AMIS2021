@@ -18,21 +18,15 @@
         :value="valueInput"
         v-if="typeInput == 'textarea'"
       />
-     
+
       <div class="ms-input__icon--after mi mi-16 mi-search"></div>
-      <div
-        class="ms-input__error"
-        :class="{ 'ms-input__error--show': isShowError }"
-      >
-        {{ inputError }}
-      </div>
     </div>
   </div>
 </template>
 
 <script>
 import Mixin from "../../mixins/methods.js";
-import {message} from "../../js/resources/resourcevn.js";
+import { message } from "../../js/resources/resourcevn.js";
 export default {
   name: "BaseInput",
   inheritAttrs: false,
@@ -69,13 +63,21 @@ export default {
     typeInput: {
       type: String,
       default: "",
-    }
+    },
+    fieldName: {
+      type: String,
+      default: "",
+    },
+     formName: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
       isInputError: false,
-      isShowError: false,
       inputError: "",
+      errorMessage: "",
     };
   },
   methods: {
@@ -88,17 +90,19 @@ export default {
         this.$refs.input.focus();
       });
     },
-    
+
     /**
      * validate input
      * CreatedBy: nvdien(2/9/2021)
      */
-    validateInput(self) {
+    validateInput() {
       //các trường không để trống
-      if (self.required && (self.value === null || self.value === "")) {
+      if (this.required && (this.value === null || this.value === "")) {
         this.isInputError = true;
-        this.inputError = this.formatString(message.messageRequired, this.label);
-        this.$emit("getInputError", this.inputError);
+        this.errorMessage = this.formatString(
+          message.messageRequired,
+          this.fieldName
+        );
       }
       //validate email
       if (this.$attrs.type === "email" && this.value != "") {
@@ -116,19 +120,31 @@ export default {
       var self = this;
       return Object.assign({}, this.$listeners, {
         input: function (event) {
+          self.isInputError = false;
+          self.$eventBus.$emit("hideTooltip");
           self.$emit("input", event.target.value);
         },
         // blur: function (event) {
         //   console.log(event);
         // },
-        mouseover: function () {
+        mouseover: function (event) {
           if (self.isInputError) {
-            // hiển thị báo lỗi
-            self.isShowError = true;
+            // hiển thị tooltip báo lỗi
+            let element = event.currentTarget;
+            let elementRect = element.getBoundingClientRect();
+            let top = elementRect.top;
+            let left = elementRect.left;
+            let tooltipData = {
+              message: self.errorMessage,
+              top: top,
+              left: left,
+              type: "error",
+            };
+            self.$eventBus.$emit("showTooltip", tooltipData);
           }
         },
         mouseout: function () {
-          self.isShowError = false;
+          self.$eventBus.$emit("hideTooltip");
         },
         focus: function (event) {
           event.target.select();
@@ -144,25 +160,22 @@ export default {
     },
   },
   watch: {
-    value: function (newValue, oldValue) {
-      if (this.required) {
-        if (newValue != "") {
-          this.isInputError = false;
-          this.isShowError = false;
-        }
-        if (oldValue != "" && newValue == "" && this.inputReset == false) {
-          this.isInputError = true;
-          this.inputError = this.formatString(message.messageRequired, this.label);
-        }
-      }
-      if(this.$attrs.type === "email" && this.validateEmail(newValue) || newValue == ""){
-         this.isInputError = false;
-         this.isShowError = false;
-      }
-    },
+    // value: function (newValue, oldValue) {
+    //   if (this.required) {
+    //     if (newValue != "") {
+    //       this.isInputError = false;
+    //     }
+    //     if (oldValue != "" && newValue == "" && this.inputReset == false) {
+    //       this.isInputError = true;
+    //       this.errorMessage = this.formatString(message.messageRequired, this.label);
+    //     }
+    //   }
+    //   if(this.$attrs.type === "email" && this.validateEmail(newValue) || newValue == ""){
+    //      this.isInputError = false;
+    //   }
+    // },
     inputCheck: function () {
-      //validate input
-      this.validateInput(this);
+      this.validateInput();
     },
     inputErrorCustom: function (newValue) {
       this.isInputError = true;
@@ -174,6 +187,17 @@ export default {
         this.inputError = false;
       }
     },
+  },
+  created() {
+    this.$eventBus.$on("validateInput"+this.formName, () => {
+      this.validateInput();
+      if (this.isInputError) {
+        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage);
+      }
+    });
+  },
+  destroyed() {
+    this.$eventBus.$off("validateInput"+this.formName);
   },
 };
 </script>
