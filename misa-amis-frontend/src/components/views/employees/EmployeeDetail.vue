@@ -43,7 +43,7 @@
                   @getInputError="getInputError"
                   :inputCheck="inputCheck"
                   :inputReset="inputReset"
-                   formName="EmployeeDetail"
+                  formName="EmployeeDetail"
                 />
               </div>
             </div>
@@ -52,7 +52,7 @@
                 <base-date-input
                   label="Ngày sinh"
                   type="date"
-                  v-model="employeeData['DateOfBirth']"
+                  v-model="employeeData['date_of_birth']"
                   @getDate="getDateOfBirth"
                   :inputReset="inputReset"
                 />
@@ -62,7 +62,7 @@
                   label="Giới tính"
                   :options="genderRadioData"
                   @chooseRadio="chooseGenderRadio"
-                  :value="employeeData['Gender']"
+                  :value="employeeData['gender']"
                   :radioReset="inputReset"
                 />
               </div>
@@ -70,27 +70,28 @@
           </div>
           <div class="row-input">
             <div class="row-input--left w-1/2">
-              <base-combobox
-                label="Đơn vị"
-                @getComboboxData="getComboboxData"
-                :comboboxDataProp="employeeData['DepartmentId']"
-                :comboboxCheck="inputCheck"
-                :comboboxReset="inputReset"
-                @getComboboxError="getInputError"
-              />
+               <base-combobox-custom
+                  label="Đơn vị"
+                  :required="true"
+                  v-model="employeeData['department_name']"
+                  :comboboxProps="departmentComboboxProps"
+                  :hasFooter="false"
+                  @getDataEventBus="bindingDepartmentCombobox"
+                  :hideAddIcon="true"
+                />
             </div>
             <div class="row-input--right w-1/2">
               <div class="w-3/5">
                 <base-input
                   label="Số CMND"
-                  v-model="employeeData['IdentityNumber']"
+                  v-model="employeeData['identity_number']"
                 />
               </div>
               <div class="w-2/5 p-l-6 border-box">
                 <base-date-input
                   label="Ngày cấp"
                   type="date"
-                  v-model="employeeData['IdentityDate']"
+                  v-model="employeeData['identity_date']"
                   @getDate="getIdentityDate"
                   :inputReset="inputReset"
                 />
@@ -101,60 +102,46 @@
             <div class="row-input--left w-1/2">
               <base-input
                 label="Chức danh"
-                v-model="employeeData['PositionName']"
+                v-model="employeeData['employee_position']"
               />
             </div>
             <div class="row-input--right w-1/2">
               <base-input
                 label="Nơi cấp"
-                v-model="employeeData['IdentityPlace']"
+                v-model="employeeData['identity_place']"
               />
             </div>
           </div>
-          <div class="row-input">
-            <base-input label="Địa chỉ" v-model="employeeData['Address']" />
-          </div>
-          <div class="row-input">
-            <div class="w-200 p-r-6">
-              <base-input
-                label="ĐT di động"
-                v-model="employeeData['PhoneNumber']"
-              />
-            </div>
-            <div class="w-200 p-r-6">
-              <base-input
-                label="ĐT cố định"
-                v-model="employeeData['FixPhoneNumber']"
-              />
-            </div>
-            <div class="w-200">
-              <base-input
-                label="Email"
-                v-model="employeeData['Email']"
-                type="email"
-                :inputCheck="inputCheck"
-                :inputReset="inputReset"
-              />
-            </div>
-          </div>
-          <div class="row-input">
-            <div class="w-200 p-r-6">
-              <base-input
-                label="Tài khoản ngân hàng"
-                v-model="employeeData['BankAccount']"
-              />
-            </div>
-            <div class="w-200 p-r-6">
-              <base-input
-                label="Tên ngân hàng"
-                v-model="employeeData['BankName']"
-              />
-            </div>
-            <div class="w-200">
-              <base-input
-                label="Chi nhánh"
-                v-model="employeeData['BankBranch']"
-              />
+          <div class="w-full contact-content">
+            <div class="contact-content__title">Liên hệ</div>
+            <div class="contact-content__content">
+              <div class="row-input">
+                <base-input label="Địa chỉ" v-model="employeeData['address']" />
+              </div>
+              <div class="row-input">
+                <div class="w-200 p-r-6">
+                  <base-input
+                    label="ĐT di động"
+                    v-model="employeeData['phone_number']"
+                  />
+                </div>
+                <div class="w-200 p-r-6">
+                  <base-input
+                    label="ĐT cố định"
+                    v-model="employeeData['fix_phone_number']"
+                  />
+                </div>
+                <div class="w-200">
+                  <base-input
+                    label="Email"
+                    v-model="employeeData['email']"
+                    type="email"
+                    :inputCheck="inputCheck"
+                    :inputReset="inputReset"
+                  />
+                </div>
+              </div>
+              <div class="row-input space-insert" ></div>
             </div>
           </div>
         </div>
@@ -195,7 +182,7 @@ import BaseDateInput from "../../base/BaseDateInput.vue";
 import BaseInput from "../../base/BaseInput.vue";
 import BaseCheckbox from "../../base/BaseCheckbox.vue";
 import BaseMessage from "../../base/BaseMessage.vue";
-import BaseCombobox from "../../base/BaseCombobox.vue";
+import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue";
 import BaseRadio from "../../base/BaseRadio.vue";
 import Mixin from "../../../mixins/methods.js";
 import { RepositoryFactory } from "../../../js/repository/repository.factory.js";
@@ -210,7 +197,7 @@ export default {
     BaseInput,
     BaseCheckbox,
     BaseMessage,
-    BaseCombobox,
+    BaseComboboxCustom,
     BaseRadio,
     BaseDateInput,
   },
@@ -251,6 +238,7 @@ export default {
       inputErrorCustom: "",
       /**show form */
       isShowEmployeeDetail: false,
+      departmentComboboxProps: this.$resourcesVN.departmentComboboxProps
     };
   },
   created() {
@@ -324,16 +312,15 @@ export default {
      * CreatedBy: nvdien(3/9/2021)
      */
     closePopup() {
-      //Reset dữ liệu popup nhân viên
-      // this.isResetData = true;
-      // this.employeeData = Object.assign({}, {});
-      // //Reset các input
-      // this.inputReset = true;
-      // //Clear danh sách lỗi
-      // this.errorList = [];
-      // //Đóng popup nhân viên
-      // this.$emit("closePopup");
       this.isShowEmployeeDetail = false;
+    },
+    /**bind dữ liệu combobox lên 
+     * @param content: nôi dung của combonbox
+     * createdBy: nvdien(5/10/2021)
+    */
+    bindingDepartmentCombobox(content){
+      this.$set(this.employeeData, "department_name", content["department_name"]);
+      this.$set(this.employeeData, "department_id", content["department_id"]);
     },
     /**
      * Đóng đồng thời message box và popup
@@ -356,32 +343,32 @@ export default {
      * CreatedBy: nvdien(1/9/2021)
      */
     saveData() {
-        // //Validate các trường
-        // let isValid = await this.validateBeforeSave();
-        // if (isValid == false) {
-        //   return;
-        // }
-        // if (this.mode == mode.ADD) {
-        //   //Thực hiện thêm mới
-        //   if (this.employeeData["Gender"] == null) {
-        //     //mặc định ngươi dùng không thay đổi gì thì giới tính sẽ là nam
-        //     this.$set(this.employeeData, "Gender", 1);
-        //   }
-        //   await EmployeesRepository.post(this.employeeData);
-        // }
-        // if (this.mode == mode.EDIT) {
-        //   //Thực hiện sửa thông tin
-        //   await EmployeesRepository.put(
-        //     this.employeeData["EmployeeId"],
-        //     this.employeeData
-        //   );
-        // }
-        // this.closeMessageAndPopup();
-        // this.$emit("loadTable");
-        EmployeesRepository.post(this.employeeData).then(response => {
-          this.$eventBus.$emit("getEmployeeDetail",response.data.Data);
-          this.isShowEmployeeDetail = false;
-        })
+      // //Validate các trường
+      // let isValid = await this.validateBeforeSave();
+      // if (isValid == false) {
+      //   return;
+      // }
+      // if (this.mode == mode.ADD) {
+      //   //Thực hiện thêm mới
+      //   if (this.employeeData["Gender"] == null) {
+      //     //mặc định ngươi dùng không thay đổi gì thì giới tính sẽ là nam
+      //     this.$set(this.employeeData, "Gender", 1);
+      //   }
+      //   await EmployeesRepository.post(this.employeeData);
+      // }
+      // if (this.mode == mode.EDIT) {
+      //   //Thực hiện sửa thông tin
+      //   await EmployeesRepository.put(
+      //     this.employeeData["EmployeeId"],
+      //     this.employeeData
+      //   );
+      // }
+      // this.closeMessageAndPopup();
+      // this.$emit("loadTable");
+      EmployeesRepository.post(this.employeeData).then((response) => {
+        this.$eventBus.$emit("getEmployeeDetail", response.data.Data);
+        this.isShowEmployeeDetail = false;
+      });
     },
     /**
      * Cất và thêm mới

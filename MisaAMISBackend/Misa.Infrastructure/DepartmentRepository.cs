@@ -12,18 +12,16 @@ using System.Threading.Tasks;
 
 namespace Misa.Infrastructure
 {
-    public class WarehouseRepository : BaseRepository<Warehouse>, IWarehouseRepository
+    public class DepartmentRepository : BaseRepository<Department>, IDepartmentRepository
     {
         #region Constructor
-        public WarehouseRepository(IConfiguration configuration) : base(configuration)
+        public DepartmentRepository(IConfiguration configuration) : base(configuration)
         {
         }
         #endregion
 
-        #region Method
-
         /// <summary>
-        /// Lọc và phân trang dữ liệu kho
+        /// Lọc và phân trang dữ liệu đơn vị
         /// </summary>
         /// <param name="searchData">giá trị tìm kiếm</param>
         /// <param name="pageIndex">index trang</param>
@@ -31,7 +29,7 @@ namespace Misa.Infrastructure
         /// <returns></returns>
         /// author: nvdien(27/8/2021)
         /// modifiedBy: nvdien(27/8/2021)
-        public object GetWarehouseFilterPaging(string searchData, int pageIndex, int pageSize)
+        public object GetDepartmentFilterPaging(string searchData, int pageIndex, int pageSize)
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
@@ -40,41 +38,22 @@ namespace Misa.Infrastructure
                 dynamicParameters.Add("@search_data", employeeFilter);
                 dynamicParameters.Add("@offset", (pageIndex - 1) * pageSize);
                 dynamicParameters.Add("@page_size", pageSize);
-                var sql = "select * from  public.func_get_warehouse_paging_filter(@search_data) limit @page_size offset @offset;";
-                sql += "select count(*) from (select * from  public.func_get_warehouse_paging_filter(@search_data)) as filtertable;";
+                var sql = "select * from  public.func_get_department_paging_filter(@search_data) limit @page_size offset @offset;";
+                sql += "select count(*) from (select * from  public.func_get_department_paging_filter(@search_data)) as filtertable;";
 
                 var response = _dbConnection.QueryMultiple(sql, param: dynamicParameters, commandType: CommandType.Text);
-
-                //var vmodel = Activator.CreateInstance<Employee>();
-                var warehouses = response.Read<Warehouse>().ToList();
+                var departments = response.Read<Department>().ToList();
                 var totalRecord = response.Read<int>().FirstOrDefault();
                 var totalPage = Math.Ceiling((double)totalRecord / pageSize);
                 var result = new
                 {
-                    Warehouses = warehouses,
+                    Departments = departments,
                     TotalRecord = totalRecord,
                     TotalPage = totalPage,
                 };
                 return result;
             }
         }
-
-        /// <summary>
-        /// Lấy mã mới
-        /// </summary>
-        /// <returns></returns>
-        public Warehouse getNewCode()
-        {
-            using (_dbConnection = new NpgsqlConnection(_connectionString))
-            {
-
-
-                var sqlCommand = "select * from public.warehouse av order by cast( public.func_extract_number(av.warehouse_code) as int) DESC LIMIT 1";
-                var content = _dbConnection.Query<Warehouse>(sqlCommand).Single();
-                return content;
-            }
-        }
-        #endregion
 
     }
 }

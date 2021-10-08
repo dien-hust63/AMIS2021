@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Misa.ApplicationCore.Interfaces.Services
 {
-    public interface IWarehouseService : IBaseService<Warehouse>
+    public interface IDepartmentService : IBaseService<Department>
     {
         /// <summary>
-        /// Lọc và phân trang kho
+        /// Lọc và phân trang đơn vị
         /// </summary>
         /// <param name="searchData">chuỗi tìm kiếm</param>
         /// <param name="pageIndex">index trang</param>
@@ -19,12 +19,6 @@ namespace Misa.ApplicationCore.Interfaces.Services
         /// <returns></returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        ServiceResult GetWarehouseFilterPaging(string searchData, int pageIndex, int pageSize);
-
-        /// <summary>
-        /// Lấy mã mới
-        /// </summary>
-        /// <returns></returns>
-        ServiceResult getNewCode();
+        ServiceResult GetDepartmentFilterPaging(string searchData, int pageIndex, int pageSize);
     }
 }

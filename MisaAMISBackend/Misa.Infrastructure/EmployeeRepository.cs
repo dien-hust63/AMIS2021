@@ -45,8 +45,6 @@ namespace Misa.Infrastructure
                 sql += "select count(*) from (select * from  public.func_get_employee_paging_filter(@search_data)) as filtertable;";
 
                 var response = _dbConnection.QueryMultiple(sql, param:dynamicParameters, commandType: CommandType.Text);
-
-                //var vmodel = Activator.CreateInstance<Employee>();
                 var employees = response.Read<Employee>().ToList();
                 var totalRecord = response.Read<int>().FirstOrDefault();
                 var totalPage = Math.Ceiling((double)totalRecord / pageSize);

@@ -153,27 +153,39 @@ namespace Misa.Infrastructure
         /// <returns>số bản ghi được thêm</returns>
         /// CreatedBy: nvdien(17/8/2021)
         /// ModifiedBy: nvdien(17/8/2021)
-        public  TEntity Insert(TEntity entity)
+        public  object Insert(TEntity entity)
         {
-            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            try
             {
-                DynamicParameters dynamicParameters = new DynamicParameters();
-                var properties = entity.GetType().GetProperties();
-                
-                foreach (var property in properties)
+                using (_dbConnection = new NpgsqlConnection(_connectionString))
                 {
-                    if (property.IsDefined(typeof(MisaNotMap), false)) continue;
-                    var propName = property.Name;
-                    var propValue = property.GetValue(entity);
-                    dynamicParameters.Add($"@{propName}", propValue);
+                    DynamicParameters dynamicParameters = new DynamicParameters();
+                    var properties = entity.GetType().GetProperties();
 
+                    foreach (var property in properties)
+                    {
+                        if (property.IsDefined(typeof(MisaNotMap), false)) continue;
+                        var propName = property.Name;
+                        var propValue = property.GetValue(entity);
+                        if (propName == $"{_className}_id")
+                        {
+                            propValue = Guid.NewGuid();
+                            entity.GetType().GetProperty(propName).SetValue(entity, propValue);
+
+                        }
+                        dynamicParameters.Add($"@{propName}", propValue);
+
+                    }
+                    var proceduce = $"func_insert_{_className}";
+                    var rowEffects = _dbConnection.Execute(proceduce, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+                    return entity;
                 }
-                var proceduce = $"func_insert_{_className}";
-                var rowEffects = _dbConnection.Execute(proceduce, param: dynamicParameters, commandType: CommandType.StoredProcedure);
-                var sql = $"select * from public.{_className} order by created_date desc limit 1";
-                var insertContent = _dbConnection.Query<TEntity>(sql, CommandType.Text).Single();
-                return insertContent;
             }
+            catch (Exception)
+            {
+                throw;
+            }
+           
         }
 
         /// <summary>

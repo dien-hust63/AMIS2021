@@ -8,24 +8,17 @@ using System.Threading.Tasks;
 
 namespace Misa.ApplicationCore.Interfaces.Repository
 {
-    public interface IWarehouseRepository : IBaseRepository<Warehouse>
+    public interface IDepartmentRepository : IBaseRepository<Department>
     {
-        /// <summary>
-        /// Lọc và phân trang dữ liệu kho
+         /// <summary>
+        /// Lọc và phân trang dữ liệu đơn vị
         /// </summary>
-        /// <param name="warehouseFilter">giá trị tìm kiếm</param>
+        /// <param name="searchData">giá trị tìm kiếm</param>
         /// <param name="pageIndex">index trang</param>
         /// <param name="pageSize">số bản ghi trên trang</param>
         /// <returns></returns>
         /// author: nvdien(27/8/2021)
         /// modifiedBy: nvdien(27/8/2021)
-        object GetWarehouseFilterPaging(string warehouseFilter, int pageIndex, int pageSize);
-
-        /// <summary>
-        /// Lấy mã mới
-        /// </summary>
-        /// <returns></returns>
-        /// CreatedBy: nvdien(24/9/2021)
-        Warehouse getNewCode();
+        object GetDepartmentFilterPaging(string searchData, int pageIndex, int pageSize);
     }
 }

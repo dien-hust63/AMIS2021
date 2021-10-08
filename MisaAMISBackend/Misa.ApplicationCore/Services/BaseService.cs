@@ -59,7 +59,7 @@ namespace Misa.ApplicationCore.Services
 
                 throw;
             }
-            
+
         }
 
         //// <summary>
@@ -69,11 +69,16 @@ namespace Misa.ApplicationCore.Services
         /// <returns></returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        public ServiceResult DeleteMultiple(List<Guid> entityIds)
+        public virtual ServiceResult DeleteMultiple(List<Guid> entityIds)
         {
             try
             {
                 var serviceResult = new ServiceResult();
+                if(entityIds.Count() <= 0)
+                {
+                    serviceResult.IsValid = false;
+                    return serviceResult;
+                }
                 var rowEffects = _baseRepository.DeleteMultiple(entityIds);
                 serviceResult.Data = new
                 {
@@ -109,7 +114,7 @@ namespace Misa.ApplicationCore.Services
 
                 throw;
             }
-           
+
         }
 
         /// <summary>
@@ -132,7 +137,7 @@ namespace Misa.ApplicationCore.Services
 
                 throw;
             }
-            
+
         }
 
         /// <summary>
@@ -166,6 +171,7 @@ namespace Misa.ApplicationCore.Services
                 }
                 //Thêm dữ liệu
                 var contentInsert = _baseRepository.Insert(entity);
+
                 serviceResult.Data = new
                 {
                     Data = contentInsert,
@@ -178,7 +184,7 @@ namespace Misa.ApplicationCore.Services
 
                 throw;
             }
-           
+
         }
 
         /// <summary>
@@ -225,10 +231,8 @@ namespace Misa.ApplicationCore.Services
 
                 throw;
             }
-            
-        }
 
-        #region Private Method
+        }
 
 
         /// <summary>
@@ -238,7 +242,7 @@ namespace Misa.ApplicationCore.Services
         /// <returns>error object nếu dữ liệu không thỏa mãn, null nếu thỏa mãn</returns>
         /// CreatedBy: nvdien(27/8/2021)
         /// ModifiedBy: nvdien(27/8/2021)
-        private object ValidateData(TEntity entity, Guid? entityId = null)
+        public object ValidateData(TEntity entity, Guid? entityId = null)
         {
             //Kiểm tra các trường bắt buộc nhập
             var checkRequiredField = CheckRequiredField(entity);
@@ -294,7 +298,6 @@ namespace Misa.ApplicationCore.Services
             }
             return null;
         }
-        #endregion
         #endregion
     }
 }

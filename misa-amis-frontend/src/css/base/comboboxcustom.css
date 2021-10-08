@@ -52,8 +52,8 @@
             background-color: #e0e0e0;
         }
        
-        .combobox-custom-actions .btn-dropdown{
-            border-left: 1px solid #babec5;
+        .combobox-custom-actions .btn-add{
+            border-right: 1px solid #babec5;
         }
         .ms-combobox-custom--readonly .combobox-custom-content{
             background-color: #eff0f2;

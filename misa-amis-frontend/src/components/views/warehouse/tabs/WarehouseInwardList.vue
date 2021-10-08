@@ -8,10 +8,8 @@
           :class="{ 'ms-button--disabled': isDisabled }"
           @click="batchExecution($event)"
         >
-          <div class="ms-button-content" >
-            <div class="ms-button__text" >
-              Thực hiện hàng loạt
-            </div>
+          <div class="ms-button-content">
+            <div class="ms-button__text">Thực hiện hàng loạt</div>
             <div class="mi mi-16 mi-arrow-up--black"></div>
           </div>
         </div>
@@ -148,7 +146,7 @@ export default {
     BaseDropdown,
     BaseDateInput,
   },
- 
+
   data() {
     return {
       tableInwardListHeaders: this.$resourcesVN.tableInwardListHeaders,
@@ -442,8 +440,11 @@ export default {
     getSelectedRowList(selectedRowList) {
       if (selectedRowList.length > 1) {
         this.isDisabled = false;
+        console.log(selectedRowList);
         for (let i = 0; i < selectedRowList.length; ++i) {
-          this.listSelectedId.push(selectedRowList[i]["accountvoucher_id"]);
+          if (selectedRowList[i]["is_mention"] == 0) {
+            this.listSelectedId.push(selectedRowList[i]["accountvoucher_id"]);
+          }
         }
       } else {
         this.isDisabled = true;
@@ -462,17 +463,21 @@ export default {
     /**Ghi sổ hàng loạt */
     mentionMany(listId) {
       VoucherRepository.mentionMany(listId)
-        .then(() => {this.loadData()})
+        .then(() => {
+          this.loadData();
+        })
         .catch((response) => console.log(response));
     },
     /**Bỏ ghi hàng loạt */
-    unMentionMany(listId){
+    unMentionMany(listId) {
       VoucherRepository.unMentionMany(listId)
-        .then(() => {this.loadData()})
+        .then(() => {
+          this.loadData();
+        })
         .catch((response) => console.log(response));
     },
     /**cảnh báo xóa hàng loạt */
-    warningDeleteMany(){
+    warningDeleteMany() {
       let messageText = this.formatString(
         this.$resourcesVN.message.messageDeleteWarning,
         "những chứng từ này"
@@ -499,9 +504,27 @@ export default {
       });
     },
     /**Xóa hàng loạt */
-    deleteMultiple(listId){
-      VoucherRepository.deleteMultiple(listId).then(
-        ()=>{//thông báo xóa thành công
+    deleteMultiple(listId) {
+      if (listId.length <= 0) {
+        //show message
+        this.$eventBus.$emit("showMessageBox", {
+          icon: "mi-exclamation-warning-48",
+          messageText: this.$resourcesVN.message.messgaeDeleteAllMention,
+          buttons: [
+            {
+              feature: "center ms-button-primary",
+              callback: () => {
+                this.closeMessageBox();
+              },
+              value: "Đóng",
+            },
+          ],
+        });
+        return;
+      }
+      VoucherRepository.deleteMultiple(listId)
+        .then(() => {
+          //thông báo xóa thành công
           let toastMessageText = this.formatString(
             this.$resourcesVN.message.messageDeleteSuccess,
             `chứng từ`
@@ -511,19 +534,20 @@ export default {
             text: toastMessageText,
           });
           this.closeMessageBox();
-          this.loadData()}
-      ).catch(response => console.log(response))
+          this.loadData();
+        })
+        .catch((response) => console.log(response));
     },
     /**Nhân bản */
-    duplicateItem(rowContent){
+    duplicateItem(rowContent) {
       let voucherId = rowContent["accountvoucher_id"];
-       VoucherRepository.getVoucherDetail(voucherId)
+      VoucherRepository.getVoucherDetail(voucherId)
         .then((response) => {
           let mode = this.$resourcesVN.mode.DUPLICATE;
           this.$eventBus.$emit("showInwardDetail", mode, response.data.Data);
         })
         .catch((response) => console.log(response));
-    }
+    },
   },
   watch: {
     timeReportDropdownData(newValue) {
@@ -536,7 +560,9 @@ export default {
     //lấy danh sách chứng từ
     this.loadData();
     this.$eventBus.$on("loadVoucherTable", () => {
-      this.$nextTick(() => {this.loadData()});
+      this.$nextTick(() => {
+        this.loadData();
+      });
     });
   },
   destroyed() {

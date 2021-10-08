@@ -125,8 +125,32 @@ namespace Misa.ApplicationCore.Entities
         /// Danh sách các đơn vị tính
         /// </summary>
         [MisaNotMap]
-        public string units { get; set; }
+        public List<CommodityUnit> units { get; set; }
+        /// <summary>
+        /// ID đơn vị hiện tại
+        /// </summary>
+        public Guid? unit_id { get; set; }
+        /// <summary>
+        /// Tên đơn vị tính hiện tại
+        /// </summary>
+        [MisaNotMap]
+        public string unit_name { get; set; }
+        /// <summary>
+        /// Trạng thái đơn vị tính
+        /// </summary>
+        [MisaNotMap]
+        public int is_main_unit { get; set; }
 
+        /// <summary>
+        /// Tỉ lệ so với đơn vị tính chính
+        /// </summary>
+        [MisaNotMap]
+        public int rate { get; set; }
+        /// <summary>
+        /// Đơn vị tính chính
+        /// </summary>
+        [MisaNotMap]
+        public string main_unit { get; set; }
         /// <summary>
         /// Trạng thái 
         /// </summary>

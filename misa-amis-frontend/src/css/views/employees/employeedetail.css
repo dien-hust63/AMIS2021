@@ -120,6 +120,9 @@
 .row-input-third{
     margin-bottom: 30px;
 }
-
+.employee-popup .space-insert{
+    height: 30px;
+    visibility: hidden;
+}
 
 

@@ -54,5 +54,33 @@ namespace Misa.Web.Controllers
             }
 
         }
+
+        /// <summary>
+        /// Lấy mã mới
+        /// </summary>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(3/10/2021)
+        [HttpGet("NewCode")]
+        public IActionResult getNewCode()
+        {
+            try
+            {
+                var serviceResult = _warehouseService.getNewCode();
+                return Ok(serviceResult.Data);
+            }
+            catch (Exception ex)
+            {
+                var errorObj = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = Resources.Exception_ErrorMsg,
+                    errorCode = "misa-001",
+                    moreInfo = "https://openapi.misa.com.vn/errorcode/misa-001",
+                    traceId = "ba9587fd-1a79-4ac5-a0ca-2c9f74dfd3fb"
+                };
+
+                return StatusCode(500, errorObj);
+            }
+        }
     }
 }

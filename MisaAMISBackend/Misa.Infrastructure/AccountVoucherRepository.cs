@@ -107,9 +107,8 @@ namespace Misa.Infrastructure
 
                         dynamicParameters1.Add("@commodity_id", commodityId);
                         var sql2 = "select * from view_commodity_unit vcu2 where vcu2.commodity_id = @commodity_id order by vcu2.is_main_unit desc";
-                        var units = _dbConnection.Query<CommodityUnit>(sql2, param: dynamicParameters1, commandType: CommandType.Text);
-                        var unitList = JsonConvert.SerializeObject(units);
-                        item.units = String.Join(",", unitList);
+                        var units = _dbConnection.Query<CommodityUnit>(sql2, param: dynamicParameters1, commandType: CommandType.Text).ToList();
+                        item.units = units;
                         inwardDetail.Add(item);
                     }
                 }
@@ -231,24 +230,25 @@ namespace Misa.Infrastructure
                
                 //Thêm mới các hàng tiền (voucher detail)
                 var voucherDetailContent = data.in_inward_detail;
-               
-                for (int i = 0; i < voucherDetailContent.Count(); ++i)
+                if(voucherDetailContent.Count() > 0)
                 {
-                    var accountVoucherDetail = voucherDetailContent[i];
-                    DynamicParameters dynamicParameters2 = new DynamicParameters();
-                    var properties2 = accountVoucherDetail.GetType().GetProperties();
-                    foreach (var property in properties2)
+                    for (int i = 0; i < voucherDetailContent.Count(); ++i)
                     {
-                        if (property.IsDefined(typeof(MisaNotMap), false)) continue;
-                        var propName = property.Name;
-                        var propValue = property.GetValue(accountVoucherDetail);
-                        dynamicParameters2.Add($"@{propName}", propValue);
+                        var accountVoucherDetail = voucherDetailContent[i];
+                        DynamicParameters dynamicParameters2 = new DynamicParameters();
+                        var properties2 = accountVoucherDetail.GetType().GetProperties();
+                        foreach (var property in properties2)
+                        {
+                            if (property.IsDefined(typeof(MisaNotMap), false)) continue;
+                            var propName = property.Name;
+                            var propValue = property.GetValue(accountVoucherDetail);
+                            dynamicParameters2.Add($"@{propName}", propValue);
 
+                        }
+                        var funcInsertDetail = $"func_insert_accountvoucherdetail";
+                        var rowEffect = connection.Execute(funcInsertDetail, param: dynamicParameters2, commandType: CommandType.StoredProcedure);
                     }
-                    var funcInsertDetail = $"func_insert_accountvoucherdetail";
-                    var rowEffect = connection.Execute(funcInsertDetail, param: dynamicParameters2, commandType: CommandType.StoredProcedure);
                 }
-
                 transaction.Commit();
                 return data;
             }
@@ -256,6 +256,7 @@ namespace Misa.Infrastructure
             {
 
                 if (transaction != null)
+
                 {
                     transaction.Rollback();
                     return null;
@@ -267,6 +268,14 @@ namespace Misa.Infrastructure
                 if (connection != null) connection.Close();
             }
         }
+        /// <summary>
+        /// sửa chứng từ
+        /// </summary>
+        /// <param name="accountVoucherID"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(6/10/2021)
+        /// ModifiedBu: nvdien(6/10/2021)
         public object updateAccountVoucher(Guid accountVoucherID, AccountVoucherData data)
         {
             NpgsqlConnection connection = null;
@@ -300,12 +309,6 @@ namespace Misa.Infrastructure
                     var accountVoucherDetail = voucherDetailContent[i];
                     var accountVoucherDetailId = accountVoucherDetail.accountvoucherdetail_id;
                     var state = accountVoucherDetail.state;
-                    if(state == (int)Mode.Add)
-                    {
-                        var newId = Guid.NewGuid();
-                        accountVoucherDetail.accountvoucherdetail_id = newId;
-                        data.in_inward_detail[i].accountvoucherdetail_id = newId;
-                    }
                     switch (state)
                     {
                         case (int)Mode.Add:
@@ -339,6 +342,7 @@ namespace Misa.Infrastructure
                             var rowEffect2 = connection.Execute(funcUpdateDetail, param: dynamicParameters3, commandType: CommandType.StoredProcedure);
                             break;
                         case (int)Mode.Delete:
+                            
                             //xóa hàng tiền
                             var sqlCommand = $"DELETE FROM public.accountvoucherdetail WHERE accountvoucherdetail_id = @accountvoucherdetail_id";
                             DynamicParameters parameters = new DynamicParameters();
@@ -348,16 +352,18 @@ namespace Misa.Infrastructure
                     }
                    
                 }
-                var sqlSlect = $"select * from public.view_accountvoucherdetail_commodity ac where ac.accountvoucher_id = @accountvoucher_id order by ac.created_date asc;";
-                DynamicParameters parametersSelect = new DynamicParameters();
-                parametersSelect.Add($"@accountvoucher_id", voucherContent.accountvoucher_id);
-                var responseDetailContent = connection.Query<AccountVoucherDetail>(sqlSlect, param: parametersSelect);
                 transaction.Commit();
-                return new
+                for (int i = data.in_inward_detail.Count - 1; i >= 0; i--)
                 {
-                    in_inward = voucherContent,
-                    in_inward_detail = responseDetailContent,
-                };
+                    var accountVoucherDetail = data.in_inward_detail[i];
+                    var accountVoucherDetailId = accountVoucherDetail.accountvoucherdetail_id;
+                    var state = accountVoucherDetail.state;
+                    if (state == (int)Mode.Delete && (accountVoucherDetail.accountvoucherdetail_id == accountVoucherDetailId))
+                    {
+                        data.in_inward_detail.RemoveAt(i);
+                    }
+                }
+                return data;
             }
             catch (Exception)
             {

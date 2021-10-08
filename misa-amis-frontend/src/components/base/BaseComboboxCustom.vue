@@ -66,6 +66,12 @@ export default {
         return false;
       },
     },
+    hasHeader: {
+      type: Boolean,
+      default() {
+        return true;
+      },
+    },
     hideDropdownIcon: {
       type: Boolean,
       default() {
@@ -136,6 +142,7 @@ export default {
         };
         this.position = elementPos;
         if (this.comboboxProps.mode == "api") {
+          let hasHeader = 'hasHeader' in this.comboboxProps ? this.comboboxProps.hasHeader: true;
           axios
             .get(this.formatString(this.comboboxProps.api, "", 1, 20))
             .then((response) => {
@@ -143,6 +150,7 @@ export default {
                 tableHeaders: this.comboboxProps.tableHeaders,
                 tableContents: response.data[this.comboboxProps.tableObject],
                 hasFooter: this.hasFooter,
+                hasHeader: hasHeader,
                 position: elementPos,
                 comboboxProps: this.comboboxProps,
               };
@@ -174,7 +182,6 @@ export default {
     },
     /**Hiển thị form thêm */
     showAddForm() {
-      
       this.$emit("showAddForm");
     },
     /**filter combobox khách hàng */
@@ -262,8 +269,7 @@ export default {
           this.$resourcesVN.message.messageRequired,
           this.comboboxProps.fieldName
         );
-      }
-      else{
+      } else {
         this.errrorMessage = "";
       }
     },
@@ -282,8 +288,19 @@ export default {
           event.target.select();
           self.isActive = true;
         },
-        blur: function () {
-          self.isActive = false;
+        blur: function (event) {
+          if (
+            self.comboboxProps.isRequired &&
+            (event.target.value === null ||event.target.value === "")
+          ) {
+            self.isError = true;
+            self.errorMessage = self.formatString(
+              self.$resourcesVN.message.messageRequired,
+              self.comboboxProps.fieldName
+            );
+          } else {
+            self.errrorMessage = "";
+          }
         },
         mouseover: function (event) {
           if (self.isError) {
@@ -307,26 +324,27 @@ export default {
       });
     },
   },
-  watch:{
-    value: function(newvalue){
-      if(this.comboboxProps.isRequired &&
-        (newvalue != null)){
+  watch: {
+    value: function (newvalue) {
+      console.log(newvalue);
+      if (this.comboboxProps.isRequired && newvalue != null) {
         this.errorMessage = "";
         this.isError = false;
         this.$eventBus.$emit("hideTooltip");
       }
-    }
+    },
   },
   created() {
     this.$eventBus.$on("validateCombobox" + this.formName, () => {
       this.validateCombobox();
       if (this.comboboxProps.isRequired) {
-        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage);
+        let element = this.$refs.input;
+        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage, element);
       }
     });
   },
   destroyed() {
-    this.$eventBus.$off("validateCombobox"+this.formName);
+    this.$eventBus.$off("validateCombobox" + this.formName);
   },
 };
 </script>

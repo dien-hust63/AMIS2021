@@ -227,6 +227,7 @@ namespace Misa.ApplicationCore.Services
                 for (int i=0; i< lengthDetail; ++i)
                 {
                     data.in_inward_detail[i].accountvoucher_id = data.in_inward.accountvoucher_id;
+                    data.in_inward_detail[i].accountvoucherdetail_id = Guid.NewGuid();
                 }
                 var resultData = _accounVoucherRepository.addAccountVoucher(data);
                 if(resultData != null)
@@ -314,7 +315,13 @@ namespace Misa.ApplicationCore.Services
                 }
                 #endregion
                 /**Sửa phiếu nhập*/
-
+                for (int i = 0; i < lengthDetail; ++i)
+                {   
+                    if(data.in_inward_detail[i].state == (int)Mode.Add)
+                    {
+                        data.in_inward_detail[i].accountvoucherdetail_id = Guid.NewGuid();
+                    }
+                }
                 var resultData = _accounVoucherRepository.updateAccountVoucher(accountVoucherID, data);
                 if (resultData != null)
                 {

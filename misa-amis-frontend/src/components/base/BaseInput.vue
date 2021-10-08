@@ -68,7 +68,7 @@ export default {
       type: String,
       default: "",
     },
-     formName: {
+    formName: {
       type: String,
       default: "",
     },
@@ -124,9 +124,16 @@ export default {
           self.$eventBus.$emit("hideTooltip");
           self.$emit("input", event.target.value);
         },
-        // blur: function (event) {
-        //   console.log(event);
-        // },
+        blur: function (event) {
+          if (self.required && (event.target.value === null || event.target.value === "")) {
+            self.isInputError = true;
+            self.errorMessage = self.formatString(
+              message.messageRequired,
+              self.fieldName
+            );
+          }
+          self.$emit('blurInput', event.target.value);
+        },
         mouseover: function (event) {
           if (self.isInputError) {
             // hiển thị tooltip báo lỗi
@@ -165,13 +172,13 @@ export default {
     //     if (newValue != "") {
     //       this.isInputError = false;
     //     }
-    //     if (oldValue != "" && newValue == "" && this.inputReset == false) {
+    //     if (oldValue != "" && newValue == "") {
     //       this.isInputError = true;
-    //       this.errorMessage = this.formatString(message.messageRequired, this.label);
+    //       this.errorMessage = this.formatString(
+    //         message.messageRequired,
+    //         this.fieldName
+    //       );
     //     }
-    //   }
-    //   if(this.$attrs.type === "email" && this.validateEmail(newValue) || newValue == ""){
-    //      this.isInputError = false;
     //   }
     // },
     inputCheck: function () {
@@ -189,15 +196,20 @@ export default {
     },
   },
   created() {
-    this.$eventBus.$on("validateInput"+this.formName, () => {
+    this.$eventBus.$on("validateInput" + this.formName, () => {
       this.validateInput();
       if (this.isInputError) {
-        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage);
+        let element = this.$refs.input;
+        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage, element);
       }
     });
+    this.$eventBus.$on("showErrorInput" + this.inputName, ()=>{
+      console.log("error custom");
+    })
   },
   destroyed() {
-    this.$eventBus.$off("validateInput"+this.formName);
+    this.$eventBus.$off("validateInput" + this.formName);
+    this.$eventBus.$off("showErrorInput"+this.inputName);
   },
 };
 </script>

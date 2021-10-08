@@ -45,6 +45,9 @@ namespace MisaCukcukApi
             services.AddScoped<ICommodityRepository, CommodityRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAccountVoucherDetailRepository, AccountVoucherDetailRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<ICommodityGroupRepository, CommodityGroupRepository>();
+            services.AddScoped<IUnitRepository, UnitRepository>();
             //Service DI
             services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
             services.AddScoped<IEmployeeService, EmployeeService>();
@@ -53,6 +56,9 @@ namespace MisaCukcukApi
             services.AddScoped<IWarehouseService, WarehouseService>();
             services.AddScoped<ICommodityService, CommodityService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<ICommodityGroupService, CommodityGroupService>();
+            services.AddScoped<IUnitService, UnitService>();
 
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {

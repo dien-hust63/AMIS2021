@@ -57,7 +57,7 @@ export default {
       VoucherRepository.getNewVoucherCode().then((response) => {
         let newVoucherCode = response.data;
         this.$eventBus.$emit('showInwardDetail', this.$resourcesVN.mode.ADD, newVoucherCode);
-      })
+      }).catch(response => console.log(response))
        
     }
   },

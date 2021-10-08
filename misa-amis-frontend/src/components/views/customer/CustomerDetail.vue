@@ -68,12 +68,12 @@
             </div>
             <div class="row-input--right w-1/2">
               <base-combobox-custom
-                label="Nhân viên bán hàng"
-                @showComboDropdown="showEmployeeDropdownPanel"
-                @showAddForm="addEmployee"
-                v-model="employeeComboboxValue"
-                @keyup="searchEmployeeCombobox($event)"
-              />
+                  label="Nhân viên bán hàng"
+                  v-model="customerContent['employee_name']"
+                  :comboboxProps="employeeComboboxProps"
+                  :hasFooter="false"
+                  @getDataEventBus="bindingEmployeeCombobox"
+                />
             </div>
           </div>
           <div class="w-full contact-content">
@@ -169,10 +169,26 @@ export default {
       timeDelaySearch: null,
       employeeComboboxValue: "",
       customerContent: {},
+      employeeComboboxProps: {
+        tableHeaders: this.$resourcesVN.customerEmployeeComboboxHeaders,
+        api: this.$resourcesVN.apiList.employeePagingFilter,
+        tableObject: "Employees",
+        mode: "api",
+      },
     };
   },
   methods: {
-    /**lưu khách hàng */
+    /**
+     * Bind employee combobox
+     * CreatedBy; nvdien(5/10/2021)
+     */
+    bindingEmployeeCombobox(content){
+      this.$set(this.customerContent, "employee_name", content["employee_name"]);
+      this.$set(this.customerContent, "employee_id", content["employee_id"]);
+    },
+    /**lưu khách hàng 
+     * CreatedBy: nvdien(5/10/2021)
+    */
     saveCustomer() {
       AccountObjectRepository.post(this.customerContent)
         .then((response) => {

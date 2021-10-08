@@ -43,6 +43,12 @@ namespace Misa.ApplicationCore.Entities
         public string commodity_name { get; set; }
 
         /// <summary>
+        /// Mã hàng hóa
+        /// </summary>
+        [MisaNotMap]
+        public string commodity_code { get; set; }
+
+        /// <summary>
         /// Đơn vị tính
         /// </summary>
         [MisaNotMap]

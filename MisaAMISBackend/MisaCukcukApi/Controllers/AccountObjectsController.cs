@@ -56,7 +56,7 @@ namespace Misa.Web.Controllers
         /// <returns></returns>
         /// CreatedBy: nvdien(3/10/2021)
         [HttpGet("NewCode")]
-        public IActionResult getNewVoucherCode()
+        public IActionResult getNewCode()
         {
             try
             {

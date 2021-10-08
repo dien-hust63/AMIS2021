@@ -10,13 +10,27 @@ var apiList = {
   employeePagingFilter:"https://localhost:44350/api/v1/Employees/filter?searchData={0}&pageIndex={1}&pageSize={2}",
   warehousePagingFilter:"https://localhost:44350/api/v1/Warehouses/filter?searchData={0}&pageIndex={1}&pageSize={2}",
   commodityPagingFilter:"https://localhost:44350/api/v1/Commoditys/filter?searchData={0}&pageIndex={1}&pageSize={2}",
-  accountPagingFilter:"https://localhost:44350/api/v1/Accounts/filter?searchData={0}&pageIndex={1}&pageSize={2}"
+  accountPagingFilter:"https://localhost:44350/api/v1/Accounts/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  departmentPagingFilter:"https://localhost:44350/api/v1/Departments/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  commodityGroupFilterPaging: "https://localhost:44350/api/v1/CommodityGroups/filter?searchData={0}&pageIndex={1}&pageSize={2}",
+  commodityUnitFilterPaging:"https://localhost:44350/api/v1/Units/filter?searchData={0}&pageIndex={1}&pageSize={2}"
 }
 var tableCustomerHeaders = [
   { fieldName: 'account_object_code', label: 'Mã khách hàng', textAlign: 'text-left', type: "normal", width: '100px'},
   { fieldName: 'account_object_name', label: 'Tên khách hàng', textAlign: 'text-left', type: "normal", width: '200px' },
   { fieldName: 'contact_address', label: 'Địa chỉ', textAlign: 'text-left', type: "normal" ,width: '250px'},
 ];
+var departmentComboboxHeaders = [
+  { fieldName: 'department_code', label: 'Mã đơn vị', textAlign: 'text-left', type: "normal", width: '150px'},
+  { fieldName: 'department_name', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '200px' },
+]
+var commodityGroupComboboxHeaders =  [
+  { fieldName: 'commodity_group_code', label: 'Mã nhóm vật tư, hàng hóa, dịch vụ', textAlign: 'text-left', type: "normal", width: '250px'},
+  { fieldName: 'commodity_group_name', label: 'Tên nhóm vật tư, hàng hóa, dịch vụ', textAlign: 'text-left', type: "normal", width: '250px' },
+]
+var commodityUnitComboboxHeaders =  [
+  { fieldName: 'unit_name', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '145px'},
+]
 var warehouseComboboxHeaders = [
   { fieldName: 'warehouse_code', label: 'Mã kho', textAlign: 'text-left', type: "normal", width: '100px'},
   { fieldName: 'warehouse_name', label: 'Tên kho', textAlign: 'text-left', type: "normal", width: '200px' },
@@ -29,13 +43,22 @@ var accountComboboxHeaders = [
   { fieldName: 'account_number', label: 'Mã tài khoản', textAlign: 'text-left', type: "normal", width: '100px'},
   { fieldName: 'account_name', label: 'Tên tài khoản', textAlign: 'text-left', type: "normal", width: '200px' },
 ]
+var  CommodityUnitComboboxProps = {
+  tableHeaders: commodityUnitComboboxHeaders,
+  api: apiList['commodityUnitFilterPaging'],
+  tableObject: "Units",
+  valueField: "unit_name",
+  mode:"api",
+  hasHeader:false
+}
 var comboboxAccountProps = {
   tableHeaders: accountComboboxHeaders,
   api: apiList['accountPagingFilter'],
   tableObject: "Accounts",
   isRequired: true,
   mode:"api",
-  fieldName: "Tài khoản"
+  fieldName: "Tài khoản",
+  addForm:"AccountDetail"
 }
 var comboboxWarehouseProps = {
   tableHeaders: warehouseComboboxHeaders,
@@ -43,7 +66,8 @@ var comboboxWarehouseProps = {
   tableObject: "Warehouses",
   isRequired: true,
   mode:"api",
-  fieldName: "Kho"
+  fieldName: "Kho",
+  addForm:"WarehouseAdd"
 }
 var comboboxCommodityProps = {
   tableHeaders: commodityComboboxHeaders,
@@ -51,13 +75,25 @@ var comboboxCommodityProps = {
   tableObject: "Commoditys",
   isRequired: true,
   mode:"api",
-  fieldName: "Mã hàng"
+  fieldName: "Mã hàng",
+  addForm:"CommodityGroup"
 }
-// var comboboxUnitProps = {
-//   tableHeaders: [{ fieldName: 'units', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '100px'}],
-//   tableContents: [{'units':""}],
-//   mode:"manual"
-// }
+var comboboxUnitProps = {
+  tableHeaders: [{ fieldName: 'unit_name', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '100px'}],
+  tableContents: [],
+  mode:"manual",
+  contentFields:"units"
+}
+var calculationList =[
+  {"calculate_name": "Phép nhân", "calculate_value":1},
+  {"calculate_name":"Phép chia", "calculate_value":2}
+]
+var comboboxCalculateProps = {
+  tableHeaders: [{ fieldName: 'calculate_name', label: 'Phép tính', textAlign: 'text-left', type: "normal", width: '150px'}],
+  tableContents: calculationList,
+  mode:"manual",
+  contentFields:"calculatation"
+}
 
 module.exports = {
   apiList: apiList,
@@ -98,7 +134,7 @@ module.exports = {
     { fieldName: 'warehouse_code',dataField:'warehouse_id' ,label: 'KHO', textAlign: 'text-left', type: "comboboxapi" , combobox:comboboxWarehouseProps},
     { fieldName: 'debit_account_number',dataField:'debit_account_id', label: 'TK NỢ', textAlign: 'text-left', type: "comboboxapi", combobox:comboboxAccountProps},
     { fieldName: 'credit_account_number', dataField:'credit_account_id',label: 'TK CÓ', textAlign: 'text-left', type: "comboboxapi",combobox:comboboxAccountProps },
-    // { fieldName: 'units', label: 'DVT', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxUnitProps},
+    { fieldName: 'unit_name',dataField:"unit_id", label: 'DVT', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxUnitProps},
     { fieldName: 'quantity', label: 'SỐ LƯỢNG', textAlign: 'text-right', type: "input",format: "number"},
     { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-right', type: "input" ,format: "number"},
     { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-right', type: "input" ,format: "number"},
@@ -106,6 +142,14 @@ module.exports = {
     { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-center', type: "date" ,format:"date"},
     { type:'delete' }
 
+  ],
+  /**mảng chứa thông tin tiêu đề bảng unit trong form thêm hàng hóa */
+  tableUnitHeaders:[
+    { fieldName: 'unit_name', dataField:'unit_id', label: 'ĐƠN VỊ CHUYỂN ĐÔI', textAlign: 'text-left', type: "comboboxapi", combobox:CommodityUnitComboboxProps},
+    { fieldName: 'rate', label: 'TỶ LỆ CHUYỂN ĐỔI', textAlign: 'text-right', type: "input" },
+    { fieldName: 'calculate_name' ,dataField:'calculate_value',label: 'PHÉP TÍNH', textAlign: 'text-left', type: "comboboxmanual" , combobox:comboboxCalculateProps },
+    { fieldName: 'description', label: 'MÔ TẢ', textAlign: 'text-left', type:"input"},
+    { type:'delete' }
   ],
   /**mảng chứa thông tin tiêu đề của combo dropdown khách hàng */
   tableCustomerHeaders:tableCustomerHeaders,
@@ -117,6 +161,11 @@ module.exports = {
   InwardEmployeeComboboxHeaders:[
     { fieldName: 'employee_code', label: 'Mã nhân viên', textAlign: 'text-left', type: "normal", width: '100px'},
     { fieldName: 'employee_name', label: 'Tên nhân viên', textAlign: 'text-left', type: "normal", width: '200px' },
+    { fieldName: 'department_name', label: 'Tên đơn vị', textAlign: 'text-left', type: "normal", width: '200px' },
+  ],
+  customerEmployeeComboboxHeaders:[
+    { fieldName: 'employee_code', label: 'Mã nhân viên', textAlign: 'text-left', type: "normal", width: '170px'},
+    { fieldName: 'employee_name', label: 'Tên nhân viên', textAlign: 'text-left', type: "normal", width: '200px' },
   ],
   /**combobox hàng hóa*/
   customerComboboxProps: {
@@ -125,9 +174,39 @@ module.exports = {
     tableObject: "AccountObjects",
     valueField: "account_object_name",
   },
+  commodityGroupComboboxProps: {
+    tableHeaders: commodityGroupComboboxHeaders,
+    api: apiList['commodityGroupFilterPaging'],
+    tableObject: "CommodityGroups",
+    valueField: "commodity_group_name",
+    mode:"api"
+  },
+  comboboxAccountProps:comboboxAccountProps,
+  CommodityUnitComboboxProps:CommodityUnitComboboxProps,
+  comboboxWarehouseProps:comboboxWarehouseProps,
   tableCommodityComboboxHeaders:[
     { fieldName: 'commodity_code', label: 'Mã hàng', textAlign: 'text-left', type: "normal", width: '100px'},
     { fieldName: 'commodity_name', label: 'Tên hàng', textAlign: 'text-left', type: "normal", width: '300px' },
+  ],
+  
+  /**combobox đơn vị */
+  departmentComboboxProps:{
+    tableHeaders: departmentComboboxHeaders,
+    api: apiList['departmentPagingFilter'],
+    tableObject: "Departments",
+    valueField: "department_name",
+    mode: "api"
+  },
+  /**table unit content */
+  tableUnitContents:[
+    {
+      'unit_name':'',
+      'rate':1,
+      'calculate_name':'Phép nhân',
+      'calculate_value':1,
+      'description':'',
+      'calculatation':calculationList,
+    }
   ],
   /**table inward detail */
   tableInwardDetailContents:[
@@ -137,7 +216,7 @@ module.exports = {
       'warehouse_code':'',
       'debit_account_code':'',
       'credit_account_code':'',
-      'units':'',
+      'units':[],
       'quantity':1,
       'debit_amount':0,
       'total_price':0,
@@ -153,7 +232,7 @@ module.exports = {
       'warehouse_code':'',
       'debit_account_code':'',
       'credit_account_code':'',
-      'units':'',
+      'units':[],
       'quantity':1,
       'debit_amount':0,
       'total_price':0,
@@ -172,7 +251,9 @@ module.exports = {
     messageDateFuture: "{0} vượt quá ngày hiện tại",
     messageDeleteWarning: "Bạn có chắc muốn xóa {0} không?",
     messageDeleteSuccess: "xóa {0} thành công",
-    messageVoucherDate: "Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ. Xin vui lòng kiểm tra lại."
+    messageVoucherDate: "Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ. Xin vui lòng kiểm tra lại.",
+    messageSaveSuccess: "Cất thành công dữ liệu",
+    messgaeDeleteAllMention: "Các chứng từ bạn chọn đều đã ghi sổ"
   },
   mode: {
     ADD: 0,

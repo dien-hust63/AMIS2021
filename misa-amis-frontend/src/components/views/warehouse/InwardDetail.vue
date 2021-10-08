@@ -112,6 +112,9 @@
                     type="date"
                     v-model="masterContent['mathematics_date']"
                     :class="{ 'ms-input--readonly': isReadOnly }"
+                    :required="true"
+                    formName="InwardDetail"
+                    filedName="Ngày hạch toán"
                   />
                 </div>
                 <div class="row-input-right">
@@ -120,6 +123,9 @@
                     type="date"
                     v-model="masterContent['voucher_date']"
                     :class="{ 'ms-input--readonly': isReadOnly }"
+                    :required="true"
+                    formName="InwardDetail"
+                    fieldName="Ngày chứng từ"
                   />
                 </div>
                 <div class="row-input-right voucher-number">
@@ -193,7 +199,11 @@
       </div>
       <div class="inward-detail-footer">
         <div class="left-group-button">
-          <base-button value="Hủy" class="ms-button-secondary" />
+          <base-button
+            value="Hủy"
+            class="ms-button-secondary"
+            @click="closeInwardDetail"
+          />
         </div>
         <div class="right-group-button">
           <div
@@ -320,11 +330,14 @@ export default {
       errorList: [],
       isValid: true,
       formName: "InwardDetail",
+      /**data clone */
+      dataClone: {},
     };
   },
   methods: {
     /**
      *hiển thị option cất
+     CreatedBy: nvdien(5/10/2021)
      */
     showAddOptions() {
       console.log("showAddOptions");
@@ -333,10 +346,58 @@ export default {
      * CreaedBy: nvdien(17/9/2021)
      */
     closeInwardDetail() {
+      /**Kiểm tra dữ liệu thay đổi */
+      var data = {
+        in_inward: this.masterContent,
+        in_inward_detail: this.tableInwardDetailContents,
+      };
+      // Kiểm tra đã thay đổi thì cảnh báo cất
+      if (
+        !this.deepEqualObject(data, this.dataClone, ["is_mention"]) &&
+        this.afterEdit
+      ) {
+        this.$eventBus.$emit("showMessageBox", {
+          icon: "mi-exclamation-question-48",
+          messageText: this.$resourcesVN.message.messageConfirmChange,
+          buttons: [
+            {
+              feature: "left ms-button-secondary",
+              callback: () => {
+                this.closeMessageBox();
+              },
+              value: "Hủy",
+            },
+            {
+              feature: "right-first ms-button-primary",
+              callback: () => {
+                this.saveVoucherDetail();
+              },
+              value: "Có",
+            },
+            {
+              feature: "right-second ms-button-secondary",
+              callback: () => {
+                this.closeMessageAndPopup();
+              },
+              value: "Không",
+            },
+          ],
+        });
+      } else {
+        //set button
+        this.hasSaveButton();
+        this.isReadOnly = false;
+        this.isShowInwardDetail = false;
+        //reset form
+        this.voucherDetailContents = [];
+        this.tableInwardDetailContents = [];
+        this.masterContent = [];
+      }
+    },
+    closeMessageAndPopup() {
+      this.closeMessageBox();
       //set button
-      this.afterSave = false;
-      this.afterEdit = true;
-      this.afterUnmention = false;
+      this.hasSaveButton();
       this.isReadOnly = false;
       this.isShowInwardDetail = false;
       //reset form
@@ -344,19 +405,27 @@ export default {
       this.tableInwardDetailContents = [];
       this.masterContent = [];
     },
-    /**Đóng message box */
+    /**Đóng message box
+     * CreatedBy: nvdien(5/10/2021)
+     */
     closeMessageBox() {
       this.$eventBus.$emit("hideMessageBox");
     },
-    /**Mở form Thêm mới khách hàng*/
+    /**Mở form Thêm mới khách hàng
+     * CreatedBy: nvdien(5/10/2021)
+     */
     showCustomerDetail() {
       this.$eventBus.$emit("showCustomerDetail");
     },
-    /**Mở form Thêm mới nhân viên*/
+    /**Mở form Thêm mới nhân viên
+     * CreatedBy: nvdien(5/10/2021)
+     */
     showEmployeeDetail() {
       this.$eventBus.$emit("showEmployeeDetail");
     },
-    /**Thêm dòng table */
+    /**Thêm dòng table
+     * createdBy:L nvdien(5/10/2021)
+     */
     addNewRow() {
       let totalRow = this.tableInwardDetailContents.length;
       if (totalRow > 0) {
@@ -424,10 +493,16 @@ export default {
       }
       this.closeMessageBox();
     },
-    /**Xóa 1 dòng */
+    /**Xóa 1 dòng
+     * @param index: index của dòng xóa
+     * CreatedBy: nvdien(5/10/2021)
+     */
     deleteRow(index) {
       let rowContent = this.tableInwardDetailContents[index];
-      if (rowContent["state"] == this.$resourcesVN.mode.EDIT) {
+      if (
+        "state" in rowContent &&
+        rowContent["state"] == this.$resourcesVN.mode.EDIT
+      ) {
         //chuyển state nội dung sang DELETE
         this.voucherDetailContents[index]["state"] =
           this.$resourcesVN.mode.DELETE;
@@ -458,12 +533,20 @@ export default {
         content["contact_address"]
       );
     },
-    /**bind lên combobox nhân viên */
+    /**bind lên combobox nhân viên
+     * CreatedBy: nvdien(5/10/2021)
+     */
     bindingEmployeeCombobox(content) {
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
       this.$set(this.masterContent, "employee_id", content["employee_id"]);
     },
-    /**gán lại nội dung table */
+    /**gán lại nội dung table
+     * @param index: index của dòng hiện tại trong băng
+     * @param header: thông tin cột trong bảng
+     * @param mode: loạt thông tin
+     * @param content: nội dung thay đổi
+     * CreatedBy: nvdien(5/20/2021)
+     */
     changeVoucherDetail(index, header, mode, content) {
       switch (mode) {
         case "input": {
@@ -478,19 +561,21 @@ export default {
             header.fieldName,
             inputContent
           );
-          //Nội dung
-          //Nếu state = 1 thì ms cập nhật nội dung
-          if (
-            this.tableInwardDetailContents[index].state ==
-              this.$resourcesVN.mode.EDIT &&
-            this.mode == this.$resourcesVN.mode.EDIT
-          ) {
-            this.$set(
-              this.voucherDetailContents[index],
-              header.fieldName,
-              content
-            );
-          }
+          /**Nội dung */
+            //#region Nội dung
+            //Nếu state giao diện = EDIT thì ms cập nhật nội dung
+            if (
+              this.tableInwardDetailContents[index].state ==
+                this.$resourcesVN.mode.EDIT &&
+              this.mode == this.$resourcesVN.mode.EDIT
+            ) {
+              let newChangeContent = Object.assign(
+                {},
+                this.tableInwardDetailContents[index]
+              );
+              newChangeContent["state"] = 1;
+              this.$set(this.voucherDetailContents, index, newChangeContent);
+            }
 
           break;
         }
@@ -499,32 +584,45 @@ export default {
             header.fieldName == "quantity" ||
             header.fieldName == "debit_amount"
           ) {
-            let quantity = this.covertStringtoNumber(content["quantity"]);
-            let debitMount = this.covertStringtoNumber(content["debit_amount"]);
-            let totalPrice = quantity * debitMount;
+            let firstVal = this.covertStringtoNumber(content);
+            let secondVal = 0;
+            if (header.fieldName == "quantity")
+              secondVal = this.covertStringtoNumber(
+                this.tableInwardDetailContents[index]["debit_amount"]
+              );
+            else {
+              secondVal = this.covertStringtoNumber(
+                this.tableInwardDetailContents[index]["quantity"]
+              );
+            }
+            let totalPrice = firstVal * secondVal;
             //Thay đổi thành tiền
             this.$set(
               this.tableInwardDetailContents[index],
               "total_price",
               this.formatSalary(totalPrice)
             );
-            //Nội dung
-            //Nếu state = 1 thì ms cập nhật nội dung
+            /**Nội dung */
+            //#region Nội dung
+            //Nếu state giao diện = EDIT thì ms cập nhật nội dung
             if (
               this.tableInwardDetailContents[index].state ==
                 this.$resourcesVN.mode.EDIT &&
               this.mode == this.$resourcesVN.mode.EDIT
             ) {
-              this.$set(
-                this.voucherDetailContents[index],
-                "total_price",
-                totalPrice
+              let newChangeContent = Object.assign(
+                {},
+                this.tableInwardDetailContents[index]
               );
+              newChangeContent["state"] = 1;
+              this.$set(this.voucherDetailContents, index, newChangeContent);
             }
           }
           if (header.fieldName == "total_price") {
-            let quantity = this.covertStringtoNumber(content["quantity"]);
-            let totalPrice = this.covertStringtoNumber(content["total_price"]);
+            let quantity = this.covertStringtoNumber(
+              this.tableInwardDetailContents[index]["quantity"]
+            );
+            let totalPrice = this.covertStringtoNumber(content);
             let debitAmount = (totalPrice * 1.0) / quantity;
             //Thay đổi thành tiền
             //Giao diện
@@ -533,18 +631,20 @@ export default {
               "debit_amount",
               this.formatSalary(debitAmount)
             );
-            //Nội dung
-            //Nếu state = 1 thì ms cập nhật nội dung
+            /**Nội dung */
+            //#region Nội dung
+            //Nếu state giao diện = EDIT thì ms cập nhật nội dung
             if (
               this.tableInwardDetailContents[index].state ==
                 this.$resourcesVN.mode.EDIT &&
               this.mode == this.$resourcesVN.mode.EDIT
             ) {
-              this.$set(
-                this.voucherDetailContents[index],
-                "debit_amount",
-                debitAmount
+              let newChangeContent = Object.assign(
+                {},
+                this.tableInwardDetailContents[index]
               );
+              newChangeContent["state"] = 1;
+              this.$set(this.voucherDetailContents, index, newChangeContent);
             }
           }
           break;
@@ -568,19 +668,20 @@ export default {
               header.dataField,
               content["account_id"]
             );
-            //Nội dung
-            //cập nhật ID của chính combobox đó
-            //Nếu state = 1 thì ms cập nhật nội dung
+            /**Nội dung */
+            //#region Nội dung
+            //Nếu state giao diện = EDIT thì ms cập nhật nội dung
             if (
               this.tableInwardDetailContents[index].state ==
                 this.$resourcesVN.mode.EDIT &&
               this.mode == this.$resourcesVN.mode.EDIT
             ) {
-              this.$set(
-                this.voucherDetailContents[index],
-                header.dataField,
-                content["account_id"]
+              let newChangeContent = Object.assign(
+                {},
+                this.tableInwardDetailContents[index]
               );
+              newChangeContent["state"] = 1;
+              this.$set(this.voucherDetailContents, index, newChangeContent);
             }
             return;
           }
@@ -637,6 +738,22 @@ export default {
               "debit_amount",
               content["debit_amount"]
             );
+            //Đơn vị tính
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "units",
+              content["units"]
+            );
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "unit_name",
+              content["unit_name"]
+            );
+            this.$set(
+              this.tableInwardDetailContents[index],
+              "unit_id",
+              content["unit_id"]
+            );
             //#endregion
             /**Nội dung */
             //#region Nội dung
@@ -662,19 +779,55 @@ export default {
             header.fieldName,
             newContent
           );
-          //Nội dung
-          //cập nhật ID của chính combobox đó
-          //Nếu state = 1 thì ms cập nhật nội dung
+          this.$set(
+            this.tableInwardDetailContents[index],
+            header.dataField,
+            content[header.dataField]
+          );
+          /**Nội dung */
+          //#region Nội dung
+          //Nếu state giao diện = EDIT thì ms cập nhật nội dung
           if (
             this.tableInwardDetailContents[index].state ==
               this.$resourcesVN.mode.EDIT &&
             this.mode == this.$resourcesVN.mode.EDIT
           ) {
+            let newChangeContent = Object.assign(
+              {},
+              this.tableInwardDetailContents[index]
+            );
+            newChangeContent["state"] = 1;
+            this.$set(this.voucherDetailContents, index, newChangeContent);
+          }
+
+          break;
+        }
+        case "comboboxmanual": {
+          if (header.fieldName == "unit_name") {
             this.$set(
-              this.voucherDetailContents[index],
+              this.tableInwardDetailContents[index],
+              header.fieldName,
+              content[header.fieldName]
+            );
+            this.$set(
+              this.tableInwardDetailContents[index],
               header.dataField,
               content[header.dataField]
             );
+          }
+
+          //Nếu state giao diện = EDIT thì ms cập nhật nội dung
+          if (
+            this.tableInwardDetailContents[index].state ==
+              this.$resourcesVN.mode.EDIT &&
+            this.mode == this.$resourcesVN.mode.EDIT
+          ) {
+            let newChangeContent = Object.assign(
+              {},
+              this.tableInwardDetailContents[index]
+            );
+            newChangeContent["state"] = 1;
+            this.$set(this.voucherDetailContents, index, newChangeContent);
           }
 
           break;
@@ -733,6 +886,7 @@ export default {
       let mathematicDate = new Date(this.masterContent["mathematics_date"]);
       let voucherDate = new Date(this.masterContent["voucher_date"]);
       if (mathematicDate < voucherDate) {
+        this.$eventBus.$emit("validateInputMethematicsDate", this.$re);
         this.$eventBus.$emit("showMessageBox", {
           icon: "mi-exclamation-warning-48",
           messageText: this.$resourcesVN.message.messageVoucherDate,
@@ -773,7 +927,7 @@ export default {
         //Trạng thái ghi sổ
         this.masterContent["is_mention"] = 1;
         //Tông tiền
-        this.masterContent["total_price"] = this.totalPrice;
+        this.masterContent["total_price"] = this.covertStringtoNumber(this.totalPrice);
         //Thêm mới
         if (this.mode == this.$resourcesVN.mode.ADD) {
           //data post
@@ -794,15 +948,15 @@ export default {
               this.voucherId = this.masterContent["accountvoucher_id"];
               let detailContent = content["in_inward_detail"];
               //Mảng chứa dữ liệu sẵn sàng để sửa
-              this.tableInwardDetailContents = detailContent;
+              this.tableInwardDetailContents = [...detailContent];
+              this.voucherDetailContents = [];
               //sửa thì state = 1
-              for (let i = 0; i < detailContent.length; ++i) {
-                detailContent[i].state = this.$resourcesVN.mode.EDIT;
-                //nội
-                this.voucherDetailContents[i] = Object.assign(
-                  {},
-                  detailContent[i]
-                );
+              for (let i = 0; i < this.tableInwardDetailContents.length; ++i) {
+                this.tableInwardDetailContents[i].state =
+                  this.$resourcesVN.mode.EDIT;
+                this.voucherDetailContents[i] = {
+                  ...this.tableInwardDetailContents[i],
+                };
               }
             })
             .catch((error) => {
@@ -865,18 +1019,37 @@ export default {
               this.voucherId = this.masterContent["accountvoucher_id"];
               let detailContent = content["in_inward_detail"];
               //Mảng chứa dữ liệu sẵn sàng để sửa
-              this.tableInwardDetailContents = detailContent;
+              this.tableInwardDetailContents = [...detailContent];
+              this.voucherDetailContents = [];
               //sửa thì state = 1
-              for (let i = 0; i < detailContent.length; ++i) {
-                detailContent[i].state = this.$resourcesVN.mode.EDIT;
-                //nội
-                this.voucherDetailContents[i] = Object.assign(
-                  {},
-                  detailContent[i]
-                );
+              for (let i = 0; i < this.tableInwardDetailContents.length; ++i) {
+                this.tableInwardDetailContents[i].state =
+                  this.$resourcesVN.mode.EDIT;
+                this.voucherDetailContents[i] = {
+                  ...this.tableInwardDetailContents[i],
+                };
               }
             })
-            .catch((response) => console.log(response));
+            .catch((error) => {
+              let response = error.response.data;
+              console.log(response);
+              if (response["code"] == "MS001") {
+                //show message trùng mã
+                this.$eventBus.$emit("showMessageBox", {
+                  icon: "mi-exclamation-warning-48",
+                  messageText: response["message"],
+                  buttons: [
+                    {
+                      feature: "center ms-button-primary",
+                      callback: () => {
+                        this.closeMessageBox();
+                      },
+                      value: "Đóng",
+                    },
+                  ],
+                });
+              }
+            });
         }
       });
     },
@@ -884,12 +1057,142 @@ export default {
      * CreatedBY: nvdien(3/10/2021)
      */
     saveAndInsert() {
-      //Cất
-      this.saveVoucherDetail();
-      //Thêm mới
+      this.validateForm();
+      setTimeout(() => {
+        if (this.isValid == false) {
+          return;
+        }
+        //lấy dữ liệu diễn giải
+        this.masterContent["description"] = this.descriptionVoucher;
+        //Lấy loại phiếu nhập
+        this.masterContent["voucher_type"] = this.dropdownInwardTypeData;
+        //Trạng thái ghi sổ
+        this.masterContent["is_mention"] = 1;
+        //Tông tiền
+        this.masterContent["total_price"] = this.totalPrice;
+        //Thêm mới
+        if (this.mode == this.$resourcesVN.mode.ADD) {
+          //data post
+          let voucherDetailContent = {
+            in_inward: this.masterContent,
+            in_inward_detail: this.tableInwardDetailContents,
+          };
+          //thêm dữ liệu
+          VoucherRepository.addVoucher(voucherDetailContent)
+            .then(() => {
+              VoucherRepository.getNewVoucherCode()
+                .then((response) => {
+                  let newVoucherCode = response.data;
+                  this.$eventBus.$emit(
+                    "showInwardDetail",
+                    this.$resourcesVN.mode.ADD,
+                    newVoucherCode
+                  );
+                  //show thông báo thêm mới thành công
+                  let toastMessageText =
+                    this.$resourcesVN.message.messageSaveSuccess;
+                  this.$eventBus.$emit("showToastMessage", {
+                    icon: "mi-notifications–success",
+                    text: toastMessageText,
+                  });
+                })
+                .catch((response) => console.log(response));
+            })
+            .catch((error) => {
+              let response = error.response.data;
+              console.log(response);
+              if (response["code"] == "MS001") {
+                //show message trùng mã
+                this.$eventBus.$emit("showMessageBox", {
+                  icon: "mi-exclamation-warning-48",
+                  messageText: response["message"],
+                  buttons: [
+                    {
+                      feature: "center ms-button-primary",
+                      callback: () => {
+                        this.closeMessageBox();
+                      },
+                      value: "Đóng",
+                    },
+                  ],
+                });
+              }
+            });
+        }
+        if (this.mode == this.$resourcesVN.mode.EDIT) {
+          //Gán các giá trị từ giao diện lên nội dung
+          //put dữ liệu
+          this.voucherId = this.masterContent["accountvoucher_id"];
+          let inwardDetailContentLength = this.tableInwardDetailContents.length;
+          let currentContentLength = this.voucherDetailContents.length;
+          let countAddIndex = 0;
+          for (let i = 0; i < inwardDetailContentLength; ++i) {
+            let content = this.tableInwardDetailContents[i];
+            this.$set(content, "accountvoucher_id", this.voucherId);
+            if (content["state"] == this.$resourcesVN.mode.ADD) {
+              this.$set(
+                this.voucherDetailContents,
+                currentContentLength + countAddIndex,
+                content
+              );
+              countAddIndex++;
+            }
+          }
 
+          //data put
+          let voucherDetailPutContent = {
+            in_inward: this.masterContent,
+            in_inward_detail: this.voucherDetailContents,
+          };
+          VoucherRepository.editInwardVoucher(
+            this.voucherId,
+            voucherDetailPutContent
+          )
+            .then(() => {
+              VoucherRepository.getNewVoucherCode()
+                .then((response) => {
+                  let newVoucherCode = response.data;
+                  this.$eventBus.$emit(
+                    "showInwardDetail",
+                    this.$resourcesVN.mode.ADD,
+                    newVoucherCode
+                  );
+                  //Show thông báo cất dữ liệu thành công
+                  let toastMessageText =
+                    this.$resourcesVN.message.messageSaveSuccess;
+                  this.$eventBus.$emit("showToastMessage", {
+                    icon: "mi-notifications–success",
+                    text: toastMessageText,
+                  });
+                })
+                .catch((response) => console.log(response));
+            })
+            .catch((error) => {
+              let response = error.response.data;
+              console.log(response);
+              if (response["code"] == "MS001") {
+                //show message trùng mã
+                this.$eventBus.$emit("showMessageBox", {
+                  icon: "mi-exclamation-warning-48",
+                  messageText: response["message"],
+                  buttons: [
+                    {
+                      feature: "center ms-button-primary",
+                      callback: () => {
+                        this.closeMessageBox();
+                      },
+                      value: "Đóng",
+                    },
+                  ],
+                });
+              }
+            });
+        }
+      });
     },
-    /**Bỏ ghi */
+    /**Bỏ ghi
+     * CreatedBy: nvdien(5/10/2021)
+     */
     unMention() {
       this.$set(this.masterContent, "is_mention", 0);
       VoucherRepository.put(this.voucherId, this.masterContent)
@@ -900,7 +1203,9 @@ export default {
         })
         .catch((response) => console.log(response));
     },
-    /**Ghi */
+    /**Ghi sổ
+     * CreatedBy:nvdien(5/10/2021)
+     */
     mention() {
       this.$set(this.masterContent, "is_mention", 1);
       VoucherRepository.put(this.voucherId, this.masterContent)
@@ -910,7 +1215,7 @@ export default {
         })
         .catch((response) => console.log(response));
     },
-    /**sửa
+    /**hanle khi ấn nút sửa
      * CreatedBy nvdien(3/10/2012)
      */
     changeEditState() {
@@ -919,13 +1224,6 @@ export default {
       this.mode = this.$resourcesVN.mode.EDIT;
       this.isReadOnly = false;
       this.hasSaveButton();
-      // let inwardDetailContentLength = this.tableInwardDetailContents.length;
-      // this.voucherDetailContents = [];
-      // for (let i = 0; i < inwardDetailContentLength; ++i) {
-      //       let content = this.tableInwardDetailContents[i];
-      //       this.$set(content, "state", 1);
-      //       this.voucherDetailContents.push(content);
-      // }
     },
     /**chuyển footer sửa
      * CreatedBY: nvdien(3/10/2021)
@@ -935,17 +1233,34 @@ export default {
       this.afterUnmention = false;
       this.afterEdit = true;
     },
-    /**chuyển footer bỏ ghi */
+    /**chuyển footer bỏ ghi
+     * CreatedBy: nvdien(5/10/2021)
+     */
     hasUnmentionButton() {
       this.afterSave = true;
       this.afterUnmention = false;
       this.afterEdit = false;
     },
-    /*chuyển footer ghi sổ */
+    /*chuyển footer ghi sổ 
+    CreatedBy: nvdien(5/10/2021)
+    */
     hasMentionButton() {
       this.afterSave = false;
       this.afterUnmention = true;
       this.afterEdit = false;
+    },
+    /**
+     * Clone dữ liệu hiện tại
+     * CreatedBy: nvdien (02/10/2021)
+     */
+    cloneData() {
+      this.dataClone = {
+        in_inward: { ...this.masterContent },
+        in_inward_detail: [],
+      };
+      this.tableInwardDetailContents.forEach((item, index) => {
+        this.dataClone.in_inward_detail[index] = { ...item };
+      });
     },
   },
   computed: {
@@ -975,6 +1290,10 @@ export default {
     },
   },
   created() {
+    /**
+     * Hiển thị form chi tiết nhập kho và lấy dữ liệu
+     * CreatedBy: nvdien(5/10/2021)
+     */
     this.$eventBus.$on("showInwardDetail", (mode, content) => {
       if (mode == this.$resourcesVN.mode.ADD) {
         let currentDate = moment().format("YYYY-MM-DD");
@@ -990,7 +1309,10 @@ export default {
           0,
           Object.assign({}, this.$resourcesVN.inwardDetailContentsDefault)
         );
+        //set mode
         this.mode = mode;
+        //clone dữ liệu để khi đóng form kiểm tra xem form có thay đổi dữ liệu không
+        this.cloneData();
         //focus vào ô đầu tiên của form
         this.$refs.customerCombobox.focusInput();
         this.isShowInwardDetail = true;
@@ -999,30 +1321,26 @@ export default {
         this.masterContent = content["in_inward"][0];
         this.voucherId = this.masterContent["accountvoucher_id"];
         let detailContent = content["in_inward_detail"];
-        //Mảng chứa dữ liệu sẵn sàng để sửa
-        this.tableInwardDetailContents = detailContent;
+        this.tableInwardDetailContents = [...detailContent];
         //sửa thì state = 1
-        for (let i = 0; i < detailContent.length; ++i) {
-          detailContent[i].state = this.$resourcesVN.mode.EDIT;
-          //nội
-          this.voucherDetailContents[i] = Object.assign({}, detailContent[i]);
+        for (let i = 0; i < this.tableInwardDetailContents.length; ++i) {
+          this.tableInwardDetailContents[i].state = this.$resourcesVN.mode.EDIT;
+          this.voucherDetailContents[i] = {
+            ...this.tableInwardDetailContents[i],
+          };
         }
         this.mode = mode;
+        //clone dữ liệu để khi đóng form kiểm tra xem form có thay đổi dữ liệu không
+        this.cloneData();
         //Check trạng thái ghi sổ
         if (this.masterContent["is_mention"]) {
           //đã ghi sổ
-          this.afterUnmention = false;
-          this.afterEdit = false;
-          this.afterSave = true;
+          this.hasUnmentionButton();
         } else {
           //chưa ghi sổ
-          this.afterUnmention = true;
-          this.afterEdit = false;
-          this.afterSave = false;
+          this.hasMentionButton();
         }
         this.isReadOnly = true;
-        //focus vào ô đầu tiên của form
-        this.$refs.customerCombobox.focusInput();
         this.isShowInwardDetail = true;
       }
       if (mode == this.$resourcesVN.mode.DUPLICATE) {
@@ -1031,23 +1349,32 @@ export default {
         //Lấy nội dung
         this.masterContent = content["in_inward"][0];
         let detailContent = content["in_inward_detail"];
-        this.tableInwardDetailContents = detailContent;
+        this.tableInwardDetailContents = [...detailContent];
         //Lấy mã mới
         VoucherRepository.getNewVoucherCode()
           .then((response) => {
             let newVoucherCode = response.data;
             this.$set(this.masterContent, "voucher_code", newVoucherCode);
+            this.cloneData();
+            //focus vào ô đầu tiên của form
+            this.$refs.customerCombobox.focusInput();
             this.isShowInwardDetail = true;
           })
           .catch((response) => {
             console.log(response);
             //focus vào ô đầu tiên của form
+            this.cloneData();
             this.$refs.customerCombobox.focusInput();
             this.isShowInwardDetail = true;
           });
       }
     });
+    /**
+     * Bind dữ liệu sau khi thêm mới form khách hàng
+     * createdBy: nvdien(5/10/2021)
+     */
     this.$eventBus.$on("getCustomerDetail", (content) => {
+      console.log(content);
       this.$set(
         this.masterContent,
         "accountobject_id",
@@ -1063,11 +1390,107 @@ export default {
         "contact_address",
         content["contact_address"]
       );
+      this.$set(this.masterContent, "employee_name", content["employee_name"]);
     });
+    /**
+     * Bind dữ liệu sau khi thêm mới form nhân viên
+     * createdBy: nvdien(5/10/2021)
+     */
     this.$eventBus.$on("getEmployeeDetail", (content) => {
       this.$set(this.masterContent, "employee_name", content["employee_name"]);
     });
-    this.$eventBus.$on("catchErrorInwardDetail", (content) => {
+    /**
+     * Bind dữ liệu sau khi thêm mới hàng hóa
+     * CreatedBy: nvdien(6/10/2021)
+     */
+    this.$eventBus.$on("getCommodityDetail", (content, rowTable) => {
+      //set mã hàng
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "commodity_id",
+        content["commodity_id"]
+      );
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "commodity_code",
+        content["commodity_code"]
+      );
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "commodity_name",
+        content["commodity_name"]
+      );
+      //set kho
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "warehouse_code",
+        content["warehouse_code"]
+      );
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "warehouse_id",
+        content["warehouse_id"]
+      );
+      //set tài khoản nợ
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "debit_account_id",
+        content["debit_account"]
+      );
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "debit_account_number",
+        content["debit_account_number"]
+      );
+      //set tài khoản có
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "credit_account_id",
+        content["credit_account"]
+      );
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "credit_account_number",
+        content["credit_account_number"]
+      );
+      //Set đơn vị tính chính
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "unit_name",
+        content["unit_name"]
+      );
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "unit_id",
+        content["unit_id"]
+      );
+      //set đơn vị tính
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "units",
+        content["units"]
+      );
+      /**Nội dung */
+      //#region Nội dung
+      //Nếu state giao diện = EDIT thì ms cập nhật nội dung
+      if (
+        this.tableInwardDetailContents[rowTable].state ==
+          this.$resourcesVN.mode.EDIT &&
+        this.mode == this.$resourcesVN.mode.EDIT
+      ) {
+        let newChangeContent = Object.assign(
+          {},
+          this.tableInwardDetailContents[rowTable]
+        );
+        newChangeContent["state"] = 1;
+        this.$set(this.voucherDetailContents, rowTable, newChangeContent);
+      }
+    });
+    /**
+     * Handle lỗi bắt được từ các input và combobox
+     * CreatedBy; nvdien(5/10/2021)
+     */
+    this.$eventBus.$on("catchErrorInwardDetail", (content, element) => {
       if (content != null && content != "") {
         //show message box
         this.$eventBus.$emit("showMessageBox", {
@@ -1078,6 +1501,7 @@ export default {
               feature: "center ms-button-primary",
               callback: () => {
                 this.closeMessageBox();
+                element.focus();
               },
               value: "Đóng",
             },
@@ -1089,11 +1513,40 @@ export default {
         this.isValid = true;
       }
     });
+    this.$eventBus.$on("getWarehouseAdd", (content, rowTable) => {
+      //set kho
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "warehouse_code",
+        content["warehouse_code"]
+      );
+      this.$set(
+        this.tableInwardDetailContents[rowTable],
+        "warehouse_id",
+        content["warehouse_id"]
+      );
+      /**Nội dung */
+      //#region Nội dung
+      //Nếu state giao diện = EDIT thì ms cập nhật nội dung
+      if (
+        this.tableInwardDetailContents[rowTable].state ==
+          this.$resourcesVN.mode.EDIT &&
+        this.mode == this.$resourcesVN.mode.EDIT
+      ) {
+        let newChangeContent = Object.assign(
+          {},
+          this.tableInwardDetailContents[rowTable]
+        );
+        newChangeContent["state"] = 1;
+        this.$set(this.voucherDetailContents, rowTable, newChangeContent);
+      }
+    });
   },
   destroyed() {
     this.$eventBus.$off("showInwardDetail");
     this.$eventBus.$off("getEmployeeDetail");
     this.$eventBus.$off("getCustomerDetail");
+    this.$eventBus.$off("getWarehouseAdd");
     this.$eventBus.$off("catchErrorInwardDetail");
   },
 };

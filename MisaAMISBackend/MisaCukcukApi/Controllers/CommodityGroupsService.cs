@@ -10,20 +10,16 @@ using System.Threading.Tasks;
 
 namespace Misa.Web.Controllers
 {
-    public class CommoditysController : BaseEntityController<Commodity>
+    public class CommodityGroupsController : BaseEntityController<CommodityGroup>
     {
-        #region Declare
-        ICommodityService _commodityService;
-        #endregion
-        #region Constructor
-        public CommoditysController(IBaseService<Commodity> baseService, ICommodityService commodityService) : base(baseService)
+        ICommodityGroupService _commodityGroupService;
+        public CommodityGroupsController(IBaseService<CommodityGroup> baseService, ICommodityGroupService commodityGroupService) : base(baseService)
         {
-            _commodityService = commodityService;
+            _commodityGroupService = commodityGroupService;
         }
-        #endregion
 
         /// <summary>
-        /// Lọc và phân trang kho
+        /// Lọc và phân trang đơn vị
         /// </summary>
         /// <param name="searchData">Dữ liệu lọc</param>
         /// <param name="pageIndex">index trang</param>
@@ -32,11 +28,11 @@ namespace Misa.Web.Controllers
         /// CreatedBy: nvdien(20/8/2021)
         /// ModifiedBy: nvdien(20/8/2021)
         [HttpGet("Filter")]
-        public IActionResult GetCommodityFilterPaging([FromQuery] string searchData, [FromQuery] int pageIndex, [FromQuery] int pageSize)
+        public IActionResult GetDepartmentFilterPaging([FromQuery] string searchData, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
             try
             {
-                var serviceResult = _commodityService.GetCommodityFilterPaging(searchData, pageIndex, pageSize);
+                var serviceResult = _commodityGroupService.GetCommodityGroupFilterPaging(searchData, pageIndex, pageSize);
                 return Ok(serviceResult.Data);
             }
             catch (Exception ex)
@@ -55,17 +51,12 @@ namespace Misa.Web.Controllers
 
         }
 
-        /// <summary>
-        /// Lấy mã mới
-        /// </summary>
-        /// <returns></returns>
-        /// CreatedBy: nvdien(3/10/2021)
-        [HttpGet("NewCode")]
-        public IActionResult getNewCode()
+        [HttpGet("Main")]
+        public IActionResult GetMainGroup()
         {
             try
             {
-                var serviceResult = _commodityService.getNewCode();
+                var serviceResult = _commodityGroupService.GetMainGroup();
                 return Ok(serviceResult.Data);
             }
             catch (Exception ex)
@@ -81,34 +72,7 @@ namespace Misa.Web.Controllers
 
                 return StatusCode(500, errorObj);
             }
-        }
 
-        /// <summary>
-        /// Thêm mới hàng hóa
-        /// </summary>
-        /// <returns></returns>
-        /// CreatedBy: nvdien(3/10/2021)
-        [HttpPost("add")]
-        public IActionResult InsertCommodity([FromBody] Commodity commodityData)
-        {
-            try
-            {
-                var serviceResult = _commodityService.InsertCommodity(commodityData);
-                return Ok(serviceResult.Data);
-            }
-            catch (Exception ex)
-            {
-                var errorObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Resources.Exception_ErrorMsg,
-                    errorCode = "misa-001",
-                    moreInfo = "https://openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = "ba9587fd-1a79-4ac5-a0ca-2c9f74dfd3fb"
-                };
-
-                return StatusCode(500, errorObj);
-            }
         }
 
 

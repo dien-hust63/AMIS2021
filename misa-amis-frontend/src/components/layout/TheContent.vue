@@ -9,6 +9,7 @@
     <employee-detail />
     <commodity-detail />
     <commodity-group />
+    <warehouse-add />
   </div>
 </template>
 
@@ -19,6 +20,7 @@ import CustomerDetail from "../../components/views/customer/CustomerDetail.vue";
 import EmployeeDetail from "../../components/views/employees/EmployeeDetail.vue";
 import CommodityDetail from "../../components/views/commodity/CommodityDetail.vue";
 import CommodityGroup from "../../components/views/commodity/CommodityGroup.vue";
+import WarehouseAdd from "../../components/views/warehouse/WarehouseAdd.vue";
 export default {
     name: "TheContent",
     components:{
@@ -27,7 +29,8 @@ export default {
         CustomerDetail,
         EmployeeDetail,
         CommodityGroup,
-        CommodityDetail
+        CommodityDetail,
+        WarehouseAdd
     }
 }
 </script>

@@ -5,7 +5,7 @@
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,.4);
-    z-index: 2100;
+    z-index: 2200;
     transition: all .25s ease;
     opacity: 1;
     /* display: none; */
@@ -20,6 +20,9 @@
     max-width: 800px;
     background-color: #fff;
     position: relative;
+}
+.commodity-detail .change-attribute{
+    cursor: pointer;
 }
 .commodity-detail-full{
     width: calc(100vw - 6px);
@@ -85,6 +88,48 @@
     opacity: 1;
     animation: fadeIn .5s;
 }
+.unit-section{
+    flex-direction: column;
+}
+.unit-section-title{
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.unit-section-title .text{
+    margin-left: 8px;
+    font-style: italic;
+    color: #757575;
+}
+/**table unit*/
+ /**table*/
+ .unit-table .ms-table-wrap{
+    overflow: auto;
+}
+.unit-table .ms-table tbody td{
+    height: 40px;
+    min-width: 150px;
+    z-index: 10;
+}
+.unit-table .ms-thead tr th:last-child, .unit-table tbody tr td:last-child{
+    width: 40px ;
+    min-width: 40px;
+    max-width: 40px;
+}
+.unit-table tbody tr td:nth-child(4){
+    background-color: #f8f8f8 !important;
+}
+.unit-table tbody tr td:nth-child(4) .ms-input__input input{
+    background-color: #f8f8f8 !important;
+    border: none;
+    outline: none;
+    pointer-events:none;
+}
+.commodity-detail .space-insert{
+    height: 100px;
+    visibility: hidden;
+}
+
 /**commodity detail footer */
 .commodity-detail .popup-footer-divide{
     height: 4px;

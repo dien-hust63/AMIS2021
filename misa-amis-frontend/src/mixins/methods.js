@@ -204,6 +204,48 @@ export default {
          */
         covertStringtoNumber(numberString){
             return parseInt(String(numberString).replaceAll(".",""));
-        }
+        },
+        /**
+		 * So sánh sâu 2 object
+		 * @param {Object} object1 
+		 * @param {Object} object2 
+		 * @param {Array} escapeFields
+		 * @returns {Boolean}
+		 * CreatedBy: nvdien(01/10/2021) - Referenced
+		 */
+		deepEqualObject(object1, object2, escapeFields = []) {
+			const keys1 = Object.keys(object1);
+            const keys2 = Object.keys(object2);
+            if (keys1.length !== keys2.length) {
+                return false;
+            }
+            for (const key of keys1) {
+                const val1 = object1[key];
+                const val2 = object2[key];
+                const areObjects = this.isObject(val1) && this.isObject(val2);
+                if (
+                    areObjects && !this.deepEqualObject(val1, val2, escapeFields) ||
+                    !areObjects
+                ) {
+					if (escapeFields.indexOf(key) == -1) 
+						if (key.includes('date')) {
+							if (val1 && val2)
+								if (val1.substring(0, 10) != val2.substring(0, 10)) {
+									return false;
+								}
+							else if (val1 && !val2) 
+								return false;
+							else if (!val1 && val2)
+								return false;
+						}
+						else {
+							if (val1 != val2) {
+								return false;
+							}
+						}
+                }
+            }
+            return true;
+		},
     }
 }

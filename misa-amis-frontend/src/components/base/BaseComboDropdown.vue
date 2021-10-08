@@ -3,7 +3,8 @@
     class="ms-combo-dropdown-panel"
     :style="positionOfPanel"
     :class="{ 'combo-dropdown-panel--show': isShowPanel }"
-  >
+    ref="panel"
+  > 
     <div class="combo-dropdown-header" v-if="hasHeader">
       <table>
         <thead>
@@ -27,7 +28,7 @@
             v-for="(tableContent, index) in tableContents"
             :key="index"
             @click="bindValue(tableContent, index)"
-            :class="{'combo-dropdown-row--active': currentIndex == index}"
+            :class="{ 'combo-dropdown-row--active': currentIndex == index }"
           >
             <td
               class="combo-dropdown-row-td"
@@ -40,17 +41,14 @@
           </tr>
         </tbody>
         <tbody v-if="tableContents.length == 0">
-          <tr
-            class="combo-dropdown-row null-data"
-          >
-            <td>
-             Không có dữ liệu hiển thị
-            </td>
+          <tr class="combo-dropdown-row null-data">
+            <td>Không có dữ liệu hiển thị</td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="combo-dropdown-loading" v-show="isLoading">
+
       <div class="combo-dropdown-loading-icon"></div>
     </div>
     <div class="combo-dropdown-footer" v-if="hasFooter">
@@ -85,13 +83,13 @@ export default {
       /**footer */
       this.hasFooter = data["hasFooter"];
       /**header */
-      if ('hasHeader' in data){
+      if ("hasHeader" in data) {
         this.hasHeader = data["hasHeader"];
-      }else{
+      } else {
         this.hasHeader = true;
       }
       /**position */
-      
+
       if (data["position"] != null) {
         this.top = data["position"]["top"];
         this.left = data["position"]["left"];
@@ -139,25 +137,48 @@ export default {
       elementCall: null,
       /**listenFunction */
       currentIndex: -1,
+      comboboxProps: {},
     };
   },
   methods: {
-    /**gán giá trị */
+    /**
+     * gán giá trị
+     * CreatedBy: nvdien(4/10/2021)
+     */
     bindValue(tableContent, index) {
       this.currentIndex = index;
       this.$eventBus.$emit("comboboxListener", tableContent);
     },
-    /**Thêm mới */
-    addNewItem(){
-
-    }
+    /**Hiển thị form thêm mới đối tượng
+     * CreatedBy: nvdien(3/10/2021)
+     */
+    addNewItem() {
+      this.$eventBus.$off("comboboxListener");
+      this.isShowPanel = false;
+      if ("rowTable" in this.comboboxProps) {
+        this.$eventBus.$emit(
+          "show" + this.comboboxProps.addForm,
+          this.comboboxProps["rowTable"]
+        );
+      } else {
+        this.$eventBus.$emit("show" + this.comboboxProps.addForm);
+      }
+    },
   },
   computed: {
     positionOfPanel: function () {
-      return {
-        top: this.top + this.topChange + "px",
-        left: this.left + this.leftChange + "px",
-      };
+      // let heightPanel = this.$refs.panel.clientHeight;
+      // if (this.top + this.topChange + heightPanel > window.innerHeight) {
+      //   return {
+      //     top: this.top - heightPanel + "px",
+      //     left: this.left + this.leftChange + "px"
+      //   };
+      // } else {
+        return {
+          top: this.top + this.topChange + "px",
+          left: this.left + this.leftChange + "px",
+        };
+      
     },
   },
   destroyed() {

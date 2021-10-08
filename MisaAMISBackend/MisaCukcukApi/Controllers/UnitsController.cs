@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Misa.Web.Controllers
 {
-    public class DepartmentsController: BaseEntityController<Department>
+    public class UnitsController : BaseEntityController<Unit>
     {
-        IDepartmentService _departmentService;
-        public DepartmentsController(IBaseService<Department> baseService, IDepartmentService departmentService):base(baseService)
+        IUnitService _unitService;
+        public UnitsController(IBaseService<Unit> baseService, IUnitService unitService) : base(baseService)
         {
-            _departmentService = departmentService;
+            _unitService = unitService;
         }
 
         /// <summary>
-        /// Lọc và phân trang đơn vị
+        /// Lọc và phân trang đơn vị tính
         /// </summary>
         /// <param name="searchData">Dữ liệu lọc</param>
         /// <param name="pageIndex">index trang</param>
@@ -28,11 +28,11 @@ namespace Misa.Web.Controllers
         /// CreatedBy: nvdien(20/8/2021)
         /// ModifiedBy: nvdien(20/8/2021)
         [HttpGet("Filter")]
-        public IActionResult GetDepartmentFilterPaging([FromQuery] string searchData, [FromQuery] int pageIndex, [FromQuery] int pageSize)
+        public IActionResult GetUnitFilterPaging([FromQuery] string searchData, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
             try
             {
-                var serviceResult = _departmentService.GetDepartmentFilterPaging(searchData, pageIndex, pageSize);
+                var serviceResult = _unitService.GetUnitFilterPaging(searchData, pageIndex, pageSize);
                 return Ok(serviceResult.Data);
             }
             catch (Exception ex)

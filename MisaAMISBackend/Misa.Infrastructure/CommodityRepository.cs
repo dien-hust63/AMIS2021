@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Misa.ApplicationCore.Attributes;
 using Misa.ApplicationCore.Entities;
 using Misa.ApplicationCore.Interfaces.Repository;
 using Npgsql;
@@ -49,6 +50,21 @@ namespace Misa.Infrastructure
                 var commodity = response.Read<Commodity>().ToList();
                 var totalRecord = response.Read<int>().FirstOrDefault();
                 var totalPage = Math.Ceiling((double)totalRecord / pageSize);
+
+                if (commodity.Count() > 0)
+                {
+                    for(int i=0; i< commodity.Count(); ++i)
+                    {
+                        var item = commodity[i];
+                        var commodityId = item.commodity_id;
+                        DynamicParameters dynamicParameters1 = new DynamicParameters();
+
+                        dynamicParameters1.Add("@commodity_id", commodityId);
+                        var sql2 = "select * from view_commodity_unit vcu2 where vcu2.commodity_id = @commodity_id order by vcu2.is_main_unit desc";
+                        var units = _dbConnection.Query<CommodityUnit>(sql2, param: dynamicParameters1, commandType: CommandType.Text).ToList();
+                        commodity[i].units = units;
+                    }
+                }
                 var result = new
                 {
                     Commoditys = commodity,
@@ -58,6 +74,92 @@ namespace Misa.Infrastructure
                 return result;
             }
 
+        }
+
+        /// <summary>
+        /// Lấy mã mới
+        /// </summary>
+        /// <returns></returns>
+        public Commodity getNewCode()
+        {
+            using (_dbConnection = new NpgsqlConnection(_connectionString))
+            {
+
+
+                var sqlCommand = "select * from public.commodity av order by cast( public.func_extract_number(av.commodity_code) as int) DESC LIMIT 1";
+                var content = _dbConnection.Query<Commodity>(sqlCommand).Single();
+                return content;
+            }
+        }
+
+        /// <summary>
+        /// Thêm mới hàng hoá
+        /// </summary>
+        /// <param name="commodityData"></param>
+        /// <returns></returns>
+        /// CreatedBy: nvdien(04/10/2021)
+        public object InsertCommodity(Commodity commodityData)
+        {
+            NpgsqlConnection connection = null;
+            IDbTransaction transaction = null;
+            try
+            {
+                connection = new NpgsqlConnection(_connectionString);
+                connection.Open();
+                transaction = connection.BeginTransaction();
+                //Thêm hàng hóa
+
+                DynamicParameters dynamicParameters = new DynamicParameters();
+                var properties = commodityData.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    if (property.IsDefined(typeof(MisaNotMap), false)) continue;
+                    var propName = property.Name;
+                    var propValue = property.GetValue(commodityData);
+                    dynamicParameters.Add($"@{propName}", propValue);
+
+                }
+                var funcInsertMaster = $"func_insert_commodity";
+                var response = connection.Execute(funcInsertMaster, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+                //Thêm mới các đơn vị tính
+                var units = commodityData.units;
+                if(units.Count() > 0)
+                {
+                    for (int i = 0; i < units.Count(); ++i)
+                    {
+                        var unit = units[i];
+                        DynamicParameters dynamicParameters2 = new DynamicParameters();
+                        var properties2 = unit.GetType().GetProperties();
+                        foreach (var property in properties2)
+                        {
+                            if (property.IsDefined(typeof(MisaNotMap), false)) continue;
+                            var propName = property.Name;
+                            var propValue = property.GetValue(unit);
+                            dynamicParameters2.Add($"@{propName}", propValue);
+
+                        }
+                        var funcInsertCommodityUnit = $"func_insert_commodityandunit";
+                        var rowEffect = connection.Execute(funcInsertCommodityUnit, param: dynamicParameters2, commandType: CommandType.StoredProcedure);
+                    }
+                }
+                transaction.Commit();
+                return commodityData;
+            }
+            catch (Exception)
+            {
+
+                if (transaction != null)
+
+                {
+                    transaction.Rollback();
+                    return null;
+                }
+                throw;
+            }
+            finally
+            {
+                if (connection != null) connection.Close();
+            }
         }
 
         #endregion

@@ -86,5 +86,22 @@ namespace Misa.ApplicationCore.Entities
         /// Đơn giá ngầm định
         /// </summary>
         public decimal debit_amount { get; set; }
+
+        /// <summary>
+        /// Đơn vị tính chính
+        /// </summary>
+        public Guid? unit_id { get; set; }
+
+        /// <summary>
+        /// Tên đơn vị tính chính
+        /// </summary>
+        [MisaNotMap]
+        public string unit_name { get; set; }
+
+        /// <summary>
+        /// Danh sách đơn vị tính
+        /// </summary>
+        [MisaNotMap]
+        public List<CommodityUnit> units { get; set; }
     }
 }

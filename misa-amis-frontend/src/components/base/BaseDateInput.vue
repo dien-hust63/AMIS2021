@@ -31,6 +31,7 @@
         v-on:keyup="validateDateInput"
         @focus="focusInputDate($event)"
         @blur="blurDateInput"
+        ref="input"
       />
       <div
         class="ms-input__error"
@@ -57,6 +58,14 @@ export default {
       default: false,
     },
     label: {
+      type: String,
+      default: "",
+    },
+    formName: {
+      type: String,
+      default: "",
+    },
+    fieldName: {
       type: String,
       default: "",
     },
@@ -112,15 +121,19 @@ export default {
     inputDatePicker(e) {
       this.$emit("input", moment(e).format("YYYY-MM-DD"));
     },
+    
     /**
      * validate input
      * CreatedBy: nvdien(2/9/2021)
      */
-    validateInput(self) {
-      if (self.required && (self.value === null || self.value === "")) {
+    validateInput() {
+      //các trường không để trống
+      if (this.required && (this.value === null || this.value === "")) {
         this.isInputError = true;
-        this.inputError = this.formatString(message.messageRequired, this.label);
-        this.$emit("getInputError", this.inputError);
+        this.errorMessage = this.formatString(
+          message.messageRequired,
+          this.fieldName
+        );
       }
     },
     /**
@@ -206,25 +219,41 @@ export default {
         }
       }
     },
-    inputCheck: function () {
-      //validate input
-      this.validateInput(this);
-    },
-    inputReset: function (newValue) {
-      if (newValue) {
-        //reset input
-        this.isInputError = false;
-        this.isShowError = false;
-        this.isFocusInput = false;
+    // inputCheck: function () {
+    //   //validate input
+    //   this.validateInput();
+    // },
+    // inputReset: function (newValue) {
+    //   if (newValue) {
+    //     //reset input
+    //     this.isInputError = false;
+    //     this.isShowError = false;
+    //     this.isFocusInput = false;
+    //   }
+    // },
+    // inputErrorCustom: function (newValue) {
+    //   this.isInputError = true;
+    //   this.inputError = newValue;
+    // },
+    // isInputError: function (newValue) {
+    //   this.isFocusInput = !newValue;
+    // },
+  },
+   created() {
+    this.$eventBus.$on("validateInput" + this.formName, () => {
+      this.validateInput();
+      if (this.isInputError) {
+        let element = this.$refs.input;
+        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage, element);
       }
-    },
-    inputErrorCustom: function (newValue) {
-      this.isInputError = true;
-      this.inputError = newValue;
-    },
-    isInputError: function (newValue) {
-      this.isFocusInput = !newValue;
-    },
+    });
+    this.$eventBus.$on("showErrorInput" + this.inputName, ()=>{
+      console.log("error custom");
+    })
+  },
+  destroyed() {
+    this.$eventBus.$off("validateInput" + this.formName);
+    this.$eventBus.$off("showErrorInput"+this.inputName);
   },
 };
 </script>
