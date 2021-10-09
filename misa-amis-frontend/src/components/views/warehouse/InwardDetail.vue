@@ -886,7 +886,8 @@ export default {
       let mathematicDate = new Date(this.masterContent["mathematics_date"]);
       let voucherDate = new Date(this.masterContent["voucher_date"]);
       if (mathematicDate < voucherDate) {
-        this.$eventBus.$emit("validateInputMethematicsDate", this.$re);
+        this.isValid = false;
+        // this.$eventBus.$emit("validateInputMethematicsDate", this.$re);
         this.$eventBus.$emit("showMessageBox", {
           icon: "mi-exclamation-warning-48",
           messageText: this.$resourcesVN.message.messageVoucherDate,
@@ -1051,7 +1052,7 @@ export default {
               }
             });
         }
-      });
+      }, 300);
     },
     /**Cất và thêm
      * CreatedBY: nvdien(3/10/2021)
