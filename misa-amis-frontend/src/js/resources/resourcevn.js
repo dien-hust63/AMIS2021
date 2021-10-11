@@ -265,6 +265,7 @@ module.exports = {
     DUPLICATE: 4,
     BUTTONCALLBACK: 2,
     BUTTONNORMAL: 3,
+    CLOSE: 10,
   },
   // WAREHOUSE
   WAREHOUSE_TUTORIAL_TITLE: 'Nghiệp vụ kho',

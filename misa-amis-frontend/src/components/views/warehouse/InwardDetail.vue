@@ -391,8 +391,7 @@ export default {
             {
               feature: "right-first ms-button-primary",
               callback: () => {
-                this.saveVoucherDetail();
-                this.closeMessageAndPopup();
+                this.saveVoucherDetail(MSMODE.CLOSE);
               },
               value: "Có",
             },
@@ -447,11 +446,14 @@ export default {
      * createdBy:L nvdien(5/10/2021)
      */
     addNewRow() {
-      let totalRow = this.tableInwardDetailContents.length;
+      let contentDetail = this.tableInwardDetailContents.filter(x => {
+        return x.state != MSMODE.DELETE;
+      })
+      let totalRow = contentDetail.length;
       if (totalRow > 0) {
         let newRowContent = Object.assign(
           {},
-          this.tableInwardDetailContents[totalRow - 1]
+          contentDetail[totalRow - 1]
         );
         //set state dòng đó thành ADD
         newRowContent["state"] = MSMODE.ADD;
@@ -459,13 +461,9 @@ export default {
         newRowContent["debit_amount"] = 0;
         newRowContent["total_price"] = 0;
         //Cập nhật giao diện
-        this.$set(this.tableInwardDetailContents, totalRow, newRowContent);
+       this.tableInwardDetailContents.push({...newRowContent});
       } else {
-        this.$set(
-          this.tableInwardDetailContents,
-          0,
-          Object.assign({}, this.$resourcesVN.inwardDetailContentsDefault)
-        );
+        this.tableInwardDetailContents.push({...this.$resourcesVN.inwardDetailContentsDefault});
       }
     },
     /**xóa hết dòng
@@ -816,9 +814,9 @@ export default {
      * Kiểm tra có hàng tiền nào trên form không
      * CreatedBy: nvdien(11/10/2021)
      */
-    checkRequiredDetail(){
-      let tempDetail = this.tableInwardDetailContents.filter(element => {
-        return element.state != MSMODE.DELETE
+    checkRequiredDetail() {
+      let tempDetail = this.tableInwardDetailContents.filter((element) => {
+        return element.state != MSMODE.DELETE;
       });
       if (tempDetail.length < 1) {
         this.tableInwardDetailContents.push({
@@ -850,7 +848,7 @@ export default {
      */
     validateForm() {
       let checkRequiredDetail = this.checkRequiredDetail();
-      if(!checkRequiredDetail) return false;
+      if (!checkRequiredDetail) return false;
       let checkArray = [
         this.masterContent["voucher_code"],
         this.masterContent["mathematics_date"],
@@ -859,9 +857,13 @@ export default {
       this.tableInwardDetailContents.forEach((element) => {
         checkArray.push(
           element["commodity_name"],
+          element["commodity_id"],
           element["warehouse_code"],
+          element["warehouse_id"],
           element["debit_account_number"],
-          element["credit_account_number"]
+          element["debit_account_id"],
+          element["credit_account_number"],
+          element["credit_account_id"]
         );
       });
       let checkRequired = this.checkRequiredField(checkArray);
@@ -879,10 +881,10 @@ export default {
      * @return {Boolean}
      * CreatedBy: nvdien(3/10/2021)
      */
-    saveVoucherDetail() {
+    saveVoucherDetail(extraPram) {
       let isValid = this.validateForm();
       if (isValid == false) {
-        return  false;
+        return;
       }
       //lấy dữ liệu diễn giải
       this.masterContent["description"] = this.descriptionVoucher;
@@ -900,48 +902,15 @@ export default {
         //thêm dữ liệu
         VoucherRepository.addVoucher(voucherDetailContent)
           .then((response) => {
-            //chuyển sang btn Bỏ ghi
-            this.hasUnmentionButton();
-            this.$eventBus.$emit("loadVoucherTable");
-            this.isReadOnly = true;
-            //bật chế độ chỉnh sửa sau khi thêm
+            if (extraPram == MSMODE.CLOSE) this.closeMessageAndPopup();
             let content = response.data.Data;
-            this.masterContent = content["in_inward"];
-            this.voucherId = this.masterContent["accountvoucher_id"];
-            let detailContent = content["in_inward_detail"];
-            //Mảng chứa dữ liệu sẵn sàng để sửa
-            this.tableInwardDetailContents = [...detailContent];
-            //sửa thì state = 1
-            for (let i = 0; i < this.tableInwardDetailContents.length; ++i) {
-              this.tableInwardDetailContents[i].state = MSMODE.EDIT;
-            }
-            return true;
+            this.updateDataAfterSave(content);
           })
           .catch((error) => {
             let response = error.response.data;
-            console.log(response);
             if (response["code"] == "MS001") {
-              //show message trùng mã
-              this.$eventBus.$emit("showMessageBox", {
-                icon: "mi-exclamation-warning-48",
-                messageText: response["message"],
-                buttons: [
-                  {
-                    feature: "center ms-button-primary",
-                    callback: () => {
-                      this.$eventBus.$emit(
-                        "showErrorInputVoucherCode",
-                        this.$resourcesVN.message.messageVoucherCodeDuplication
-                      );
-                      this.$refs.vouchercode.focusInput();
-                      this.closeMessageBox();
-                    },
-                    value: "Đóng",
-                  },
-                ],
-              });
+              this.showVoucherCodeDuplication(response["message"]);
             }
-            return false;
           });
       }
       if (this.mode == MSMODE.EDIT) {
@@ -964,21 +933,123 @@ export default {
           voucherDetailPutContent
         )
           .then((response) => {
-            //chuyển sang btn Bỏ ghi
-            this.hasUnmentionButton();
-            this.$eventBus.$emit("loadVoucherTable");
-            this.isReadOnly = true;
+            if (extraPram == MSMODE.CLOSE) this.closeMessageAndPopup();
             let content = response.data.Data;
-            this.masterContent = content["in_inward"];
-            this.voucherId = this.masterContent["accountvoucher_id"];
-            let detailContent = content["in_inward_detail"];
-            //Mảng chứa dữ liệu sẵn sàng để sửa
-            this.tableInwardDetailContents = [...detailContent];
-            //sửa thì state = 1
-            for (let i = 0; i < this.tableInwardDetailContents.length; ++i) {
-              this.tableInwardDetailContents[i].state = MSMODE.EDIT;
+            this.updateDataAfterSave(content);
+          })
+          .catch((error) => {
+            let response = error.response.data;
+            if (response["code"] == "MS001") {
+              this.showVoucherCodeDuplication(response["message"]);
             }
-            return true;
+          });
+      }
+    },
+    /**
+     * Gán lại các giá trị sau khi thêm và sửa
+     * @param {object} content
+     * CreatedBy: nvdien(11/10/2021)
+     */
+    updateDataAfterSave(content) {
+      //chuyển sang btn Bỏ ghi
+      this.hasUnmentionButton();
+      this.$eventBus.$emit("loadVoucherTable");
+      this.isReadOnly = true;
+
+      this.masterContent = content["in_inward"];
+      this.voucherId = this.masterContent["accountvoucher_id"];
+      let detailContent = content["in_inward_detail"];
+      //Mảng chứa dữ liệu sẵn sàng để sửa
+      this.tableInwardDetailContents = [...detailContent];
+      //sửa thì state = 1
+      for (let i = 0; i < this.tableInwardDetailContents.length; ++i) {
+        this.tableInwardDetailContents[i].state = MSMODE.EDIT;
+      }
+    },
+    /**Hiển thị lỗi trùng mã chứng từ
+     * @param {string} errorMessage string báo lỗi
+     * CreatedBy: nvdien(11/10/2021)
+     */
+    showVoucherCodeDuplication(errorMessage) {
+      //show message trùng mã
+      this.$eventBus.$emit("showMessageBox", {
+        icon: "mi-exclamation-warning-48",
+        messageText: errorMessage,
+        buttons: [
+          {
+            feature: "center ms-button-primary",
+            callback: () => {
+              this.$eventBus.$emit(
+                "showErrorInputVoucherCode",
+                this.$resourcesVN.message.messageVoucherCodeDuplication
+              );
+              this.$refs.vouchercode.focusInput();
+              this.closeMessageBox();
+            },
+            value: "Đóng",
+          },
+        ],
+      });
+    },
+    /**Cất và thêm
+     * CreatedBY: nvdien(3/10/2021)
+     */
+    saveAndInsert() {
+      let isValid = this.validateForm();
+      if (isValid == false) {
+        return false;
+      }
+      //lấy dữ liệu diễn giải
+      this.masterContent["description"] = this.descriptionVoucher;
+      //Lấy loại phiếu nhập
+      this.masterContent["voucher_type"] = this.dropdownInwardTypeData;
+      //Trạng thái ghi sổ
+      this.masterContent["is_mention"] = 1;
+      //Thêm mới
+      if (this.mode == MSMODE.ADD) {
+        //data post
+        let voucherDetailContent = {
+          in_inward: this.masterContent,
+          in_inward_detail: this.tableInwardDetailContents,
+        };
+        //thêm dữ liệu
+        VoucherRepository.addVoucher(voucherDetailContent)
+          .then(() => {
+            VoucherRepository.getNewVoucherCode()
+              .then((response) => {
+                let newVoucherCode = response.data;
+                let currentDate = moment().format("YYYY-MM-DD");
+                this.masterContent = {
+                  voucher_code: newVoucherCode,
+                  mathematics_date: currentDate,
+                  voucher_date: currentDate,
+                  is_mention: 1,
+                };
+                //set default
+                this.tableInwardDetailContents = [];
+                this.$set(
+                  this.tableInwardDetailContents,
+                  0,
+                  Object.assign(
+                    {},
+                    this.$resourcesVN.inwardDetailContentsDefault
+                  )
+                );
+                //set mode
+                this.mode = MSMODE.ADD;
+                //clone dữ liệu để khi đóng form kiểm tra xem form có thay đổi dữ liệu không
+                this.cloneData();
+                //focus vào ô đầu tiên của form
+                this.$refs.customerCombobox.focusInput();
+                //show thông báo thêm mới thành công
+                let toastMessageText =
+                  this.$resourcesVN.message.messageSaveSuccess;
+                this.$eventBus.$emit("showToastMessage", {
+                  icon: "mi-notifications–success",
+                  text: toastMessageText,
+                });
+              })
+              .catch((response) => console.log(response));
           })
           .catch((error) => {
             let response = error.response.data;
@@ -999,137 +1070,88 @@ export default {
                 ],
               });
             }
-            return false;
           });
       }
-    },
-    /**Cất và thêm
-     * CreatedBY: nvdien(3/10/2021)
-     */
-    saveAndInsert() {
-      this.validateForm();
-      setTimeout(() => {
-        if (this.isValid == false) {
-          return;
+      if (this.mode == MSMODE.EDIT) {
+        //Gán các giá trị từ giao diện lên nội dung
+        //put dữ liệu
+        this.voucherId = this.masterContent["accountvoucher_id"];
+        let inwardDetailContentLength = this.tableInwardDetailContents.length;
+        for (let i = 0; i < inwardDetailContentLength; ++i) {
+          this.$set(
+            this.tableInwardDetailContents[i],
+            "accountvoucher_id",
+            this.voucherId
+          );
         }
-        //lấy dữ liệu diễn giải
-        this.masterContent["description"] = this.descriptionVoucher;
-        //Lấy loại phiếu nhập
-        this.masterContent["voucher_type"] = this.dropdownInwardTypeData;
-        //Trạng thái ghi sổ
-        this.masterContent["is_mention"] = 1;
-        //Thêm mới
-        if (this.mode == MSMODE.ADD) {
-          //data post
-          let voucherDetailContent = {
-            in_inward: this.masterContent,
-            in_inward_detail: this.tableInwardDetailContents,
-          };
-          //thêm dữ liệu
-          VoucherRepository.addVoucher(voucherDetailContent)
-            .then(() => {
-              VoucherRepository.getNewVoucherCode()
-                .then((response) => {
-                  let newVoucherCode = response.data;
-                  this.$eventBus.$emit(
-                    "showInwardDetail",
-                    MSMODE.ADD,
-                    newVoucherCode
-                  );
-                  //show thông báo thêm mới thành công
-                  let toastMessageText =
-                    this.$resourcesVN.message.messageSaveSuccess;
-                  this.$eventBus.$emit("showToastMessage", {
-                    icon: "mi-notifications–success",
-                    text: toastMessageText,
-                  });
-                })
-                .catch((response) => console.log(response));
-            })
-            .catch((error) => {
-              let response = error.response.data;
-              console.log(response);
-              if (response["code"] == "MS001") {
-                //show message trùng mã
-                this.$eventBus.$emit("showMessageBox", {
-                  icon: "mi-exclamation-warning-48",
-                  messageText: response["message"],
-                  buttons: [
-                    {
-                      feature: "center ms-button-primary",
-                      callback: () => {
-                        this.closeMessageBox();
-                      },
-                      value: "Đóng",
-                    },
-                  ],
-                });
-              }
-            });
-        }
-        if (this.mode == MSMODE.EDIT) {
-          //Gán các giá trị từ giao diện lên nội dung
-          //put dữ liệu
-          this.voucherId = this.masterContent["accountvoucher_id"];
-          let inwardDetailContentLength = this.tableInwardDetailContents.length;
-          for (let i = 0; i < inwardDetailContentLength; ++i) {
-            this.$set(
-              this.tableInwardDetailContents[i],
-              "accountvoucher_id",
-              this.voucherId
-            );
-          }
 
-          //data put
-          let voucherDetailPutContent = {
-            in_inward: this.masterContent,
-            in_inward_detail: this.tableInwardDetailContents,
-          };
-          VoucherRepository.editInwardVoucher(
-            this.voucherId,
-            voucherDetailPutContent
-          )
-            .then(() => {
-              VoucherRepository.getNewVoucherCode()
-                .then((response) => {
-                  let newVoucherCode = response.data;
-                  this.$eventBus.$emit(
-                    "showInwardDetail",
-                    MSMODE.ADD,
-                    newVoucherCode
-                  );
-                  //Show thông báo cất dữ liệu thành công
-                  let toastMessageText =
-                    this.$resourcesVN.message.messageSaveSuccess;
-                  this.$eventBus.$emit("showToastMessage", {
-                    icon: "mi-notifications–success",
-                    text: toastMessageText,
-                  });
-                })
-                .catch((response) => console.log(response));
-            })
-            .catch((error) => {
-              let response = error.response.data;
-              console.log(response);
-              if (response["code"] == "MS001") {
-                //show message trùng mã
-                this.$eventBus.$emit("showMessageBox", {
-                  icon: "mi-exclamation-warning-48",
-                  messageText: response["message"],
-                  buttons: [
-                    {
-                      feature: "center ms-button-primary",
-                      callback: () => {
-                        this.closeMessageBox();
-                      },
-                      value: "Đóng",
-                    },
-                  ],
+        //data put
+        let voucherDetailPutContent = {
+          in_inward: this.masterContent,
+          in_inward_detail: this.tableInwardDetailContents,
+        };
+        VoucherRepository.editInwardVoucher(
+          this.voucherId,
+          voucherDetailPutContent
+        )
+          .then(() => {
+            VoucherRepository.getNewVoucherCode()
+              .then((response) => {
+                let newVoucherCode = response.data;
+                let currentDate = moment().format("YYYY-MM-DD");
+                this.masterContent = {
+                  voucher_code: newVoucherCode,
+                  mathematics_date: currentDate,
+                  voucher_date: currentDate,
+                  is_mention: 1,
+                };
+                //set default
+                this.tableInwardDetailContents = [];
+                this.$set(
+                  this.tableInwardDetailContents,
+                  0,
+                  Object.assign(
+                    {},
+                    this.$resourcesVN.inwardDetailContentsDefault
+                  )
+                );
+                //set mode
+                this.mode = MSMODE.ADD;
+                //clone dữ liệu để khi đóng form kiểm tra xem form có thay đổi dữ liệu không
+                this.cloneData();
+                //focus vào ô đầu tiên của form
+                this.$refs.customerCombobox.focusInput();
+                //Show thông báo cất dữ liệu thành công
+                let toastMessageText =
+                  this.$resourcesVN.message.messageSaveSuccess;
+                this.$eventBus.$emit("showToastMessage", {
+                  icon: "mi-notifications–success",
+                  text: toastMessageText,
                 });
-              }
-            });
-        }
-      });
+              })
+              .catch((response) => console.log(response));
+          })
+          .catch((error) => {
+            let response = error.response.data;
+            console.log(response);
+            if (response["code"] == "MS001") {
+              //show message trùng mã
+              this.$eventBus.$emit("showMessageBox", {
+                icon: "mi-exclamation-warning-48",
+                messageText: response["message"],
+                buttons: [
+                  {
+                    feature: "center ms-button-primary",
+                    callback: () => {
+                      this.closeMessageBox();
+                    },
+                    value: "Đóng",
+                  },
+                ],
+              });
+            }
+          });
+      }
     },
     /**Bỏ ghi
      * CreatedBy: nvdien(5/10/2021)
@@ -1217,12 +1239,12 @@ export default {
     },
     totalPrice: function () {
       let total = 0;
-      total = this.tableInwardDetailContents.reduce(
-        (prevValue, currentElement) => {
-          return prevValue + currentElement["total_price"];
-        },
-        0
-      );
+      let currentContents = this.tableInwardDetailContents.filter((x) => {
+        return x.state != MSMODE.DELETE;
+      });
+      total = currentContents.reduce((prevValue, currentElement) => {
+        return prevValue + currentElement["total_price"];
+      }, 0);
       this.$set(this.masterContent, "total_price", Number(total).toFixed(1));
       total = this.formatMoney(total);
       return total;
