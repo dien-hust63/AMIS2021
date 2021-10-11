@@ -230,11 +230,11 @@ namespace Misa.Infrastructure
                
                 //Thêm mới các hàng tiền (voucher detail)
                 var voucherDetailContent = data.in_inward_detail;
+                var count = 0;
                 if(voucherDetailContent.Count() > 0)
                 {
-                    for (int i = 0; i < voucherDetailContent.Count(); ++i)
+                    foreach(var accountVoucherDetail in voucherDetailContent)
                     {
-                        var accountVoucherDetail = voucherDetailContent[i];
                         DynamicParameters dynamicParameters2 = new DynamicParameters();
                         var properties2 = accountVoucherDetail.GetType().GetProperties();
                         foreach (var property in properties2)
@@ -247,6 +247,7 @@ namespace Misa.Infrastructure
                         }
                         var funcInsertDetail = $"func_insert_accountvoucherdetail";
                         var rowEffect = connection.Execute(funcInsertDetail, param: dynamicParameters2, commandType: CommandType.StoredProcedure);
+                        count++;
                     }
                 }
                 transaction.Commit();

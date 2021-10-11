@@ -26,26 +26,26 @@
         class="input-date"
         placeholder="DD/MM/YYYY"
         v-model="valueDateInput"
-        @mouseover="mouseoverDateInput"
-        @mouseout="mouseoutDateInput"
+        @mouseover="mouseoverDateInput($event)"
+        @mouseout="mouseoutDateInput()"
         v-on:keyup="validateDateInput"
         @focus="focusInputDate($event)"
         @blur="blurDateInput"
         ref="input"
       />
-      <div
+      <!-- <div
         class="ms-input__error"
         :class="{ 'ms-input__error--show': isShowError }"
       >
         {{ inputError }}
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
 import Mixin from "../../mixins/methods.js";
-import {message} from "../../js/resources/resourcevn.js";
+import { message } from "../../js/resources/resourcevn.js";
 import locals from "../../js/locales/locales.js";
 import moment from "moment";
 export default {
@@ -73,32 +73,20 @@ export default {
       type: [String, Number],
       default: "",
     },
-    inputCheck: {
-      type: Boolean,
-      default() {
-        return false;
-      },
-    },
-    inputReset: {
-      type: Boolean,
-      default() {
-        return false;
-      },
-    },
-    inputErrorCustom: {
+    defaultValue: {
       type: String,
       default: "",
     },
-    defaultValue:{
-      type:String,
+    inputName: {
+      type: String,
       default: "",
-    }
+    },
   },
   data() {
     return {
       isInputError: false,
       isShowError: false,
-      inputError: "",
+      errorMessage: "",
       valueDateInput: this.defaultValue,
       notWatch: false,
       isFocusInput: false,
@@ -121,29 +109,39 @@ export default {
     inputDatePicker(e) {
       this.$emit("input", moment(e).format("YYYY-MM-DD"));
     },
-    
+
     /**
      * validate input
      * CreatedBy: nvdien(2/9/2021)
      */
-    validateInput() {
-      //các trường không để trống
-      if (this.required && (this.value === null || this.value === "")) {
-        this.isInputError = true;
-        this.errorMessage = this.formatString(
-          message.messageRequired,
-          this.fieldName
-        );
-      }
-    },
+    // validateInput() {
+    //   //các trường không để trống
+    //   if (this.required && (this.value === null || this.value === "")) {
+    //     this.isInputError = true;
+    //     this.errorMessage = this.formatString(
+    //       message.messageRequired,
+    //       this.fieldName
+    //     );
+    //   }
+    // },
     /**
      * mouseover input date
      * CreatedBy: nvdien(3/9/2021)
      */
-    mouseoverDateInput() {
+    mouseoverDateInput(event) {
       if (this.isInputError) {
-        // hiển thị báo lỗi
-        this.isShowError = true;
+        // hiển thị tooltip báo lỗi
+        let element = event.currentTarget;
+        let elementRect = element.getBoundingClientRect();
+        let top = elementRect.top;
+        let left = elementRect.left;
+        let tooltipData = {
+          message: this.errorMessage,
+          top: top,
+          left: left,
+          type: "error",
+        };
+        this.$eventBus.$emit("showTooltip", tooltipData);
       }
     },
     /**
@@ -151,23 +149,34 @@ export default {
      * CreatedBY: nvdien(2/9/2021)
      */
     mouseoutDateInput() {
-      this.isShowError = false;
+          this.$eventBus.$emit("hideTooltip");
     },
     /**
      * validate input date
      * CreatedBY: nvdien(2/9/2021)
      */
     validateDateInput() {
-      if (this.valueDateInput === "") {
-        this.isInputError = false;
-        this.isShowError = false;
+      //các trường không để trống
+      if (
+        this.required &&
+        (this.valueDateInput === null || this.valueDateInput === "")
+      ) {
+        this.isInputError = true;
+        this.isShowError = true;
+        this.errorMessage = this.formatString(
+          message.messageRequired,
+          this.fieldName
+        );
         this.$emit("getDate", null);
         return;
       }
       if (this.validateDateString(this.valueDateInput)) {
         if (this.isFutureDate(this.valueDateInput)) {
           this.isInputError = true;
-          this.inputError =this.formatString(message.messageDateFuture, this.label);
+          this.errorMessage = this.formatString(
+            message.messageDateFuture,
+            this.label
+          );
           return;
         }
         this.isInputError = false;
@@ -178,8 +187,17 @@ export default {
         );
       } else {
         this.isInputError = true;
-        this.inputError = message.messageDateSyntax;
+        this.errorMessage = message.messageDateSyntax;
       }
+    },
+    /**
+     * focus vào ô input
+     * CreatedBy: nvdien(30/8/2021)
+     */
+    focusInput() {
+      this.$nextTick(() => {
+        this.$refs.input.focus();
+      });
     },
     /**
      * focus vào input date
@@ -205,7 +223,10 @@ export default {
         }
         if (oldValue != "" && newValue == "" && this.inputReset == false) {
           this.isInputError = true;
-           this.inputError = this.formatString(message.messageRequired, this.label);
+          this.errorMessage = this.formatString(
+            message.messageRequired,
+            this.fieldName
+          );
         }
       }
       if (this.$attrs.type == "date") {
@@ -213,47 +234,44 @@ export default {
           this.valueDateInput = moment(newValue, "YYYY-MM-DD").format(
             "DD/MM/YYYY"
           );
-        }
-        else{
+        } else {
           this.valueDateInput = "";
         }
       }
     },
-    // inputCheck: function () {
-    //   //validate input
-    //   this.validateInput();
-    // },
-    // inputReset: function (newValue) {
-    //   if (newValue) {
-    //     //reset input
-    //     this.isInputError = false;
-    //     this.isShowError = false;
-    //     this.isFocusInput = false;
-    //   }
-    // },
-    // inputErrorCustom: function (newValue) {
-    //   this.isInputError = true;
-    //   this.inputError = newValue;
-    // },
-    // isInputError: function (newValue) {
-    //   this.isFocusInput = !newValue;
-    // },
+    valueDateInput(newValue) {
+      if (newValue) {
+        if (this.validateDateString(newValue)) {
+          this.$emit(
+            "getDate",
+            moment(newValue, "DD/MM/YYYY").format("YYYY-MM-DD")
+          );
+          return;
+        }
+      }
+      this.$emit("getDate", null);
+    },
   },
-   created() {
+  created() {
     this.$eventBus.$on("validateInput" + this.formName, () => {
-      this.validateInput();
+      this.validateDateInput();
       if (this.isInputError) {
         let element = this.$refs.input;
-        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage, element);
+        this.$eventBus.$emit(
+          "catchError" + this.formName,
+          this.errorMessage,
+          element
+        );
       }
     });
-    this.$eventBus.$on("showErrorInput" + this.inputName, ()=>{
-      console.log("error custom");
-    })
+    this.$eventBus.$on("showErrorDate" + this.inputName, (content) => {
+      this.isInputError = true;
+      this.errorMessage = content;
+    });
   },
   destroyed() {
     this.$eventBus.$off("validateInput" + this.formName);
-    this.$eventBus.$off("showErrorInput"+this.inputName);
+    this.$eventBus.$off("showErrorDate" + this.inputName);
   },
 };
 </script>

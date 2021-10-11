@@ -138,7 +138,7 @@
               <base-input label="TK trả lại" />
             </div>
             <div class="row-input">
-               <base-combobox-custom
+              <base-combobox-custom
                 label="Tài khoản chi phí"
                 v-model="commodityData['credit_account_number']"
                 :comboboxProps="comboboxAccountProps"
@@ -156,7 +156,13 @@
               <base-input label="Đơn giá mua cố định" />
             </div>
             <div class="row-input">
-              <base-input label="Đơn giá mua gần nhất" />
+              <base-input
+                label="Đơn giá mua gần nhất"
+                :value="commodityData['debit_amount']"
+                @blurInput="blurDebitAmount"
+                format="number"
+                class="text-right"
+              />
             </div>
             <div class="row-input">
               <base-input label="Đơn giá bán" />
@@ -212,7 +218,6 @@
               @clickButton="warningDeleteAllRow"
             />
           </div>
-          
         </div>
         <div class="space-insert"></div>
       </div>
@@ -276,6 +281,14 @@ export default {
     };
   },
   methods: {
+    /**
+     * thay đổi đơn giá mua
+     * @param {string} content
+     * CreatedBy: nvdien(11/10/2021)
+     */
+    blurDebitAmount(content){
+      this.$set(this.commodityData, "debit_amount", content);
+    },
     /**
      * trả về mô tả đơn vị tính
      * CreatedBy: nvdien(7/10/2021)
@@ -452,25 +465,32 @@ export default {
     bindingCommodityUnit(content) {
       this.$set(this.commodityData, "unit_name", content["unit_name"]);
       this.$set(this.commodityData, "unit_id", content["unit_id"]);
-
     },
     /**
      * Gán nội dung tài khoản kho
      * @param content: nội dung emit lên
      * CreatedBy: nvdien(8/10/2021)
      */
-    bindingDebitAccount(content){
+    bindingDebitAccount(content) {
       this.$set(this.commodityData, "debit_account", content["account_id"]);
-      this.$set(this.commodityData, "debit_account_number", content["account_number"]);
+      this.$set(
+        this.commodityData,
+        "debit_account_number",
+        content["account_number"]
+      );
     },
     /**
      * Gán nội dung tài khoản có
      * @param content: nội dung emit lên
      * CreatedBy: nvdien(8/10/2021)
      */
-    bindingCreditAccount(content){
-       this.$set(this.commodityData, "credit_account", content["account_id"]);
-      this.$set(this.commodityData, "credit_account_number", content["account_number"]);
+    bindingCreditAccount(content) {
+      this.$set(this.commodityData, "credit_account", content["account_id"]);
+      this.$set(
+        this.commodityData,
+        "credit_account_number",
+        content["account_number"]
+      );
     },
     /**
      * Gán nội dung commodity group combobox
@@ -516,17 +536,17 @@ export default {
       if (this.commodityData.unit_id != null) {
         let mainUnit = {
           unit_id: this.commodityData.unit_id,
-          unit_name:this.commodityData.unit_name,
+          unit_name: this.commodityData.unit_name,
           is_main_unit: 1,
           rate: 1,
         };
         this.tableUnitContents.push(mainUnit);
-        for(let i=0; i< this.tableUnitContents.length; ++i){
+        for (let i = 0; i < this.tableUnitContents.length; ++i) {
           let unit = this.tableUnitContents[i];
-          if(unit["unit_id"] != null) continue;
-          else{
+          if (unit["unit_id"] != null) continue;
+          else {
             //loại bỏ đơn vị tính chuyển đổi đó
-            this.tableUnitContents.splice(i,1);
+            this.tableUnitContents.splice(i, 1);
           }
         }
         this.commodityData.units = this.tableUnitContents;

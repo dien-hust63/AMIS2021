@@ -1,6 +1,6 @@
 <template>
   <div class="ms-table-wrap">
-    <table class="ms-table" :class="{'ms-table-readonly':isReadOnly}">
+    <table class="ms-table" :class="{ 'ms-table-readonly': isReadOnly }">
       <thead class="ms-thead">
         <tr>
           <th v-for="(item, index) in tableHeaders" :key="index">
@@ -18,12 +18,12 @@
           v-for="(tableContent, index) in tableContents"
           :key="index"
           :class="{ 'ms-table-row--selected': isSelectedRow(index) }"
+          v-show="tableContent['state'] != 2"	
         >
           <td
             v-for="(tableHeader, headerIndex) in tableHeaders"
             :key="headerIndex"
             @click="handleClickCell(tableHeader, tableContent)"
-            
           >
             <base-checkbox
               v-if="tableHeader.type == 'checkbox'"
@@ -41,7 +41,12 @@
             </div>
             <div v-if="tableHeader.type == 'contextmenu'">
               <div class="row-context-menu">
-                <div class="row-context-menu__text" @click="showInContext(tableContent)">Xem</div>
+                <div
+                  class="row-context-menu__text"
+                  @click="showInContext(tableContent)"
+                >
+                  Xem
+                </div>
                 <div
                   class="row-context-menu__icon"
                   @click="toogleContextMenu($event, tableContent, index)"
@@ -54,7 +59,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="tableHeader.type == 'number'">{{ index + 1 }}</div>
+            <div v-if="tableHeader.type == 'number'">{{tableDisplay.indexOf(tableContent) + 1}}</div>
             <div v-if="tableHeader.type == 'delete'" @click="deleteRow(index)">
               <div class="mi mi-16 mi-delete"></div>
             </div>
@@ -67,7 +72,7 @@
                 @getDataEventBus="
                   bindingCombobox(index, tableHeader, ...arguments)
                 "
-                :class="{'ms-combobox-custom--readonly':isReadOnly}"
+                :class="{ 'ms-combobox-custom--readonly': isReadOnly }"
                 :formName="formName"
               />
             </div>
@@ -79,23 +84,27 @@
                 @getDataEventBus="
                   renderComboboxManualValue(tableHeader, index, ...arguments)
                 "
-                :class="{'ms-combobox-custom--readonly':isReadOnly}"
+                :class="{ 'ms-combobox-custom--readonly': isReadOnly }"
               />
             </div>
-            <div v-if="tableHeader.type == 'input'" :class="[tableHeader.textAlign]">
+            <div
+              v-if="tableHeader.type == 'input'"
+              :class="[tableHeader.textAlign]"
+            >
               <base-input
                 :value="formatTableContent(tableContent, tableHeader)"
                 @input="changeInputValue(index, tableHeader, ...arguments)"
-                @blurInput="blurInput(index, tableHeader,...arguments)"
-                :class="{'ms-input--readonly':isReadOnly}"
+                @blurInput="blurInput(index, tableHeader, ...arguments)"
+                :class="{ 'ms-input--readonly': isReadOnly }"
+                :format="tableHeader.format"
               />
             </div>
             <div v-if="tableHeader.type == 'date'">
               <base-date-input
-                :value="formatTableContent(tableContent, tableHeader)"
+                :value="tableContent[tableHeader.fieldName]"
                 @input="changeDate(index, tableHeader, ...arguments)"
                 type="date"
-                :class="{'ms-input--readonly':isReadOnly}"
+                :class="{ 'ms-input--readonly': isReadOnly }"
               />
             </div>
           </td>
@@ -108,7 +117,7 @@
             :key="index"
             :class="[item.textAlign]"
           >
-            <div v-if="item.footerValue != null">{{ item.footerValue }}</div>
+            <div v-if="item.footerValue != null">{{formatFooter(item)}}</div>
           </td>
         </tr>
       </tfoot>
@@ -127,7 +136,7 @@ import MixinListener from "../../mixins/listeners/listeners";
 import MixinMethod from "../../mixins/methods";
 export default {
   name: "BaseTable",
-  mixins: [MixinListener,MixinMethod],
+  mixins: [MixinListener, MixinMethod],
   components: {
     BaseCheckbox,
     BaseComboboxCustom,
@@ -135,11 +144,11 @@ export default {
     BaseInput,
   },
   props: {
-    formName:{
-      type:String,
-      default(){
+    formName: {
+      type: String,
+      default() {
         return "";
-      }
+      },
     },
     tableHeaders: {
       type: Array,
@@ -169,12 +178,12 @@ export default {
         };
       },
     },
-    isReadOnly:{
-      type:Boolean,
-      default(){
+    isReadOnly: {
+      type: Boolean,
+      default() {
         return false;
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -193,15 +202,25 @@ export default {
     };
   },
   methods: {
-    /**thay đổi nội dung input */
+    /**thay đổi nội dung của input  
+     * @param index: index của row
+     * @param header: header hiện tại
+     * @param content: nội dung ô hiện tại
+     * CreatedBY: nvdien(9/10/2021)
+    */
     changeInputValue(index, header, content) {
-      let mode="input";
+      let mode = "input";
+      if(header.format == "number") return;
       this.$emit("changeTableContent", index, header, mode, content);
     },
-
-    /**thay đổi nội dung của input date */
+    /**thay đổi nội dung của input date 
+     * @param index: index của row
+     * @param header: header hiện tại
+     * @param date: nội dung ô hiện tại
+     * CreatedBY: nvdien(9/10/2021)
+    */
     changeDate(index, header, date) {
-      let mode ="date";
+      let mode = "date";
       this.$emit("changeTableContent", index, header, mode, date);
     },
     /**
@@ -220,13 +239,27 @@ export default {
           "DD/MM/YYYY"
         );
       }
-      if (tableHeader.format == "number") {
-        cellData = this.formatSalary(cellData);
+      if(tableHeader.type == "normal" 
+      && tableHeader.format == "number"){
+        cellData = this.formatMoney(cellData);
       }
       return cellData;
     },
     /**
+     * format footer
+     * CreatedBy: nvdien(10/10/2021)
+     */
+    formatFooter(header){
+      if(header.format == "number"){
+        return this.formatMoney(header.footerValue);
+      }
+      return header.footerValue;
+    },
+    /**
      * hiển thị context menu
+     * @param event: sự kiện
+     * @param tableContent nội dung hàng hiện tại
+     * @param index: index hàng
      * CreatedBy: nvdien(25/9/2021)
      */
     toogleContextMenu(event, tableContent, index) {
@@ -252,12 +285,17 @@ export default {
       }
     },
     /**Xem khi ấn vào nút xem trong context menu
+     * @param tableContent: nội dung hàng hiện tại
      * CreatedBy: nvdien(2/10/2021)
      */
-    showInContext(tableContent){
+    showInContext(tableContent) {
       this.$emit("showInContext", tableContent);
     },
-    /**trả về custom style cho cell */
+    /**trả về custom style cho cell 
+     * @param tableContent: nội dung hàng hiện tại
+     * @param tableHeader: nội dung header
+     * CreatedBy: nvdien(9/10/2021)
+    */
     getClass(tableContent, tableHeader) {
       let customClass = "";
       if (tableContent["is_mention"] == 1) customClass = "text--green";
@@ -308,12 +346,16 @@ export default {
     isSelectedRow(index) {
       return this.listSelectedRow.includes(index);
     },
-    /**Xóa 1 dòng */
+    /**Xóa 1 dòng 
+     * @param index: index hàng hiện tại
+     * CreatedBy: nvdien(9/10/2021)
+    */
     deleteRow(index) {
       this.$emit("deleteRow", index);
     },
     /**click vào 1 ô
      * @param tableHeader : header của cột đó
+     * CreatedBy: nvdien(9/10/2021)
      */
     handleClickCell(tableHeader, tableContent) {
       if ("hasClick" in tableHeader) {
@@ -321,21 +363,27 @@ export default {
       }
     },
     /**double click vào 1 dòng
-     * @param tableContent nội dung dòng đó
+     * param tableContent nội dung dòng đó
+     * CreatedBy: nvdien(9/10/2021)
      */
     handleDoubleClickRow(tableContent) {
       this.$emit("handleDoubleClickRow", tableContent);
     },
-    /**render combobox props */
+    /**render combobox props 
+     * @param header: header table hiện tại
+     * @param index: index hàng hiện tại
+     * CreatedBY: nvdien( 9/10/2021 )
+    */
     renderComboboxProps(header, index) {
       if (header.type == "comboboxapi") {
-        let comboboxProps = {...header.combobox};
+        let comboboxProps = { ...header.combobox };
         comboboxProps["rowTable"] = index;
         return comboboxProps;
       }
       if (header.type == "comboboxmanual") {
         if (this.tableContents[index][header.combobox.contentFields]) {
-          let content = this.tableContents[index][header.combobox.contentFields];
+          let content =
+            this.tableContents[index][header.combobox.contentFields];
           let comboboxProps = {};
           Object.assign(comboboxProps, header.combobox);
           comboboxProps.tableContents = content;
@@ -343,23 +391,53 @@ export default {
         }
       }
     },
-    /**bind dữ liệu lên combobox */
+     /**bind dữ liệu lên combobox
+     * @param index: index của row
+     * @param header: header hiện tại
+     * @param content: nội dung ô hiện tại
+     * CreatedBY: nvdien(9/10/2021)
+    */
     bindingCombobox(index, header, content) {
       let mode = "comboboxapi";
-      this.$emit("changeTableContent", index, header, mode , content);
+      this.$emit("changeTableContent", index, header, mode, content);
     },
-    /**combobox manual value */
+    /**combobox manual value 
+     * @param tableHeader: header hiện tại
+     * @param index: index hàng hiện tại
+     * @param content: nội dung ô hiện tại
+     * CreatedBY: nvdien(9/10/2021)
+    */
     renderComboboxManualValue(tableHeader, index, content) {
-      if (content[tableHeader.combobox.fieldName] != this.tableContents[index][tableHeader.combobox.contentFields]) {
-          let mode = "comboboxmanual";
-          this.$emit("changeTableContent", index, tableHeader, mode , content);
+      if (
+        content[tableHeader.combobox.fieldName] !=
+        this.tableContents[index][tableHeader.combobox.contentFields]
+      ) {
+        let mode = "comboboxmanual";
+        this.$emit("changeTableContent", index, tableHeader, mode, content);
       }
     },
-    /**blur input */
-   blurInput(index, header, content){
-     let mode = "blur";
-     this.$emit("changeTableContent", index, header, mode , content);
-   }
+    /**blur input 
+     * @param index: index của row
+     * @param header: header hiện tại
+     * @param content: nội dung ô hiện tại
+     * CreatedBY: nvdien(9/10/2021)
+    */
+    blurInput(index, header, content) {
+      let mode = "blur";
+      this.$emit("changeTableContent", index, header, mode, content);
+    },
+  },
+  computed: {
+    /**
+     * Table đang hiển thị
+     * CreatedBy: nvdien (08/10/2021)
+     */
+    tableDisplay() {
+      var tableData = this.tableContents.filter((item) => {
+        return item["state"] != this.$resourcesVN.mode.DELETE;
+      });
+      return tableData;
+    },
   },
 };
 </script>

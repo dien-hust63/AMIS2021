@@ -64,6 +64,10 @@ export default {
       type: String,
       default: "",
     },
+    format: {
+      type: String,
+      default: "",
+    },
     fieldName: {
       type: String,
       default: "",
@@ -72,6 +76,11 @@ export default {
       type: String,
       default: "",
     },
+    inputName: {
+      type: String,
+      default: "",
+    },
+
   },
   data() {
     return {
@@ -120,19 +129,21 @@ export default {
       var self = this;
       return Object.assign({}, this.$listeners, {
         input: function (event) {
+          let value = event.target.value;
           self.isInputError = false;
           self.$eventBus.$emit("hideTooltip");
-          self.$emit("input", event.target.value);
+            self.$emit("input",value);
         },
         blur: function (event) {
-          if (self.required && (event.target.value === null || event.target.value === "")) {
+          let value = event.target.value;
+          if (self.required && (value === null || value === "")) {
             self.isInputError = true;
             self.errorMessage = self.formatString(
               message.messageRequired,
               self.fieldName
             );
           }
-          self.$emit('blurInput', event.target.value);
+          self.$emit("blurInput",value);
         },
         mouseover: function (event) {
           if (self.isInputError) {
@@ -156,12 +167,32 @@ export default {
         focus: function (event) {
           event.target.select();
         },
+        keydown: (event) => {
+          if (this.format == "number") {
+            var charCode = event.key.charCodeAt(0);
+            var key = event.key;
+            if (
+              (charCode < 48 || charCode > 57) &&
+              charCode != 46 &&
+              key != "Backspace" &&
+              key != "F1" &&
+              key != "Tab" &&
+              key != "Shift"
+            ) {
+              event.preventDefault();
+            }
+          }
+        },
       });
     },
 
     valueInput: function () {
       if (this.$attrs.type == "date") {
         return this.formatDate(this.value, "-");
+      }
+      if (this.format == "number") {
+        let inputValue = this.formatMoney(this.value);
+        return inputValue;
       }
       return this.value;
     },
@@ -200,16 +231,21 @@ export default {
       this.validateInput();
       if (this.isInputError) {
         let element = this.$refs.input;
-        this.$eventBus.$emit("catchError" + this.formName, this.errorMessage, element);
+        this.$eventBus.$emit(
+          "catchError" + this.formName,
+          this.errorMessage,
+          element
+        );
       }
     });
-    this.$eventBus.$on("showErrorInput" + this.inputName, ()=>{
-      console.log("error custom");
-    })
+    this.$eventBus.$on("showErrorInput" + this.inputName, (content) => {
+      this.isInputError = true;
+      this.errorMessage = content;
+    });
   },
   destroyed() {
     this.$eventBus.$off("validateInput" + this.formName);
-    this.$eventBus.$off("showErrorInput"+this.inputName);
+    this.$eventBus.$off("showErrorInput" + this.inputName);
   },
 };
 </script>

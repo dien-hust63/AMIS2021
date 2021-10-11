@@ -139,7 +139,7 @@ module.exports = {
     { fieldName: 'debit_amount', label: 'ĐƠN GIÁ', textAlign: 'text-right', type: "input" ,format: "number"},
     { fieldName: 'total_price', label: 'THÀNH TIỀN', textAlign: 'text-right', type: "input" ,format: "number"},
     { fieldName: 'lot_number', label: 'SỐ LÔ', textAlign: 'text-left', type: "input"},
-    { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-center', type: "date" ,format:"date"},
+    // { fieldName: 'expiry', label: 'HẠN SỬ DỤNG', textAlign: 'text-center', type: "date" ,format:"date"},
     { type:'delete' }
 
   ],
@@ -253,7 +253,10 @@ module.exports = {
     messageDeleteSuccess: "xóa {0} thành công",
     messageVoucherDate: "Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ. Xin vui lòng kiểm tra lại.",
     messageSaveSuccess: "Cất thành công dữ liệu",
-    messgaeDeleteAllMention: "Các chứng từ bạn chọn đều đã ghi sổ"
+    messgaeDeleteAllMention: "Các chứng từ bạn chọn đều đã ghi sổ",
+    messageVoucherCodeDuplication:"Mã chứng từ bị trùng",
+    messageVoucherDateInput:"Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ",
+    messagevoucherDetailRequired:"Bạn phải nhập chứng từ chi tiết"
   },
   mode: {
     ADD: 0,

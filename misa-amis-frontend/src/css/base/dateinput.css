@@ -50,8 +50,8 @@
      position: absolute;
      top: 80%;
      left:50%;
-     background-color:  #393a3d;
-     color:#fff;
+     background-color: #ff7777 !important;
+     color: #fff !important;
      text-align: center;
      transform: translate(-50%);
      height: 15px;

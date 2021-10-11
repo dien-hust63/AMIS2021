@@ -176,45 +176,15 @@ export default {
             return parentE;
         },
         /**
-         * Định dạng tiền
-         * @param {string} salary  tiền
-         * @returns string tiền được định dạng
-         * CreatedBy: nvdien(2/10/2021)
+         * So sánh sâu 2 object
+         * @param {Object} object1 
+         * @param {Object} object2 
+         * @param {Array} escapeFields
+         * @returns {Boolean}
+         * CreatedBy: nvdien(01/10/2021) - Referenced
          */
-        formatSalary(salary) {
-            let salaryString = String(salary).replaceAll(".","");
-            var result = '';
-            var number 
-            if (salaryString != null) {
-                for (var i = String(salaryString).length; i > 0; i = i - 3) {
-                    if (i > 3) {
-                         number = String(salaryString).slice(i - 3, i);
-                        result += number.split("").reverse().join("") + ".";
-                    } else {
-                         number = String(salaryString).slice(0, i);
-                        result += number.split("").reverse().join("");
-                    }
-                }
-                return result.split("").reverse().join("");
-            } else return '';
-        },
-        /**
-         * convert string định dạng tiền sang số
-         * CreatedBy: nvdien(2/10/2021)
-         */
-        covertStringtoNumber(numberString){
-            return parseInt(String(numberString).replaceAll(".",""));
-        },
-        /**
-		 * So sánh sâu 2 object
-		 * @param {Object} object1 
-		 * @param {Object} object2 
-		 * @param {Array} escapeFields
-		 * @returns {Boolean}
-		 * CreatedBy: nvdien(01/10/2021) - Referenced
-		 */
-		deepEqualObject(object1, object2, escapeFields = []) {
-			const keys1 = Object.keys(object1);
+        deepEqualObject(object1, object2, escapeFields = []) {
+            const keys1 = Object.keys(object1);
             const keys2 = Object.keys(object2);
             if (keys1.length !== keys2.length) {
                 return false;
@@ -227,25 +197,78 @@ export default {
                     areObjects && !this.deepEqualObject(val1, val2, escapeFields) ||
                     !areObjects
                 ) {
-					if (escapeFields.indexOf(key) == -1) 
-						if (key.includes('date')) {
-							if (val1 && val2)
-								if (val1.substring(0, 10) != val2.substring(0, 10)) {
-									return false;
-								}
-							else if (val1 && !val2) 
-								return false;
-							else if (!val1 && val2)
-								return false;
-						}
-						else {
-							if (val1 != val2) {
-								return false;
-							}
-						}
+                    if (escapeFields.indexOf(key) == -1)
+                        if (key.includes('date')) {
+                            if (val1 && val2)
+                                if (val1.substring(0, 10) != val2.substring(0, 10)) {
+                                    return false;
+                                }
+                                else if (val1 && !val2)
+                                    return false;
+                                else if (!val1 && val2)
+                                    return false;
+                        }
+                        else {
+                            if (val1 != val2) {
+                                return false;
+                            }
+                        }
                 }
             }
             return true;
-		},
+        },
+        /**
+         * Format tiền tệ
+         * @param {Number} value
+         * @returns {String}
+         * CreatedBy: nvdien(10/10/2021)
+         */
+        formatMoney(value) {
+            let inputValue = 0;
+            if (value) inputValue = value;
+            var number = Number(inputValue);
+            let tempFormat = number.toFixed(1).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+            let indexDot = tempFormat.indexOf('.');
+            tempFormat = tempFormat.replaceAll(',', '.');
+            let result = this.replaceAt(tempFormat, indexDot, ',');
+            return result;
+
+        },
+        /**
+         * thay thế kí tụ ở vị trí index
+         * @param {string} str 
+         * @param {number} index 
+         * @param {character} replacement 
+         * @returns 
+         * CreatedBy: nvdien(10/10/2021)
+         */
+        replaceAt(str, index, replacement) {
+            return str.substr(0, index) + replacement + str.substr(index + replacement.length);
+        },
+        /**
+         * chuyển string định dạng tiền ex 1.432.434,0 sang số 1432434.0
+         * @param {string} value 
+         * @returns {number} 
+         * CreatedBY: nvdien(10/10/2021)
+         */
+        convertMoneyToNumber(value) {
+            let inputString = String(value);
+            let tempValue = inputString.replaceAll('.', '');
+            let result = tempValue.replace(',', '.');
+            return result;
+        },
+        /**
+         * Kiểm tra xem phải xâu rỗng hoặc null không
+         * @param {array} str 
+         * @return {Boolean} 
+         * CreatedBY: nvdien(11/10/2021)
+         */
+        checkRequiredField(arrayStr){
+            for(let i=0; i< arrayStr.length; ++i){
+                if(arrayStr[i]) continue;
+                else return false;
+            }
+            return true;
+        }
     }
 }
