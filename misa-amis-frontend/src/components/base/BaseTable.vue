@@ -184,6 +184,12 @@ export default {
         return false;
       },
     },
+    resetSelected: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
   },
   data() {
     return {
@@ -333,7 +339,7 @@ export default {
         this.listSelectedContent.push(tableContent);
       } else {
         this.listSelectedRow.splice(position, 1);
-        this.listSelectedContent.splice(tableContent, 1);
+        this.listSelectedContent.splice(position, 1);
       }
       this.$emit("getSelectedRowList", this.listSelectedContent);
     },
@@ -439,6 +445,12 @@ export default {
       return tableData;
     },
   },
+  watch:{
+    resetSelected(){
+      this.listSelectedRow = [];
+      this.listSelectedContent = [];
+    }
+  }
 };
 </script>
 

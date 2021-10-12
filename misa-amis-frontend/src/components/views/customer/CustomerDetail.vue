@@ -23,14 +23,17 @@
           <div class="row-input">
             <div class="row-input--left w-1/2">
               <div class="w-2/5 p-r-6 border-box">
-                <base-input label="Mã số thuế" ref="taxcode" />
+                <base-input label="Mã số thuế" ref="taxcode" v-model="taxCode"/>
               </div>
               <div class="w-3/5">
                 <base-input
                   label="Mã khách hàng"
                   :required="true"
                   v-model="customerContent['account_object_code']"
+                  ref="customercode"
                   formName="CustomerDetail"
+                  fieldName="Mã khách hàng"
+                  inputName="AccountObjectCode"
                 />
               </div>
             </div>
@@ -50,6 +53,9 @@
                 :required="true"
                 v-model="customerContent['account_object_name']"
                 formName="CustomerDetail"
+                fieldName="Tên khách hàng"
+                inputName="AccountObjectName"
+                ref="customername"
               />
             </div>
             <div class="row-input--right w-1/2">
@@ -150,6 +156,7 @@ import BaseComboboxCustom from "../../base/BaseComboboxCustom.vue";
 import { RepositoryFactory } from "../../../js/repository/repository.factory";
 const EmployeeRepository = RepositoryFactory.get("employees");
 const AccountObjectRepository = RepositoryFactory.get("accountobjects");
+import MixinMethod from "../../../mixins/methods";
 export default {
   name: "CustomerDetail",
   components: {
@@ -158,11 +165,12 @@ export default {
     BaseRadio,
     BaseComboboxCustom,
   },
+  mixins: [MixinMethod],
   data() {
     return {
       customerRadioData: [
         { data: 1, value: "Tổ chức" },
-        { data: 2, value: "Cá nhân" },
+        { data: 2, value: "Cá nhân" },  
       ],
       isShowCustomerDetail: false,
       /**combo employee */
@@ -175,6 +183,7 @@ export default {
         tableObject: "Employees",
         mode: "api",
       },
+      taxCode:"",
     };
   },
   methods: {
@@ -186,10 +195,36 @@ export default {
       this.$set(this.customerContent, "employee_name", content["employee_name"]);
       this.$set(this.customerContent, "employee_id", content["employee_id"]);
     },
+    /**Đóng message box
+     * CreatedBy: nvdien(5/10/2021)
+     */
+    closeMessageBox() {
+      this.$eventBus.$emit("hideMessageBox");
+    },
+     /**validate form
+     *
+     * CreatedBy: nvdien(3/10/2021)
+     */
+    validateForm() {
+      let checkArray = [
+        this.customerContent["account_object_name"],
+        this.customerContent["account_object_code"]
+      ];
+      let checkRequired = this.checkRequiredField(checkArray);
+      if (!checkRequired) {
+        this.$eventBus.$emit("validateInputCustomerDetail");
+        return false;
+      }
+      return true;
+    },
     /**lưu khách hàng 
      * CreatedBy: nvdien(5/10/2021)
     */
     saveCustomer() {
+      let isValid = this.validateForm();
+      if (isValid == false) {
+        return;
+      }
       AccountObjectRepository.post(this.customerContent)
         .then((response) => {
           this.$eventBus.$emit("getCustomerDetail",response.data.Data);
@@ -199,6 +234,7 @@ export default {
     },
     /**đóng form */
     closeCustomerDetail() {
+      this.customerContent = {};
       this.isShowCustomerDetail = false;
     },
     //#region Combobox employee
@@ -295,7 +331,7 @@ export default {
   created() {
     this.$eventBus.$on("showCustomerDetail", () => {
       AccountObjectRepository.getNewCode().then((response) => {
-        this.$set(this.customerContent, "account_object_code", response.data);
+        this.customerContent = {"account_object_code":response.data};
         this.$refs.taxcode.focusInput();
         this.isShowCustomerDetail = true;
       });
@@ -308,9 +344,38 @@ export default {
       this.employeeComboboxValue = data["employee_name"];
       this.$eventBus.$emit("hideComboDropdown");
     });
+    /**
+     * Handle lỗi bắt được từ các input và combobox
+     * CreatedBy; nvdien(5/10/2021)
+     */
+    this.$eventBus.$on("catchErrorCustomerDetail", (content, element) => {
+      if (content != null && content != "") {
+        //show message box
+        this.$eventBus.$emit("showMessageBox", {
+          icon: "mi-exclamation-error-48-2",
+          messageText: content,
+          buttons: [
+            {
+              feature: "center ms-button-primary",
+              callback: () => {
+                this.closeMessageBox();
+                element.focus();
+              },
+              value: "Đóng",
+            },
+          ],
+        });
+
+        this.isValid = false;
+      } else {
+        this.isValid = true;
+      }
+    });
   },
   destroyed() {
     this.$eventBus.$off("showCustomerDetail");
+    this.$eventBus.$off("catchErrorCustomerDetail");
+
     /**
      * Huỷ các sự kiện
      * CreatedBy: nvdien (20/09/2021)

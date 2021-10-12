@@ -76,6 +76,6 @@ namespace Misa.ApplicationCore.Interfaces.Repository
         /// </summary>
         /// <param name="voucherCode"></param>
         /// <returns></returns>
-        IEnumerable<AccountVoucher> checkVoucherCodeDuplicate(string voucherCode);
+        IEnumerable<AccountVoucher> checkVoucherCodeDuplicate(string voucherCode, string voucherID = "");
     }
 }

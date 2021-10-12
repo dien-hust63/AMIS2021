@@ -76,7 +76,7 @@ namespace Misa.ApplicationCore.Interfaces.Services
         /// </summary>
         /// <param name="accountVoucher"></param>
         /// <returns></returns>
-        int checkAccountVoucherCode(int mode,string accountVoucher, string editId = "");
+        int checkAccountVoucherCode(string accountVoucher, string editId = "");
 
     }
 }

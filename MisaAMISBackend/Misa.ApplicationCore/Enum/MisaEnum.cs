@@ -25,6 +25,8 @@ namespace Misa.ApplicationCore.Enum
     {
         Add = 0,
         Update = 1,
-        Delete = 2
+        Delete = 2,
+        Duplicate = 3,
+        Success = 0,
     }
 }

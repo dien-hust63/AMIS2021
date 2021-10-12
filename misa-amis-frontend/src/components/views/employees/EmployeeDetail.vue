@@ -245,8 +245,7 @@ export default {
     this.$eventBus.$on("showEmployeeDetail", () => {
       EmployeesRepository.getNewEmployeeCode()
         .then((response) => {
-          console.log(response.data);
-          this.$set(this.employeeData, "employee_code", response.data);
+          this.employeeData = {"employee_code":response.data};
           this.$refs.employeeCodeInput.focusInput();
           this.isShowEmployeeDetail = true;
         })

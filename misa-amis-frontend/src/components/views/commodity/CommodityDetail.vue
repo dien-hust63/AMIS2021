@@ -45,10 +45,11 @@
             <base-input
               label="Tên"
               :required="true"
-              formName="Commodity"
+              formName="CommodityDetail"
               v-model="commodityData['commodity_name']"
               ref="commodityname"
               fieldName="Tên hàng hóa"
+              inputName="CommodityName"
             />
           </div>
           <div class="row-input">
@@ -56,8 +57,10 @@
               <base-input
                 label="Mã"
                 :required="true"
-                formName="Commodity"
+                formName="CommodityDetail"
                 v-model="commodityData['commodity_code']"
+                  fieldName="Mã hàng hóa"
+                  inputName="CommodityCode"
               />
             </div>
             <div class="w-3/4">
@@ -397,7 +400,7 @@ export default {
       } else {
         this.tableUnitContents = [];
         this.tableUnitContents[0] = {
-          ...this.$resourcesVN.tableUnitContents[0],
+          ...this.$resourcesVN.tableUnitContents[0]
         };
       }
     },
@@ -527,10 +530,30 @@ export default {
     showUnitSection() {
       this.isShowUnitSection = !this.isShowUnitSection;
     },
+    /**validate form
+     *
+     * CreatedBy: nvdien(3/10/2021)
+     */
+    validateForm() {
+      let checkArray = [
+        this.commodityData["commodity_name"],
+        this.commodityData["commodity_code"]
+      ];
+      let checkRequired = this.checkRequiredField(checkArray);
+      if (!checkRequired) {
+        this.$eventBus.$emit("validateInputCommodityDetail");
+        return false;
+      }
+      return true;
+    },
     /**Thêm mới hàng hóa
      * CreatedBy: nvdien(3/10/2021)
      */
     saveCommodity() {
+      let isValid = this.validateForm();
+      if (isValid == false) {
+        return;
+      }
       /**thêm đơn vị tính chính vào dữ liệu */
       //Kiểm tra có đơn vị tính chính không
       if (this.commodityData.unit_id != null) {
@@ -571,7 +594,9 @@ export default {
     closeCommodityDetail() {
       this.isShowCommodityDetail = false;
       this.commodityData = {};
+      this.tableUnitContents = [{ ...this.$resourcesVN.tableUnitContents[0] }];
       this.isShowInmplicitSection = false;
+      this.isShowUnitSection = false;
     },
     /**
      * hiển thị form group
@@ -600,6 +625,7 @@ export default {
 
       CommodityRepository.getNewCode().then((response) => {
         this.commodityData = { commodity_code: response.data };
+        this.tableUnitContents = [{ ...this.$resourcesVN.tableUnitContents[0] }];
         //bind lên combobox commodity group
         this.$set(
           this.commodityData,
@@ -615,9 +641,37 @@ export default {
         this.isShowCommodityDetail = true;
       });
     });
+    /**
+     * Handle lỗi bắt được từ các input và combobox
+     * CreatedBy; nvdien(5/10/2021)
+     */
+    this.$eventBus.$on("catchErrorCommodityDetail", (content, element) => {
+      if (content != null && content != "") {
+        //show message box
+        this.$eventBus.$emit("showMessageBox", {
+          icon: "mi-exclamation-error-48-2",
+          messageText: content,
+          buttons: [
+            {
+              feature: "center ms-button-primary",
+              callback: () => {
+                this.closeMessageBox();
+                element.focus();
+              },
+              value: "Đóng",
+            },
+          ],
+        });
+
+        this.isValid = false;
+      } else {
+        this.isValid = true;
+      }
+    });
   },
   destroyed() {
     this.$eventBus.$off("showCommodityDetail");
+    this.$eventBus.$off("catchErrorCommodityDetail");
   },
 };
 </script>

@@ -200,8 +200,8 @@ namespace Misa.ApplicationCore.Services
                     }
                 }
                 //Check trùng mã
-                int isDuplicateCode = checkAccountVoucherCode((int)Mode.Add, accountVoucher.voucher_code);
-                if(isDuplicateCode == 0)
+                int isDuplicateCode = checkAccountVoucherCode( accountVoucher.voucher_code);
+                if(isDuplicateCode == (int)Mode.Duplicate)
                 {
                     serviceResult.IsValid = false;
                     serviceResult.Data = new
@@ -292,8 +292,8 @@ namespace Misa.ApplicationCore.Services
                     }
                 }
                 //Check trùng mã
-                int isDuplicateCode = checkAccountVoucherCode((int)Mode.Update, accountVoucher.voucher_code, accountVoucherID.ToString());
-                if (isDuplicateCode == 0)
+                int isDuplicateCode = checkAccountVoucherCode(accountVoucher.voucher_code, accountVoucherID.ToString());
+                if (isDuplicateCode == (int)Mode.Duplicate)
                 {
                     serviceResult.IsValid = false;
                     serviceResult.Data = new
@@ -352,49 +352,13 @@ namespace Misa.ApplicationCore.Services
         /// <param name="accountVoucher"></param>
         /// <returns>0: mã bị trùng, 1: mã không bị trùng, -1: sai tham số truyền</returns>
         /// CreatedBy: nvdien(3/10/2021)
-        public int checkAccountVoucherCode(int mode, string accountVoucherCode, string editId = "")
+        public int checkAccountVoucherCode(string accountVoucherCode, string editId = "")
         {
             try
             {
-                if (mode == (int)Mode.Add)
-                {
-                    var voucherList = _accounVoucherRepository.checkVoucherCodeDuplicate(accountVoucherCode);
-                    if (voucherList.Count() > 0)
-                    {
-                        //Mã bị trùng
-                        return 0;
-                    }
-                    //Mã không trùng
-                    return 1;
-                }
-                if (mode == (int)Mode.Update)
-                {
-                    var voucherList = _accounVoucherRepository.checkVoucherCodeDuplicate(accountVoucherCode);
-                    if (voucherList.Count() == 1)
-                    {
-                        //Kiểm tra xem mã này của chính nó hay của object khác
-                        if (!String.IsNullOrEmpty(editId))
-                        {
-                            var voucherID = Guid.Parse(editId);
-                            var voucher = _accounVoucherRepository.GetEntityById(voucherID);
-                            if (voucher != null && voucher.voucher_code == accountVoucherCode)
-                            {
-                                //Không trùng
-                                return 1;
-                            }
-                            else return 0;
-                        }
-                        return -1;
-                    }
-                    if (voucherList.Count() < 1)
-                    {
-                        //Mã không bị trùng
-                        return 1;
-                    }
-                    //Mã bị trùng
-                    return 0;
-                }
-                return -1;
+                var voucherList = _accounVoucherRepository.checkVoucherCodeDuplicate(accountVoucherCode, editId);
+                if (voucherList.Count() > 0) return (int)Mode.Duplicate;
+                else return (int)Mode.Success;
             }
             catch (Exception)
             {

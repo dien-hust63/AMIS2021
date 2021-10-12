@@ -387,14 +387,20 @@ namespace Misa.Infrastructure
         /// <param name="voucherCode"></param>
         /// <returns></returns>
         /// CreatedBy: nvdien(3/10/2021)
-        public IEnumerable<AccountVoucher> checkVoucherCodeDuplicate(string voucherCode)
+        public IEnumerable<AccountVoucher> checkVoucherCodeDuplicate(string voucherCode, string voucherID = "")
         {
             using (_dbConnection = new NpgsqlConnection(_connectionString))
             {
-
                 var dynamicParameters = new DynamicParameters();
                 dynamicParameters.Add("@voucher_code", voucherCode);
                 var sqlCommand = "select * from public.accountvoucher av where av.voucher_code = @voucher_code";
+                if (voucherID.Length != 0)
+                {
+                    var accountVoucherId = new Guid(voucherID);
+                    dynamicParameters.Add("@accountvoucher_id", accountVoucherId);
+                    sqlCommand = "select * from public.accountvoucher av where av.voucher_code = @voucher_code and av.accountvoucher_id != @accountvoucher_id";
+
+                }
                 var response = _dbConnection.Query<AccountVoucher>(sqlCommand, param: dynamicParameters, commandType: CommandType.Text);
                 return response;
             }

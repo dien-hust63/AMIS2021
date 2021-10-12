@@ -205,11 +205,9 @@
       </div>
       <div class="inward-detail-footer">
         <div class="left-group-button">
-          <base-button
-            value="Hủy"
-            class="ms-button-secondary"
-            @click="closeInwardDetail"
-          />
+          <div class="ms-button ms-button-secondary" @click="closeInwardDetail">
+            Hủy
+          </div>
         </div>
         <div class="right-group-button">
           <div
@@ -414,6 +412,10 @@ export default {
         this.masterContent = {};
       }
     },
+    /**
+     * Đóng form và messageBox
+     * CreatedBy: nvdien(11/10/2021)
+     */
     closeMessageAndPopup() {
       this.closeMessageBox();
       //set button
@@ -446,24 +448,23 @@ export default {
      * createdBy:L nvdien(5/10/2021)
      */
     addNewRow() {
-      let contentDetail = this.tableInwardDetailContents.filter(x => {
+      let contentDetail = this.tableInwardDetailContents.filter((x) => {
         return x.state != MSMODE.DELETE;
-      })
+      });
       let totalRow = contentDetail.length;
       if (totalRow > 0) {
-        let newRowContent = Object.assign(
-          {},
-          contentDetail[totalRow - 1]
-        );
+        let newRowContent = Object.assign({}, contentDetail[totalRow - 1]);
         //set state dòng đó thành ADD
         newRowContent["state"] = MSMODE.ADD;
         newRowContent["quantity"] = 1;
         newRowContent["debit_amount"] = 0;
         newRowContent["total_price"] = 0;
         //Cập nhật giao diện
-       this.tableInwardDetailContents.push({...newRowContent});
+        this.tableInwardDetailContents.push({ ...newRowContent });
       } else {
-        this.tableInwardDetailContents.push({...this.$resourcesVN.inwardDetailContentsDefault});
+        this.tableInwardDetailContents.push({
+          ...this.$resourcesVN.inwardDetailContentsDefault,
+        });
       }
     },
     /**xóa hết dòng
@@ -1015,6 +1016,7 @@ export default {
         //thêm dữ liệu
         VoucherRepository.addVoucher(voucherDetailContent)
           .then(() => {
+            this.$eventBus.$emit("loadVoucherTable");
             VoucherRepository.getNewVoucherCode()
               .then((response) => {
                 let newVoucherCode = response.data;
@@ -1026,15 +1028,9 @@ export default {
                   is_mention: 1,
                 };
                 //set default
-                this.tableInwardDetailContents = [];
-                this.$set(
-                  this.tableInwardDetailContents,
-                  0,
-                  Object.assign(
-                    {},
-                    this.$resourcesVN.inwardDetailContentsDefault
-                  )
-                );
+                this.tableInwardDetailContents = [
+                  { ...this.$resourcesVN.inwardDetailContentsDefault },
+                ];
                 //set mode
                 this.mode = MSMODE.ADD;
                 //clone dữ liệu để khi đóng form kiểm tra xem form có thay đổi dữ liệu không
@@ -1095,6 +1091,7 @@ export default {
           voucherDetailPutContent
         )
           .then(() => {
+            this.$eventBus.$emit("loadVoucherTable");
             VoucherRepository.getNewVoucherCode()
               .then((response) => {
                 let newVoucherCode = response.data;
@@ -1106,15 +1103,10 @@ export default {
                   is_mention: 1,
                 };
                 //set default
-                this.tableInwardDetailContents = [];
-                this.$set(
-                  this.tableInwardDetailContents,
-                  0,
-                  Object.assign(
-                    {},
-                    this.$resourcesVN.inwardDetailContentsDefault
-                  )
-                );
+                this.tableInwardDetailContents = [
+                  { ...this.$resourcesVN.inwardDetailContentsDefault },
+                ];
+
                 //set mode
                 this.mode = MSMODE.ADD;
                 //clone dữ liệu để khi đóng form kiểm tra xem form có thay đổi dữ liệu không

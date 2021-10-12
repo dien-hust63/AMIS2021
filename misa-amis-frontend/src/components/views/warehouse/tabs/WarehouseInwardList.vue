@@ -32,6 +32,7 @@
                   :dropdownList="$resourcesVN.mentionStateDropdownList"
                   :defaultData="$resourcesVN.mentionStateDropdownList[0]"
                   v-model="mentionState"
+                  :resetDropdown="resetDropdown"
                 />
               </div>
               <div class="row-input">
@@ -40,6 +41,7 @@
                   :dropdownList="$resourcesVN.inwardTypeDropdownList"
                   :defaultData="$resourcesVN.inwardTypeDropdownList[0]"
                   v-model="voucherType"
+                  :resetDropdown="resetDropdown"
                 />
               </div>
               <div class="row-input">
@@ -49,6 +51,7 @@
                     :dropdownList="$resourcesVN.timeReportDropdownList"
                     :defaultData="$resourcesVN.timeReportDropdownList[2]"
                     v-model="timeReportDropdownData"
+                    :resetDropdown="resetDropdown"
                   />
                 </div>
                 <div class="w-4/7 flex">
@@ -72,7 +75,7 @@
               </div>
             </div>
             <div class="filter-panel-footer">
-              <div class="ms-button ms-button-secondary">Đặt lại</div>
+              <div class="ms-button ms-button-secondary" @click="resetFilter">Đặt lại</div>
               <div
                 class="ms-button ms-button-primary"
                 @click="filterVoucherData"
@@ -110,6 +113,7 @@
         @handleDoubleClickRow="editVoucher"
         @clickCellVoucherCode="editVoucher"
         @showInContext="editVoucher"
+        :resetSelected="resetSelected"
       />
       <div class="warehouse-content-pagination">
         <base-pagination
@@ -181,7 +185,6 @@ export default {
           {
             name: "hello",
             function: () => {
-              this.functionTest("hello");
             },
           },
         ],
@@ -190,21 +193,32 @@ export default {
       currentRowData: {},
       /**Button thực hiện hàng loạt */
       isDisabled: true,
-      listSelectedId: [],
+      listSelectedContents: [],
+      resetSelected:false,
+      //reset filter
+      resetDropdown:false
     };
   },
   methods: {
     /**
-     * context test
+     * Đặt lại điều kiện lọc
+     * CreatedBy: nvdien(12/10/2021)
      */
-    functionTest(index) {
-      console.log(index);
+    resetFilter(){
+      this.resetDropdown = !this.resetDropdown;
+      this.mentionState = "";
+      this.voucherType = "";
+      this.timeReportDropdownData = "month";
     },
-    /**Hiển thị panel lọc */
+    /**Hiển thị panel lọc 
+     * CreatedBy: nvdien(11/10/2021)
+    */
     toogleFilterPanel() {
       this.showFilterPanel = !this.showFilterPanel;
     },
-    /**lấy danh sách chứng từ */
+    /**lấy danh sách chứng từ
+     * CreatedBy: nvdien(11/10/2021)
+     */
     loadData() {
       VoucherRepository.getAccountVoucherPagingFilter(
         this.searchData,
@@ -237,19 +251,23 @@ export default {
     },
     /**
      * dữ liệu lấy được từ phân trang
+     * CreatedBy: nvdien(11/10/2021)
      */
     getPagingData(pageIndex, pageSize) {
       this.pageIndex = pageIndex;
       this.pageSize = pageSize;
       this.loadData();
     },
-    /**lọc dữ liệu */
+    /**lọc dữ liệu 
+     * CreatedBy: nvdien(11/10/2021)
+    */
     filterVoucherData() {
       this.showFilterPanel = false;
       this.loadData();
     },
     /**
      * Tìm kiếm
+     * createdBy: nvdien(11/10/2021)
      */
     search() {
       if (this.timeDelaySearch) {
@@ -354,6 +372,7 @@ export default {
           });
           this.closeMessageBox();
           this.loadData();
+
         })
         .catch((response) => console.log(response));
     },
@@ -402,13 +421,13 @@ export default {
         {
           name: "Ghi sổ",
           function: () => {
-            this.mentionMany(this.listSelectedId);
+            this.mentionMany();
           },
         },
         {
           name: "Bỏ ghi",
           function: () => {
-            this.unMentionMany(this.listSelectedId);
+            this.unMentionMany();
           },
         },
         {
@@ -436,21 +455,22 @@ export default {
         this.$eventBus.$emit("hideContextMenu");
       }
     },
-    /**Lấy danh sách các selected row */
+    /**Lấy danh sách các selected row
+     * @param {array} selectedRowList: danh sách các dòng được chọn
+     * CreatedBy: nvdien(11/10/2021)
+     */
     getSelectedRowList(selectedRowList) {
+      this.listSelectedContents = selectedRowList;
       if (selectedRowList.length > 1) {
         this.isDisabled = false;
-        console.log(selectedRowList);
-        for (let i = 0; i < selectedRowList.length; ++i) {
-          if (selectedRowList[i]["is_mention"] == 0) {
-            this.listSelectedId.push(selectedRowList[i]["accountvoucher_id"]);
-          }
-        }
       } else {
         this.isDisabled = true;
       }
     },
-    /**Mở form phiếu nhập kho */
+    /**Mở form phiếu nhập kho
+     * @param {object} content
+     * CreatedBY: nvdien(11/10/2021)
+     */
     editVoucher(content) {
       let voucherId = content["accountvoucher_id"];
       VoucherRepository.getVoucherDetail(voucherId)
@@ -460,23 +480,46 @@ export default {
         })
         .catch((response) => console.log(response));
     },
-    /**Ghi sổ hàng loạt */
-    mentionMany(listId) {
+    /**Ghi sổ hàng loạt 
+     * CreatedBy: nvdien(11/10/2021)
+    */
+    mentionMany() {
+      if(this.isDisabled) return;
+      //Lấy các chứng từ chưa ghi sổ
+      let unMentionContents = this.listSelectedContents.filter(x => {
+        return x["is_mention"] == 0;
+      })
+      let listId = unMentionContents.map(x => x["accountvoucher_id"]);
+      if(listId.length <= 0) return;
       VoucherRepository.mentionMany(listId)
         .then(() => {
+          this.resetSelected = !this.resetSelected;
           this.loadData();
         })
         .catch((response) => console.log(response));
     },
-    /**Bỏ ghi hàng loạt */
-    unMentionMany(listId) {
+    /**Bỏ ghi hàng loạt 
+     * @param listId danh sách ID bỏ ghi
+     * createdBy: nvdien(11/10/2021)
+    */
+    unMentionMany() {
+      if(this.isDisabled) return;
+      //Lấy các chứng từ đã ghi sổ
+      let mentionContents = this.listSelectedContents.filter(x => {
+        return x["is_mention"] == 1;
+      })
+      let listId = mentionContents.map(x => x["accountvoucher_id"]);
+      if(listId.length <= 0) return;
       VoucherRepository.unMentionMany(listId)
         .then(() => {
+          this.resetSelected = !this.resetSelected;
           this.loadData();
         })
         .catch((response) => console.log(response));
     },
-    /**cảnh báo xóa hàng loạt */
+    /**cảnh báo xóa hàng loạt 
+     * CreatedBy: nvdien(11/10/2021)
+    */
     warningDeleteMany() {
       let messageText = this.formatString(
         this.$resourcesVN.message.messageDeleteWarning,
@@ -496,17 +539,26 @@ export default {
           {
             feature: "right-first ms-button-primary",
             callback: () => {
-              this.deleteMultiple(this.listSelectedId);
+              this.deleteMultiple();
             },
             value: "Có",
           },
         ],
       });
     },
-    /**Xóa hàng loạt */
-    deleteMultiple(listId) {
+    /**Xóa hàng loạt 
+     * createdBy: nvdien(11/10/2021)
+    */
+    deleteMultiple() {
+      if(this.isDisabled) return;
+      //Lọc những chứng từ chưa ghi sổ
+      let listContent = this.listSelectedContents.filter(x => {
+        return x["is_mention"] == 0;
+      })
+      //Láy danh sách các ID
+      let listId = listContent.map(x => x["accountvoucher_id"]);
       if (listId.length <= 0) {
-        //show message
+        //danh sách chứa các chứng từ đã ghi sổ
         this.$eventBus.$emit("showMessageBox", {
           icon: "mi-exclamation-warning-48",
           messageText: this.$resourcesVN.message.messgaeDeleteAllMention,
@@ -534,11 +586,15 @@ export default {
             text: toastMessageText,
           });
           this.closeMessageBox();
+          this.resetSelected = !this.resetSelected;
           this.loadData();
         })
         .catch((response) => console.log(response));
     },
-    /**Nhân bản */
+    /**Nhân bản 
+     * @param {object} rowContent
+     * CreatedBy: nvdien(11/10/2021)
+    */
     duplicateItem(rowContent) {
       let voucherId = rowContent["accountvoucher_id"];
       VoucherRepository.getVoucherDetail(voucherId)

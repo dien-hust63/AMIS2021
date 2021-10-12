@@ -56,6 +56,12 @@ export default {
         return {};
       },
     },
+    resetDropdown: {
+      type: Boolean,
+      default: function () {
+        return false;
+      },
+    },
   },
   data() {
     return {
@@ -102,6 +108,12 @@ export default {
       this.isShowList = !this.isShowList;
     },
   },
+  watch:{
+    resetDropdown(){
+      this.currentValue = this.defaultData.value;
+      this.dropdownData = this.defaultData.data;
+    }
+  }
 };
 </script>
 

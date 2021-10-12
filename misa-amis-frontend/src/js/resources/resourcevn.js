@@ -254,7 +254,7 @@ module.exports = {
     messageVoucherDate: "Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ. Xin vui lòng kiểm tra lại.",
     messageSaveSuccess: "Cất thành công dữ liệu",
     messgaeDeleteAllMention: "Các chứng từ bạn chọn đều đã ghi sổ",
-    messageVoucherCodeDuplication:"Mã chứng từ bị trùng",
+    messageVoucherCodeDuplication:"Số chứng từ bị trùng",
     messageVoucherDateInput:"Ngày hạch toán phải lớn hơn hoặc bằng ngày chứng từ",
     messagevoucherDetailRequired:"Bạn phải nhập chứng từ chi tiết"
   },
